@@ -61,7 +61,6 @@
 							<th scope="col">Type</th>\
 							<th scope="col">Action</th>\
 							<th scope="col">Time</th>\
-							<th scope="col">Room</th>\
 						</tr>\
 					</thead>\
 					<tbody id="conLst">\
@@ -81,12 +80,6 @@
 							<td>\
 								<input type="text" class="form-control" name="daterange" value="" />\
 							</td>\
-							<td>\
-								<select class="form-control">\
-									<option>IF-401</option>\
-									<option>IF-501</option>\
-								</select>\
-							</td>\
 						</tr>\
 						<tr>\
 							<td>\
@@ -103,12 +96,6 @@
 							</td>\
 							<td>\
 								<input type="text" class="form-control" name="daterange2" value="" />\
-							</td>\
-							<td>\
-								<select class="form-control">\
-									<option>IF-401</option>\
-									<option>IF-501</option>\
-								</select>\
 							</td>\
 						</tr>\
 						<tr>\
@@ -127,15 +114,16 @@
 							<td>\
 								<input type="text" class="form-control" name="daterange3" value="" />\
 							</td>\
-							<td>\
-								<select class="form-control">\
-									<option>IF-401</option>\
-									<option>IF-501</option>\
-								</select>\
-							</td>\
 						</tr>\
 					</tbody>\
-				</table>',
+				</table>\
+				<div class="form-group">\
+					<label for="roomlab">Room</label>\
+					<select class="form-control" id="roomlab">\
+						<option>IF-401</option>\
+						<option>IF-501</option>\
+					</select>\
+				</div>',
 				focusConfirm: false,
 				preConfirm: () => {
 					console.log('Is checkbox1 checked:' + document.getElementById('checkbox1').checked);
