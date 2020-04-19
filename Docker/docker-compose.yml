@@ -1,0 +1,69 @@
+version: "3.0"
+services:
+
+   web:
+     container_name: web
+     image: python:3.7
+     command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app"
+     ports:
+       - "80:5000"
+     restart: always
+     links:
+       - influxdb
+       - mysql-db
+     volumes:
+       - ./web:/src
+     depends_on:
+       - mysql-db
+       - influxdb
+
+   influxdb:
+     container_name: influxdb
+     image: influxdb:1.8
+     ports:
+       - "8086:8086"
+     networks:
+       - dev_net
+     volumes:
+       - ./db/influxdb/data:/var/lib/influxdb
+      # - ./db/influxdb/config:/etc/influxdb/
+     restart: always
+
+   telegraf:
+     container_name: telegraf
+     image: telegraf:1.14
+     networks:
+       - dev_net
+     #volumes:
+      # - /telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf
+     restart: always
+
+   mysql-db:
+     container_name: mysql-db
+     image: mysql:5.7
+     environment:
+       - MYSQL_ROOT_PASSWORD=123456
+     networks:
+       - dev_net
+     restart: always
+     volumes:
+       - ./db/mysql/initdb/:/docker-entrypoint-initdb.d
+     #Fix docker-toolbox error
+     command: --innodb_use_native_aio=0
+
+   phpmyadmin:
+     container_name: phpmyadmin
+     image: phpmyadmin/phpmyadmin
+     environment:
+       - PMA_HOST=mysql-db
+     ports:
+       - "81:80"
+     networks:
+       - dev_net
+     restart: always
+     links:
+       - mysql-db
+
+networks:
+   dev_net:
+     driver: bridge
