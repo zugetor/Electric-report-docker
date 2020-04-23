@@ -96,19 +96,19 @@
 					<div class="form-row">
 						<div class="col-md-1 mb-3">
 					<div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="customCheck1">
+						<input type="checkbox" class="custom-control-input" id="customCheck1" checked>
 						<label class="custom-control-label" for="customCheck1"> Light </label>
 					  </div>
 					</div>
 					<div class="col-md-1 mb-3">
 					  <div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="customCheck2">
+						<input type="checkbox" class="custom-control-input" id="customCheck2" checked>
 						<label class="custom-control-label" for="customCheck2"> Electricity </label>
 					  </div>
 					</div>
 					<div class="col-md-2 mb-3">
 					  <div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="customCheck3">
+						<input type="checkbox" class="custom-control-input" id="customCheck3" checked>
 						<label class="custom-control-label" for="customCheck3"> Air Conditioner </label>
 					  </div>
 					</div>
@@ -134,16 +134,9 @@
 		</div>
 	</div>
 	<center>
-
-	<div class="col-1">
-	Since : 
-	</div>
-	<input type="text" class="form-control col-2" name="daterange" value="" />
-	<div class="col-1">
-		To : 
-		</div>
-		
-	<input type="text" class="form-control col-2" name="daterange2" value="" />
+		time range :
+		<input type="text" name="daterange" />
+	<br>
 	<br>
 	Chart Type:
 	<select id="type">
@@ -160,6 +153,9 @@
 	</select>
 	<button id="update">update</button>
 	<br>
+	<br>
+	<button class="btn btn-outline-success" id="refresh">refresh</button>
+	<button class="btn btn-outline-danger" id="clear">clear</button>
 	<div id="compare">
 		<div style="width:1000px" >
 			<canvas id="chart1"></canvas>
@@ -184,26 +180,16 @@
 </center>
 	<script>
 
-			$('input[name="daterange"]').daterangepicker({
-				timePicker: true,
-				timePicker24Hour: true,
-				timePickerIncrement: 1,
-				locale: {
-					format: 'HH:mm'
-				}
-			}).on('show.daterangepicker', function (ev, picker) {
-				picker.container.find(".calendar-table").hide();
-			});
-			$('input[name="daterange2"]').daterangepicker({
-				timePicker: true,
-				timePicker24Hour: true,
-				timePickerIncrement: 1,
-				locale: {
-					format: 'HH:mm'
-				}
-			}).on('show.daterangepicker', function (ev, picker) {
-				picker.container.find(".calendar-table").hide();
-			});
+$(function() {
+  $('input[name="daterange"]').daterangepicker({
+    timePicker: true,
+    startDate: moment().startOf('hour'),
+    endDate: moment().startOf('hour').add(32, 'hour'),
+    locale: {
+      format: 'M/DD hh:mm A'
+    }
+  });
+});
 
 		$( "#compare" ).hide();
 		$( "#combine" ).hide();
