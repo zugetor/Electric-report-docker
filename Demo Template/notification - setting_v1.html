@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Condition Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>	
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js" integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+</head>
+<body>
+	<nav class="navbar navbar-icon-top navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">Energy Saving</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		  <span class="navbar-toggler-icon"></span>
+		</button>
+	  
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		  <ul class="navbar-nav mr-auto">
+			<li class="nav-item">
+			  <a class="nav-link" href="sensor_view.html">
+				Sensor Management
+				</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="./sensor_add.html">
+				  Sensor Add
+				</a>
+			  </li>
+			<li class="nav-item">
+			  <a class="nav-link" href="./graph_view.html">
+				</i>
+				Dashboard
+			  </a>
+			</li>
+			<li class="nav-item">
+			  <a class="nav-link" href="./sensor_condition.html">
+				Condition Management
+			  </a>
+			</li>
+			<li class="nav-item active border">
+				<a class="nav-link" href="#">
+				  Notification Setting
+				</a>
+			  </li>
+		</div>
+	  </nav>
+	<div class="container-fluid">
+		<div class="row justify-content-center pt-3">
+			<div class="col-xs-12 col-sm-offset-2 col-sm-8">
+				<div class="mb-4 border-bottom">
+					<h1>Notification Setting
+						
+					</h1>
+				</div> 
+				
+		
+			</div>
+		</div>
+	</div>
+	<script>
+		$("#edit").click(function(){
+			Swal.fire({
+				width: '45rem',
+				title: 'Edit',
+				html: '<form>\
+					<div class="form-row">\
+						<div class="col-md mb-3">\
+						<label for="validationServer01">Sensor Name</label>\
+						<input type="text" class="form-control " id="validationServer01">\
+						</div>\
+					</div>\
+					<div class="form-row">\
+					  <div class="col-md-6 mb-3">\
+						<label for="validationServer04">Building</label>\
+						<select class="custom-select" id="validationServer04">\
+						  <option selected disabled value="">Building...</option>\
+						  <option>Informatics Building</option>\
+						  <option>Informatics Building</option>\
+						  <option>BUU Library</option>\
+						  <option>BUUIC</option>\
+						  <option>HU-SO</option>\
+						</select>\
+						\
+					  </div>\
+					  <div class="col-md-3 mb-3">\
+						<label for="validationServer04">Floor</label>\
+						<select class="custom-select" id="validationServer04">\
+						  <option selected disabled value="">Floor...</option>\
+						  <option>1</option>\
+						  <option>2</option>\
+						  <option>3</option>\
+						  <option>4</option>\
+						  <option>5</option>\
+						  <option>6</option>\
+						  <option>7</option>\
+						  <option>8</option>\
+						  <option>9</option>\
+						  <option>10</option>\
+						  <option>11</option>\
+						  <option>12</option>\
+						</select>\
+					  </div>\
+					  <div class="col-md-3 mb-3">\
+						<label for="validationServer05">Room</label>\
+						<select class="custom-select" id="validationServer04">\
+							<option selected disabled value="">Room...</option>\
+							<option>Room1</option>\
+							<option>Room2</option>\
+							<option>Room3</option>\
+							<option>Room4</option>\
+							<option>Room5</option>\
+							<option>Room6</option>\
+							<option>Room7</option>\
+							<option>Room8</option>\
+							<option>Room9</option>\
+							<option>Room10</option>\
+						  </select>\
+					  </div>\
+					</div>\
+					</div>\
+				  </form>',
+				focusConfirm: false
+			});
+		});
+		$("#del").click(function(){
+			Swal.fire({
+				title: 'Are you sure?',
+				text: "You won't be able to revert this!",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes'
+			}).then((result) => {
+				if (result.value) {
+					Swal.fire(
+						'Deleted!',
+						'Your condition has been deleted.',
+						'success'
+					)
+				}
+			})
+		});
+	</script>
+</body>
+</html>
