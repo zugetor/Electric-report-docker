@@ -1,7 +1,7 @@
+flask
+PyMySQL
+influxdb
 requests
 beautifulsoup4
-flask
-requests_cache
 lxml
 pytz
-waitress

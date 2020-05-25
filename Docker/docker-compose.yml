@@ -4,17 +4,19 @@ services:
    web:
      container_name: web
      image: python:3.7
-     command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app"
+     command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
      ports:
        - "80:5000"
      restart: always
+     networks:
+       - dev_net
      links:
        - influxdb
-       - mysql
+       - db
      volumes:
        - ./web:/src
      depends_on:
-       - mysql
+       - db
        - influxdb
 
    influxdb:
@@ -43,13 +45,13 @@ services:
      links:
        - influxdb
      volumes:
-       - ./db/telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf
+       - ./db/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
      restart: always
      depends_on:
        - influxdb
 
-   mysql:
-     container_name: mysql
+   db:
+     container_name: db
      image: mysql:5.7
      environment:
        - MYSQL_RANDOM_ROOT_PASSWORD=yes
@@ -68,14 +70,14 @@ services:
      container_name: phpmyadmin
      image: phpmyadmin/phpmyadmin
      environment:
-       - PMA_HOST=mysql
+       - PMA_HOST=db
      ports:
        - "81:80"
      networks:
        - dev_net
      restart: always
      links:
-       - mysql
+       - db
 
 networks:
    dev_net:
