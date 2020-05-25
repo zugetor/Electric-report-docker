@@ -10,11 +10,11 @@ services:
      restart: always
      links:
        - influxdb
-       - mysql-db
+       - mysql
      volumes:
        - ./web:/src
      depends_on:
-       - mysql-db
+       - mysql
        - influxdb
 
    influxdb:
@@ -45,12 +45,17 @@ services:
      volumes:
        - ./db/telegraf/config/telegraf.conf:/etc/telegraf/telegraf.conf
      restart: always
+     depends_on:
+       - influxdb
 
-   mysql-db:
-     container_name: mysql-db
+   mysql:
+     container_name: mysql
      image: mysql:5.7
      environment:
-       - MYSQL_ROOT_PASSWORD=123456
+       - MYSQL_RANDOM_ROOT_PASSWORD=yes
+       - MYSQL_USER=myuser
+       - MYSQL_PASSWORD=verysecure
+       - MYSQL_DATABASE=electric_mon
      networks:
        - dev_net
      restart: always
@@ -63,14 +68,14 @@ services:
      container_name: phpmyadmin
      image: phpmyadmin/phpmyadmin
      environment:
-       - PMA_HOST=mysql-db
+       - PMA_HOST=mysql
      ports:
        - "81:80"
      networks:
        - dev_net
      restart: always
      links:
-       - mysql-db
+       - mysql
 
 networks:
    dev_net:
