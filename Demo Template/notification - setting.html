@@ -84,6 +84,12 @@
 				Notification
 			</div>
 
+      <li class="nav-item">
+				<a class="nav-link" href="logs.html">
+					<i class="fas fa-clock"></i>
+					<span>Logs</span></a>
+			</li>
+
 			<li class="nav-item">
 				<a class="nav-link" href="notification - setting.html">
 					<i class="fas fa-sliders-h"></i>
@@ -304,8 +310,10 @@
 				  <option>Second</option>
 				  <option>Minute</option>
 				  <option>Hour</option>
-				</select>
-			  </div>
+        </select>
+        
+        </div>
+        <button type="button" class="btn btn-primary" id="save">update</button>
 			  <br>
 			  
 		  </div>
@@ -315,32 +323,33 @@
 		</div>
 	  </div>
 	</div>
-  
-	<br>
-	 <!-- Earnings (Monthly) Card Example -->
-	 
-		<div class="card border-left-success shadow h-100 py-2">
-		  <div class="card-body">
-			<div class="row no-gutters align-items-center">
-			  <div class="col mr-2">
-				<div class="text-xs font-weight-bold text-success text-uppercase mb-1">Language</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="Thai">
-					<label class="form-check-label" for="inlineRadio1">Thai</label>
-				  </div>
-				  <div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="English">
-					<label class="form-check-label" for="inlineRadio2">English</label>
-				  </div>
-			  </div>
-			  <div class="col-auto">
-				<i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-			  </div>
-			</div>
+  <br>
+  <br>
+  <div class="card border-left-info shadow h-100 py-2">
+	  <div class="card-body">
+		<div class="row no-gutters align-items-center">
+		  <div class="col mr-2">
+			<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Line Token</div>
+			<div class="h5 mb-0 font-weight-bold text-gray-800"><h4>Current Token : </h4>s8QED^gW7?Zs&vJn=MlDCTR0A°J°(Wy%1~wqPEeth3a$!xM#b1LrOY9G%o</div><br>
+			<div class="form-group">
+				<label for="exampleFormControlSelect1">New Token</label>
+        <input type="text" class="form-control" id="token">
+        
+        </div>
+        <button type="button" class="btn btn-info" id="save">update</button>
+			  <br>
+			  
+		  </div>
+		  <div class="col-auto">
+			
 		  </div>
 		</div>
+	  </div>
+	</div>
+
+	<br>
+	
 	  <br>
-		<button type="button" class="btn btn-success" id="save">save</button>
 
         </div>
         <!-- /.container-fluid -->
