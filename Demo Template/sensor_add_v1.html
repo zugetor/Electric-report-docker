@@ -16,7 +16,8 @@
   <link
     href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
     rel="stylesheet">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
+		integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
   <!-- Custom styles for this template -->
   <link href="css/sb-admin-2.min.css" rel="stylesheet">
 
@@ -29,7 +30,8 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js"
     integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>
-
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 </head>
 
 <body id="page-top">
@@ -208,7 +210,18 @@
                 <input id="bMAC" type="text" class="form-control " placeholder="Search...">
               </div>
             </div>
-            
+
+            <div class="form-row">
+              <div class="col-md mb-3">
+                <label for="startDate">Time Range</label>
+                <input id="startDate" type="text" class="form-control" value="">
+              </div>
+              <div class="col-md mb-3">
+                <label for="endDate">Time Range</label>
+                <input id="endDate" type="text" class="form-control" value="">
+              </div>
+            </div>
+
             <div class="form-row">
               <div class="col-md-8 mb-3">
                 <button class="btn btn-primary" type="submit">Search</button>
@@ -291,6 +304,8 @@
   <!-- Bootstrap core JavaScript-->
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js">
+  </script>
 
   <!-- Core plugin JavaScript-->
   <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
@@ -306,6 +321,29 @@
   <script src="js/demo/datatables-demo.js"></script>
 
   <script>
+
+$(function () {
+				$('#startDate').daterangepicker({
+					singleDatePicker: true,
+          timePicker: true,
+          startDate :moment().startOf('year'),
+					locale: {
+						format: 'YYYY-MM-DD hh:mm:ss'
+					}
+				});
+			});
+
+      $(function () {
+				$('#endDate').daterangepicker({
+					singleDatePicker: true,
+          timePicker: true,
+          startDate :moment().add(1,'hours'),
+					locale: {
+						format: 'YYYY-MM-DD hh:mm:ss'
+					}
+				});
+			});
+
     var unRegistered = [{
         "ID": 1,
         "MAC": "cc:24:b3:b0:19:f6",
@@ -388,25 +426,41 @@
       }
     ];
 
+
+
     $.fn.showData = function (param) {
       Table = $('#unRegisterList').DataTable({
-       data: param,
-            columnDefs: [{
-                "targets": -1,
-                "render": function (data, type, row) {
-                    var action = '	<button type="button" class="btn btn-success" id="register'+data.ID+'">add sensor</button> <button type="button" class="btn btn-danger" id="del">Delete</button>'; 
-                    return action;
-                }
-            }],
-            columns: [
-                { data: 'ID' },
-                { data: 'MAC' },
-                { data: 'Type.air' },
-                { data: 'Type.elec' },
-                { data: 'Type.light' },
-                { data: 'Added' },
-                { data: null }
-            ]
+        data: param,
+        columnDefs: [{
+          "targets": -1,
+          "render": function (data, type, row) {
+            var action = '	<button type="button" class="btn btn-success" id="register' + data.ID +
+              '">add sensor</button> <button type="button" class="btn btn-danger" id="del">Delete</button>';
+            return action;
+          }
+        }],
+        columns: [{
+            data: 'ID'
+          },
+          {
+            data: 'MAC'
+          },
+          {
+            data: 'Type.air'
+          },
+          {
+            data: 'Type.elec'
+          },
+          {
+            data: 'Type.light'
+          },
+          {
+            data: 'Added'
+          },
+          {
+            data: null
+          }
+        ]
       });
 
     };
@@ -423,6 +477,15 @@
         });
       }
 
+      var startDate = $('#startDate').val();
+      
+      var endDate = $('#endDate').val();
+
+      
+
+      filteredData = $(unRegistered).filter(function (i, n) {
+        return n.Added >= startDate && n.Added <= endDate;
+      });
 
       $('#tableSensor tbody').empty();
       Table.destroy();
@@ -430,6 +493,8 @@
 
       event.preventDefault();
     });
+
+    
 
     $("#register1").click(function () {
       Swal.fire({
