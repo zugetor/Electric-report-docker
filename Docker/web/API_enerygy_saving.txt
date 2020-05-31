@@ -1,0 +1,26 @@
+API
+/api/private/sensor/list
+/api/private/sensor/add			-name,rid,tid
+/api/private/sensor/edit   		-name,id
+/api/private/sensor/del			-id
+
+/api/public/sensor/list
+
+/api/private/register/list
+/api/private/register/add		-boid,name,sensor(JSON ARRAY) {tid}
+/api/private/register/del		-id
+
+
+
+
+/api/private/rules/list
+/api/private/rules/add			-rid,start,stop,type(JSON ARRAY) {type,state,enable} x4	
+/api/private/rules/edit			-rid,start,stop,type(JSON ARRAY) {type,state,enable} x4	
+/api/private/rules/del			-rid
+
+logs no API
+
+/api/private/noti				-time,unit,token,clslogs
+								check userID from server
+								
+
