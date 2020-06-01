@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from route import demo
 from config import ProductionConfig, DevelopmentConfig, TestingConfig
 from extensions import mysql, influx, query
@@ -15,7 +15,7 @@ app.register_blueprint(demo.app)
 
 @app.route("/")
 def index():
-    return "<h1>Hello World</h1>"
+    return render_template("login.html")
 
 if __name__ == "__main__":
 	app.run()

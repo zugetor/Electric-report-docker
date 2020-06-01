@@ -2,14 +2,14 @@ class Config(object):
     DEBUG = False
     TESTING = False
     MYSQL_HOST = 'db'
-    MYSQL_USER = 'myuser'
-    MYSQL_PASSWORD = 'verysecure'
+    MYSQL_USER = 'myuser' #MySQL username
+    MYSQL_PASSWORD = 'verysecure' #MySQL password
     MYSQL_DB = 'electric_mon'
     INFLUX_HOST = 'influxdb'
-    INFLUX_USER = 'telegraf'
-    INFLUX_PASSWORD = 'secretpassword'
+    INFLUX_USER = 'telegraf' #influxdb username
+    INFLUX_PASSWORD = 'secretpassword' #influxdb password
     INFLUX_DB = 'electric_data'
-    SECRET_KEY = "mysecretkey"
+    SECRET_KEY = "mysecretkey" #your secret key
 
 class ProductionConfig(Config):
     DEBUG = False
