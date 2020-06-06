@@ -10,6 +10,8 @@ class Config(object):
     INFLUX_PASSWORD = 'secretpassword' #influxdb password
     INFLUX_DB = 'electric_data'
     SECRET_KEY = "mysecretkey" #your secret key
+    SESSION_COOKIE_HTTPONLY = True
+    REMEMBER_COOKIE_HTTPONLY = True
 
 class ProductionConfig(Config):
     DEBUG = False
