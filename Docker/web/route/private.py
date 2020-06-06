@@ -5,25 +5,33 @@ app = Blueprint('Private', __name__)
     
 @app.route('/sensor/list',methods=['GET'])
 def sensor_list():
-    return jsonify(query.sensor_list())
+    response = jsonify(query.sensor_list())
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
     
 @app.route('/room/list',methods=['GET'])
 def all_room_list():
-    return jsonify(query.all_room_list())
+    response = jsonify(query.all_room_list())
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
     
     
-@app.route('/sensor/edit',methods=['UPDATE'])
+@app.route('/sensor/edit',methods=['PUT'])
 def sensor_edit():
-    sid = request.form['sid']
-    sname = request.form['sname']
+    sid = request.get_json()['sid']
+    sname = request.get_json()['sname']
     query.sensor_edit(sid,sname)
-    return '200 OK EDIT'
+    response = jsonify({'Code':'200 ok'})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
     
 @app.route('/sensor/del',methods=['DELETE'])
 def sensor_del():
-    sid = request.form['sid']
+    sid = request.get_json()['sid']
     query.sensor_del(sid)
-    return '200 OK DELETE'
+    response = jsonify({'Code':'200 ok'})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
     
 @app.route('/register/list',methods=['GET'])
 def register_list():
