@@ -16,7 +16,7 @@ class Config(object):
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
-    SECRET_KEY = "Your Key"
+    SECRET_KEY = "Your Key" #your secret key for production
     
 class DevelopmentConfig(Config):
     DEBUG = True

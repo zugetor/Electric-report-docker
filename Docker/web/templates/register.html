@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Register</title>
+
+  <!-- Custom fonts for this template-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" integrity="sha256-zmfNZmXoNWBMemUOo1XUGFfc0ihGGLYdgtJS3KCr/l0=" crossorigin="anonymous" />
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+
+  <div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+      <div class="col-xl-10 col-lg-12 col-md-9">
+
+        <div class="card o-hidden border-0 shadow-lg my-5">
+          <div class="card-body p-0">
+            <!-- Nested Row within Card Body -->
+            <div class="row">
+              <div class="col-lg-6 d-none d-lg-block bg-register-image"></div>
+              <div class="col-lg-6">
+                <div class="p-5">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Sign Up!</h1>
+                  </div>
+                  <form class="user" method="POST" action="{{ url_for('Page.register') }}">
+                    <div class="form-group">
+                      <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Username" value="">
+                      {% if form.username.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.username.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      <input type="email" class="form-control form-control-user" id="email" name="email" placeholder="Email Address" value="">
+                      {% if form.email.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.email.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password" value="">
+                      {% if form.password.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.password.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>
+                    <div class="form-group">
+                      <input type="password" class="form-control form-control-user" id="confirm_password" name="confirm_password" placeholder="Confirm Password" value="">
+                      {% if form.confirm_password.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.confirm_password.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>
+                    <input type="submit" class="btn btn-primary btn-user btn-block" value="Register"/>
+                  </form>
+                    <div style="height: 10em;">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bootstrap core JavaScript-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha256-fzFFyH01cBVPYzl16KT40wqjhgPtq6FFUB6ckN2+GGw= sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o sha512-TqmAh0/sSbwSuVBODEagAoiUIeGRo8u95a41zykGfq5iPkO9oie8IKCgx7yAr1bfiBjZeuapjLgMdp9UMpCVYQ==" crossorigin="anonymous"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha256-H3cjtrm/ztDeuhCN9I4yh4iN2Ybx/y1RM7rMmAesA0k=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script> 
+
+  <!-- Custom scripts for all pages-->
+  <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+
+  <script type="text/javascript">
+    $().ready(function() {
+    // validate signup form on keyup and submit
+      $("form").validate({
+        errorClass:'text-danger',
+        rules: {
+          username: {
+            required: true,
+            minlength: 4
+          },
+          password: {
+            required: true,
+            minlength: 6
+          },
+          confirm_password: {
+            required: true,
+            minlength: 6,
+            equalTo: "#password"
+          },
+          email: {
+            required: true,
+            email: true
+          }
+        },
+        messages: {
+          username: {
+            required: "Please enter a username",
+            minlength: "Field must be between 4 and 25 characters long."
+          },
+          password: {
+            required: "Please provide a password",
+            minlength: "Field must be at least 6 characters long."
+          },
+          confirm_password: {
+            required: "Please provide a password",
+            minlength: "Field must be at least 6 characters long.",
+            equalTo: "Passwords must match"
+          },
+          email: "Not a valid email address."
+        }
+      });
+  });
+  </script>
+
+</body>
+
+</html>
