@@ -23,10 +23,8 @@
 
   <!-- Old GUI Version CDN -->
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js" integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js" integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>	
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css" />  
 </head>
 
 <body id="page-top">
@@ -40,7 +38,7 @@
       <!-- Sidebar - Brand -->
       <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
-			<i class="fas fa-bolt"></i>
+          <i class="fas fa-bolt"></i>
         </div>
         <div class="sidebar-brand-text mx-3">Energy Saving <sup></sup></div>
       </a>
@@ -48,15 +46,15 @@
       <!-- Divider -->
       <hr class="sidebar-divider">
 
-	 <!-- Heading -->
-	 <div class="sidebar-heading">
+      <!-- Heading -->
+      <div class="sidebar-heading">
         Monitor
-	  </div>
-	  
+      </div>
+
       <!-- Nav Item - Dashboard -->
       <li class="nav-item">
-        <a class="nav-link" href="graph_view.html">
-			<i class="fas fa-fw fa-chart-area"></i>
+        <a class="nav-link" href="{{ url_for('Page.graph_view') }}">
+          <i class="fas fa-fw fa-chart-area"></i>
           <span>Dashboard</span></a>
       </li>
 
@@ -67,23 +65,22 @@
       <div class="sidebar-heading">
         Sensor Management
       </div>
-	  
-	  <li class="nav-item">
-        <a class="nav-link" href="sensor_view.html">
-			<i class="fas fa-eye"></i>
+
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.sensor_view') }}">
+          <i class="fas fa-eye"></i>
           <span>View All Sensor</span></a>
-	  </li>
-	  <li class="nav-item">
-        <a class="nav-link" href="sensor_add_v1.html">
-			<i class="far fa-registered"></i>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.sensor_add') }}">
+          <i class="far fa-registered"></i>
           <span>Register Sensor</span></a>
-	  </li>
-	  <li class="nav-item">
-        <a class="nav-link" href="sensor_condition.html">
-			<i class="far fa-clock"></i>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.conditions') }}">
+          <i class="far fa-clock"></i>
           <span>Rules Management</span></a>
       </li>
-
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -92,17 +89,18 @@
       <div class="sidebar-heading">
         Notification
       </div>
+
       <li class="nav-item">
-				<a class="nav-link" href="logs.html">
-					<i class="fas fa-clock"></i>
-					<span>Logs</span></a>
-			</li>
+        <a class="nav-link" href="{{ url_for('Page.logs') }}">
+          <i class="fas fa-clock"></i>
+          <span>Logs</span></a>
+      </li>
       <li class="nav-item">
-        <a class="nav-link" href="notification - setting.html">
-			<i class="fas fa-sliders-h"></i>
+        <a class="nav-link" href="{{ url_for('Page.settings') }}">
+          <i class="fas fa-sliders-h"></i>
           <span>Setting</span></a>
-	  </li>
-	  
+      </li>
+
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
 
@@ -296,9 +294,11 @@
 
   <!-- Page level custom scripts -->
   <script src="{{ url_for('static', filename='js/demo/datatables-demo.js') }}"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/2.18.1/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js"></script>
 
   <script>
-	$("#new, #edit").click(function(){
+	$("#new, #edit").click(async function(){
 		Swal.fire({
 			width: '45rem',
 			title: 'Please specify conditions.',
@@ -385,7 +385,7 @@
 				console.log('Is checkbox2 checked:' + document.getElementById('checkbox2').checked);
 			}
 		});
-		$('input[name="daterange"]').daterangepicker({
+		await $('input[name="daterange3"]').daterangepicker({
 			timePicker: true,
 			timePicker24Hour: true,
 			timePickerIncrement: 1,
