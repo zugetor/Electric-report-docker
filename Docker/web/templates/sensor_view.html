@@ -523,12 +523,12 @@
 	var Table;
 	$ajax = $.ajax({
 		type: 'GET',
-		url: 'http://127.0.0.1/room/list',
+		url: '{{ url_for("Private.all_room_list") }}',
 		dataType: 'json',
 		success: function (roomData) {
 			$ajax = $.ajax({
 				type: 'GET',
-				url: 'http://127.0.0.1/sensor/list',
+				url: '{{ url_for("Private.sensor_list") }}',
 				dataType: 'json',
 				success: function (allData) {
 					let building = $('#building');
@@ -649,8 +649,8 @@
 							}).then((result) => {
 								console.log(result.value.sname);
 								$.ajax({
-										url: "http://127.0.0.1/sensor/edit",
-										method: "PUT",
+										url: "{{ url_for('Private.sensor_edit') }}",
+										method: "POST",
 										data: JSON.stringify({
 											"sid": result.value.sid,
 											"sname": result.value.sname
@@ -685,9 +685,9 @@
 							}).then((result) => {
 								if (result.value) {
 									$.ajax({
-											url: "http://127.0.0.1/sensor/del",
-											method: "DELETE",
-											data: JSON.stringify({"sid": data.sid}),
+											url: "{{ url_for('Private.sensor_del') }}",
+											method: "GET",
+											data: {"id": data.sid},
 										contentType: "application/json; charset=utf-8",
 										dataType: "json"
 										}).then(function(res){

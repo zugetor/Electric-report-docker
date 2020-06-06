@@ -28,83 +28,81 @@
     <!-- Sidebar -->
 		<ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
-			<!-- Sidebar - Brand -->
-			<a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-				<div class="sidebar-brand-icon rotate-n-15">
-					<i class="fas fa-bolt"></i>
-				</div>
-				<div class="sidebar-brand-text mx-3">Energy Saving <sup></sup></div>
-			</a>
+      <!-- Sidebar - Brand -->
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Energy Saving <sup></sup></div>
+      </a>
 
-			<!-- Divider -->
-			<hr class="sidebar-divider">
+      <!-- Divider -->
+      <hr class="sidebar-divider">
 
-			<!-- Heading -->
-			<div class="sidebar-heading">
-				Monitor
-			</div>
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Monitor
+      </div>
 
-			<!-- Nav Item - Dashboard -->
-			<li class="nav-item">
-				<a class="nav-link" href="graph_view.html">
-					<i class="fas fa-fw fa-chart-area"></i>
-					<span>Dashboard</span></a>
-			</li>
+      <!-- Nav Item - Dashboard -->
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.graph_view') }}">
+          <i class="fas fa-fw fa-chart-area"></i>
+          <span>Dashboard</span></a>
+      </li>
 
-			<!-- Divider -->
-			<hr class="sidebar-divider">
+      <!-- Divider -->
+      <hr class="sidebar-divider">
 
-			<!-- Heading -->
-			<div class="sidebar-heading">
-				Sensor Management
-			</div>
-
-			<li class="nav-item">
-				<a class="nav-link" href="sensor_view.html">
-					<i class="fas fa-eye"></i>
-					<span>View All Sensor</span></a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="sensor_add_v1.html">
-					<i class="far fa-registered"></i>
-					<span>Register Sensor</span></a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="sensor_condition.html">
-					<i class="far fa-clock"></i>
-					<span>Rules Management</span></a>
-			</li>
-
-
-			<!-- Divider -->
-			<hr class="sidebar-divider">
-
-			<!-- Heading -->
-			<div class="sidebar-heading">
-				Notification
-			</div>
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Sensor Management
+      </div>
 
       <li class="nav-item">
-				<a class="nav-link" href="logs.html">
-					<i class="fas fa-clock"></i>
-					<span>Logs</span></a>
-			</li>
+        <a class="nav-link" href="{{ url_for('Page.sensor_view') }}">
+          <i class="fas fa-eye"></i>
+          <span>View All Sensor</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.sensor_add') }}">
+          <i class="far fa-registered"></i>
+          <span>Register Sensor</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.conditions') }}">
+          <i class="far fa-clock"></i>
+          <span>Rules Management</span></a>
+      </li>
 
-			<li class="nav-item">
-				<a class="nav-link" href="notification - setting.html">
-					<i class="fas fa-sliders-h"></i>
-					<span>Setting</span></a>
-			</li>
+      <!-- Divider -->
+      <hr class="sidebar-divider">
 
-			<!-- Divider -->
-			<hr class="sidebar-divider d-none d-md-block">
+      <!-- Heading -->
+      <div class="sidebar-heading">
+        Notification
+      </div>
 
-			<!-- Sidebar Toggler (Sidebar) -->
-			<div class="text-center d-none d-md-inline">
-				<button class="rounded-circle border-0" id="sidebarToggle"></button>
-			</div>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.logs') }}">
+          <i class="fas fa-clock"></i>
+          <span>Logs</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('Page.settings') }}">
+          <i class="fas fa-sliders-h"></i>
+          <span>Setting</span></a>
+      </li>
 
-		</ul>
+      <!-- Divider -->
+      <hr class="sidebar-divider d-none d-md-block">
+
+      <!-- Sidebar Toggler (Sidebar) -->
+      <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle"></button>
+      </div>
+
+    </ul>
 		<!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
