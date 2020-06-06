@@ -1,15 +1,7 @@
 from flask import Blueprint, jsonify, request
 from extensions import query
 
-app = Blueprint('DEMO', __name__)
-
-@app.route('/demo')
-def demo():
-    return jsonify(query.demo1())
-    
-@app.route('/demo2')
-def demo2():
-    return jsonify(query.demo2())
+app = Blueprint('Private', __name__)
     
 @app.route('/sensor/list',methods=['GET'])
 def sensor_list():

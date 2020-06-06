@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from route import demo
+from route import private
 from config import ProductionConfig, DevelopmentConfig, TestingConfig
 from extensions import mysql, influx, query
 
@@ -10,8 +10,7 @@ mysql.init_app(app.config)
 influx.init_app(app.config)
 query.init_db(mysql.get_connection(), mysql.get_cursor(), influx.get_client())
 
-app.register_blueprint(demo.app, url_prefix="/api")
-app.register_blueprint(demo.app)
+app.register_blueprint(private.app, url_prefix="/api/private")
 
 @app.route("/")
 def index():
