@@ -15,7 +15,7 @@ app.register_blueprint(demo.app)
 
 @app.route("/")
 def index():
-    return render_template("login.html")
+    return render_template("sensor_view.html")
 
 if __name__ == "__main__":
 	app.run()

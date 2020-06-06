@@ -1,25 +1,27 @@
 API
-/api/private/sensor/list x
-/api/private/sensor/edit  x 		-name,id
-/api/private/sensor/del	x		-id
+/api/private/sensor/list 										//list all sensor
+/api/private/sensor/edit   		-name,id							//edit sensor name
+/api/private/sensor/del			-id								//delete sensor from board #delete all logs in this sensor
 
-/api/private/room/list x
-/api/private/room/add
-edit
-delete
+/api/private/room/list 											//list all room
+/api/private/room/add 			-rname,fid							//add room 
+/api/private/room/edit 			-rid,rname,fid							//edit room name or change floor
+/api/private/room/del	 		-rid								//delete this room and then all boards in this room is deleted #warning before delete
 
-floor 
+/api/private/floor/list 										//list all floor
+/api/private/floor/add 			-fname,bid							//add floor
+/api/private/floor/edit 		-fid,fname,bid							//edit floor name or change building
+/api/private/floor/del	 		-fid								//delete rooms in this floor first then delete this floor. all boards in this floor is deleted  #warning before delete
 
-building
+/api/private/building/list 										//list all building 
+/api/private/building/add 		-bname								//add building
+/api/private/building/edit 		-bid,bname							//edit building name
+/api/private/building/del 		-bid								//delete room , floor in this building first then delete this building. all boards in this building is deleted #warning before delete
 
-
-/api/public/sensor/list x
-
-		add			-MAC,sensor(JSON ARRAY){tid}
-/api/private/register/list x
-/api/private/register/register 		-boid,sensor(name) json array ,rid
-/api/private/register/del x		-id
-
+		 func add		-MAC,sensor(JSON ARRAY){tid}     				// add board and sensor with no sensor name and unregister
+/api/private/register/list 										// list all boards
+/api/private/register/register 		-boid,sensor(name) json array ,rid				//change board status to register and change all sensor name in this board
+/api/private/register/del 		-id								//delete board and all sensor in this board
 
 /api/private/rules/list
 /api/private/rules/add			-rid,start,stop,type(JSON ARRAY) {type,state,enable} x4	
