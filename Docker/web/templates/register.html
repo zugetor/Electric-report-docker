@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Register</title>
+  <title>Energy Saving - Register</title>
 
   <!-- Custom fonts for this template-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" integrity="sha256-zmfNZmXoNWBMemUOo1XUGFfc0ihGGLYdgtJS3KCr/l0=" crossorigin="anonymous" />
@@ -41,7 +41,7 @@
                   </div>
                   <form class="user" method="POST" action="{{ url_for('Page.register') }}">
                     <div class="form-group">
-                      <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Username" value="">
+                      <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Username">
                       {% if form.username.errors %}
                           <ul class="text-danger">
                             {% for error in form.username.errors %}
@@ -51,7 +51,7 @@
                       {% endif %}
                     </div>
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="email" name="email" placeholder="Email Address" value="">
+                      <input type="email" class="form-control form-control-user" id="email" name="email" placeholder="Email Address">
                       {% if form.email.errors %}
                           <ul class="text-danger">
                             {% for error in form.email.errors %}
@@ -61,7 +61,7 @@
                       {% endif %}
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password" value="">
+                      <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password">
                       {% if form.password.errors %}
                           <ul class="text-danger">
                             {% for error in form.password.errors %}
@@ -71,7 +71,7 @@
                       {% endif %}
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="confirm_password" name="confirm_password" placeholder="Confirm Password" value="">
+                      <input type="password" class="form-control form-control-user" id="confirm_password" name="confirm_password" placeholder="Confirm Password">
                       {% if form.confirm_password.errors %}
                           <ul class="text-danger">
                             {% for error in form.confirm_password.errors %}
@@ -80,6 +80,16 @@
                           </ul>
                       {% endif %}
                     </div>
+                    <div class="form-group">
+                      {{ form.recaptcha }}
+                      {% if form.recaptcha.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.recaptcha.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>                    
                     <input type="submit" class="btn btn-primary btn-user btn-block" value="Register"/>
                   </form>
                     <div style="height: 10em;">
@@ -129,6 +139,13 @@
             required: true,
             email: true
           }
+        },
+        submitHandler: function(form) {
+            if (grecaptcha.getResponse()) {
+                form.submit();
+            } else {
+                alert('Please confirm captcha to proceed')
+            }
         },
         messages: {
           username: {

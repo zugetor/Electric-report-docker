@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from flask_wtf import RecaptchaField
 from passlib.hash import pbkdf2_sha256
 
 app = Blueprint('Page', __name__)
@@ -14,11 +15,23 @@ class RegistrationForm(Form):
 		validators.Length(min=6)
 	])
 	confirm_password = PasswordField('confirm_password')
+	recaptcha = RecaptchaField
 
-@app.route("/login")
+class LoginForm(Form):
+	username = StringField('username', [validators.Length(min=4, max=25)])
+	password = PasswordField('password', [
+		validators.DataRequired(),
+		validators.Length(min=6)
+	])
+	recaptcha = RecaptchaField()
+
+
+@app.route("/login",methods=['GET','POST'])
 def login():
-	#pbkdf2_sha256.verify(password, result["password"])
-	return render_template("login.html")
+	form = LoginForm(request.form)
+	if request.method == 'POST' and form.validate(): #pbkdf2_sha256.verify(password, result["password"])
+		return redirect(url_for('Page.graph_view'))
+	return render_template("login.html",form=form)
 
 @app.route("/register",methods=['GET','POST'])
 def register():

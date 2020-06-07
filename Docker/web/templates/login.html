@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Login</title>
+  <title>Energy Saving - Login</title>
 
   <!-- Custom fonts for this template-->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" integrity="sha256-zmfNZmXoNWBMemUOo1XUGFfc0ihGGLYdgtJS3KCr/l0=" crossorigin="anonymous" />
@@ -39,13 +39,37 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                   </div>
-                  <form class="user" method="POST" action="/action_page.php">
+                  <form class="user" method="POST" action="{{ url_for('Page.login') }}">
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Email Address or username">
+                      <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Email Address or username">
+                      {% if form.username.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.username.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password">
+                      <input type="password" class="form-control form-control-user" id="password" name="password" placeholder="Password">
+                      {% if form.password.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.password.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
                     </div>
+                    <div class="form-group">
+                      {{ form.recaptcha }}
+                      {% if form.recaptcha.errors %}
+                          <ul class="text-danger">
+                            {% for error in form.recaptcha.errors %}
+                              <li>{{ error }}</li>
+                              {% endfor %}
+                          </ul>
+                      {% endif %}
+                    </div>      
                     <input type="submit" class="btn btn-primary btn-user btn-block" value="Login"/>
 					          <a href="{{ url_for('Page.register') }}" class="btn btn-success btn-user btn-block">Register</a>
                   </form>
@@ -68,9 +92,46 @@
 
   <!-- Core plugin JavaScript-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha256-H3cjtrm/ztDeuhCN9I4yh4iN2Ybx/y1RM7rMmAesA0k=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script> 
 
   <!-- Custom scripts for all pages-->
   <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+
+  <script type="text/javascript">
+    $().ready(function() {
+    // validate signup form on keyup and submit
+      $("form").validate({
+        errorClass:'text-danger',
+        rules: {
+          username: {
+            required: true,
+            minlength: 4
+          },
+          password: {
+            required: true,
+            minlength: 6
+          }
+        },
+        submitHandler: function(form) {
+            if (grecaptcha.getResponse()) {
+                form.submit();
+            } else {
+                alert('Please confirm captcha to proceed')
+            }
+        },
+        messages: {
+          username: {
+            required: "Please enter a username",
+            minlength: "Field must be between 4 and 25 characters long."
+          },
+          password: {
+            required: "Please provide a password",
+            minlength: "Field must be at least 6 characters long."
+          }
+        }
+      });
+  });
+  </script>
 
 </body>
 
