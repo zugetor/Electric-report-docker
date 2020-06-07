@@ -15,7 +15,7 @@ class RegistrationForm(Form):
 		validators.Length(min=6)
 	])
 	confirm_password = PasswordField('confirm_password')
-	recaptcha = RecaptchaField
+	recaptcha = RecaptchaField()
 
 class LoginForm(Form):
 	username = StringField('username', [validators.Length(min=4, max=25)])
