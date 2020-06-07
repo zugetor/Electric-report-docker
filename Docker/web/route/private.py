@@ -1,5 +1,5 @@
-from flask import Blueprint, jsonify, request
-from extensions import query
+from flask import Blueprint, jsonify, request, escape
+from extensions import query, html_escape
 
 app = Blueprint('Private', __name__)
     
@@ -20,7 +20,7 @@ def register_list():
 @app.route('/sensor',methods=['POST'])
 def sensor_edit():
     sid = request.get_json()['sid']
-    sname = request.get_json()['sname']
+    sname = html_escape(request.get_json()['sname'])
     query.sensor_edit(sid,sname)
     response = jsonify({'Code':'200 ok'})
     return response
@@ -47,7 +47,7 @@ def register_del():
     
 @app.route('/room',methods=['POST'])
 def room_add():
-    rname = request.form['rname']
+    rname = html_escape(request.form['rname'])
     fid = request.form['fid']
     query.room_add(rname,fid)
     return '200 OK ADD ROOM'
@@ -55,7 +55,7 @@ def room_add():
 @app.route('/room/edit',methods=['POST'])
 def room_edit():
     rid = request.form['rid']
-    rname = request.form['rname']
+    rname = html_escape(request.form['rname'])
     fid = request.form['fid']
     query.room_edit(rid,rname,fid)
     return '200 OK EDIT ROOM'
@@ -68,7 +68,7 @@ def room_del():
     
 @app.route('/floor/',methods=['POST'])
 def floor_add():
-    fname = request.form['fname']
+    fname = html_escape(request.form['fname'])
     bid = request.form['bid']
     query.floor_add(fname,bid)
     return '200 OK ADD FLOOR'
@@ -76,7 +76,7 @@ def floor_add():
 @app.route('/floor/edit',methods=['POST'])
 def floor_edit():
     fid = request.form['fid']
-    fname = request.form['fname']
+    fname = html_escape(request.form['fname'])
     bid = request.form['bid']
     query.floor_edit(fid,fname,bid)
     return '200 OK EDIT FLOOR'
@@ -90,14 +90,14 @@ def floor_del():
     
 @app.route('/building/',methods=['POST'])
 def building_add():
-    bname = request.form['bname']
+    bname = html_escape(request.form['bname'])
     query.building_add(bname)
     return '200 OK ADD BUILDING'
     
 @app.route('/building/edit',methods=['POST'])
 def building_edit():
     bid = request.form['bid']
-    bname = request.form['bname']
+    bname = html_escape(request.form['bname'])
     query.building_edit(bid,bname)
     return '200 OK EDIT BUILDING'
     

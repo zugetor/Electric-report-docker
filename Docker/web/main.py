@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from route import private, page
 from config import ProductionConfig, DevelopmentConfig, TestingConfig
-from extensions import mysql, influx, query
+from extensions import mysql, influx, query, html_escape
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
