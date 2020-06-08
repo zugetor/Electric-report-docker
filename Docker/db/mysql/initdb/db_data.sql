@@ -16,7 +16,7 @@ INSERT INTO `board` (`boid`, `bomac`, `register`, `rid`) VALUES (NULL, '7B-D3-A3
 
 INSERT INTO `type` (`tid`, `tname`) VALUES (NULL, 'Light'), (NULL, 'Electricity'), (NULL, 'Air Conditioner');
 
-INSERT INTO `user` (`id`, `username`, `email`, `password`, `create_time`) VALUES (NULL, 'admin', 'admin@mail.com', 'nimda', CURRENT_TIMESTAMP);
+INSERT INTO `user` (`id`, `username`, `email`, `password`, `create_time`, `is_active`) VALUES (NULL, 'admin', 'admin@mail.com', '$pbkdf2-sha256$29000$JmSsdY5R6t07h1AqpVQKwQ$Y.g5BF0EgSKCjK47wfBa45EFlIALaxD8k0snzPvxRBM', CURRENT_TIMESTAMP, 1);
 
 INSERT INTO `sensor` (`sid`, `sname`, `tid`, `boid`) VALUES (NULL, 'Light 1', '1', '1'), (NULL, 'Light 2', '1', '1'), (NULL, 'Elec 1', '2', '1'), (NULL, 'Air 1', '3', '1'), (NULL, 'Light x', '1', '3'), (NULL, 'Light y', '1', '3'), (NULL, 'Light z', '1', '3'), (NULL, 'Light a', '1', '4'), (NULL, 'Elec b', '2', '4'), (NULL, 'Air c', '3', '4');
 
