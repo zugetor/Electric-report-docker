@@ -116,7 +116,7 @@ class Query:
 		self._cur.execute("DELETE FROM building WHERE bid = %s",(bid))
 
 	def register_user(self,user,email,password):
-		self._cur.execute("INSERT INTO `user` (`username`, `email`, `password`, `activate`, `flogout`, `create_time`) VALUES (%s, %s, %s, '0', '0', CURRENT_TIMESTAMP)",
+		self._cur.execute("INSERT INTO `user` (`username`, `email`, `password`, `is_active`, `flogout`, `create_time`) VALUES (%s, %s, %s, '0', '0', CURRENT_TIMESTAMP)",
 			(user,email,password))
 
 	def get_userByid(self,id):
@@ -130,7 +130,6 @@ class Query:
 		return res
 		
 	#board.rid can be null
-	#sensor type_tid must change to only tid
 	
 	def building_list(self):
 		self._cur.execute("SELECT * FROM building")

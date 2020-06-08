@@ -47,15 +47,11 @@ def login():
 @app.route("/register",methods=['GET','POST'])
 def register():
 	form = RegistrationForm(request.form)
-	if request.method == 'POST' and form.validate():
-		password = pbkdf2_sha256.using(rounds=8000, salt_size=10).hash(form.password.data)
+	if request.method == 'POST' and form.validate() and not query.get_userLogin(form.username.data) and not query.get_userLogin(form.email.data):
+		password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(form.password.data)
+		query.register_user(form.username.data, form.email.data, password)
 		return redirect(url_for('Page.login'))
 	return render_template("register.html",form=form)
-
-@app.route("/test")
-@login_required
-def test():
-	return render_template("graph_view.html")
 
 @app.route('/logout')
 @login_required
