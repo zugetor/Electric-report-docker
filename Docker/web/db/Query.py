@@ -132,19 +132,19 @@ class Query:
 	#board.rid can be null
 	#sensor type_tid must change to only tid
 	
-    def building_list(self):
-        self._cur.execute("SELECT * FROM building")
-        res = self._cur.fetchall()
-        return res	
-    
-    def floor_list(self,bid):
-        self._cur.execute("SELECT * FROM floor where bid = %s",(bid))
-        res = self._cur.fetchall()
-        return res
-        
-    def room_list(self,fid):
-        self._cur.execute("SELECT * FROM room where fid = %s",(fid))
-        res = self._cur.fetchall()
-        return res
+	def building_list(self):
+		self._cur.execute("SELECT * FROM building")
+		res = self._cur.fetchall()
+		return res	
+	
+	def floor_list(self,bid):
+		self._cur.execute("SELECT * FROM floor where bid = %s",(bid))
+		res = self._cur.fetchall()
+		return res
+		
+	def room_list(self,fid):
+		self._cur.execute("SELECT * FROM room where fid = %s",(fid))
+		res = self._cur.fetchall()
+		return res
 	
 
