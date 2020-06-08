@@ -1,206 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>Energy Saving - Sensor Register</title>
-
-  <!-- Custom fonts for this template -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" integrity="sha256-zmfNZmXoNWBMemUOo1XUGFfc0ihGGLYdgtJS3KCr/l0=" crossorigin="anonymous" />
-  <link
-    href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-    rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
-		integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
-  <!-- Custom styles for this template -->
-  <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-  <!-- Custom styles for this page -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap4.min.css" integrity="sha256-F+DaKAClQut87heMIC6oThARMuWne8+WzxIDT7jXuPA=" crossorigin="anonymous" />
-
-  <!-- Old UI Version CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js"
-    integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-</head>
-
-<body id="page-top">
-
-  <!-- Page Wrapper -->
-  <div id="wrapper">
-
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-      <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-bolt"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Energy Saving <sup></sup></div>
-      </a>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Monitor
-      </div>
-
-      <!-- Nav Item - Dashboard -->
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.graph_view') }}">
-          <i class="fas fa-fw fa-chart-area"></i>
-          <span>Dashboard</span></a>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Sensor Management
-      </div>
-
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.sensor_view') }}">
-          <i class="fas fa-eye"></i>
-          <span>View All Sensor</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.sensor_add') }}">
-          <i class="far fa-registered"></i>
-          <span>Register Sensor</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.conditions') }}">
-          <i class="far fa-clock"></i>
-          <span>Rules Management</span></a>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Notification
-      </div>
-
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.logs') }}">
-          <i class="fas fa-clock"></i>
-          <span>Logs</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('Page.settings') }}">
-          <i class="fas fa-sliders-h"></i>
-          <span>Setting</span></a>
-      </li>
-
-      <!-- Divider -->
-      <hr class="sidebar-divider d-none d-md-block">
-
-      <!-- Sidebar Toggler (Sidebar) -->
-      <div class="text-center d-none d-md-inline">
-        <button class="rounded-circle border-0" id="sidebarToggle"></button>
-      </div>
-
-    </ul>
-    <!-- End of Sidebar -->
-
-    <!-- Content Wrapper -->
-    <div id="content-wrapper" class="d-flex flex-column">
-
-      <!-- Main Content -->
-      <div id="content">
-
-        <!-- Topbar -->
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-          <!-- Sidebar Toggle (Topbar) -->
-          <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-            <i class="fa fa-bars"></i>
-          </button>
-
-
-
-          <!-- Topbar Navbar -->
-          <ul class="navbar-nav ml-auto">
-
-            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-            <li class="nav-item dropdown no-arrow d-sm-none">
-              <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-search fa-fw"></i>
-              </a>
-              <!-- Dropdown - Messages -->
-              <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                aria-labelledby="searchDropdown">
-                <form class="form-inline mr-auto w-100 navbar-search">
-                  <div class="input-group">
-                    <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
-                      aria-label="Search" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                      <button class="btn btn-primary" type="button">
-                        <i class="fas fa-search fa-sm"></i>
-                      </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </li>
-
-
-
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">IsDat</span>
-                <img class="img-profile rounded-circle"
-                  src="https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-9/4504_1065207716213_1313626_n.jpg?_nc_cat=101&_nc_sid=85a577&_nc_eui2=AeEXhfUh_ckOBflAOpMsFBnJeNdjj2RlWsx412OPZGVazL8Aqn_Cg5K13QcpXmwouAtXSCrg-VcZBERhLgFjy-d1&_nc_ohc=BX9IiXBgDDgAX_hlZGH&_nc_ht=scontent.fbkk7-3.fna&oh=40360f32c89d5c081c222348dae121b3&oe=5ED6B24A">
-              </a>
-              <!-- Dropdown - User Information -->
-              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Profile
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Settings
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
-                </a>
-              </div>
-            </li>
-
-          </ul>
-
-        </nav>
-        <!-- End of Topbar -->
-
-        <!-- Begin Page Content -->
-        <div class="container-fluid">
-
+{% extends 'base.html' %}
+{% block title %}Energy Saving - Sensor Register{% endblock %}
+{% block content %}
           <!-- Page Heading -->
           <h1 class="h3 mb-2 text-gray-800">Sensor Managemnet</h1>
           <form id="searchForm">
@@ -245,104 +45,36 @@
                       <th>Action</th>
                     </tr>
                   </thead>
-
                   <tbody>
-
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
-
-        </div>
-        <!-- /.container-fluid -->
-
-      </div>
-      <!-- End of Main Content -->
-
-      <!-- Footer -->
-      <footer class="sticky-footer bg-white">
-        <div class="container my-auto">
-          <div class="copyright text-center my-auto">
-            <span>Enerygy Saving System &copy; 2020</span>
-          </div>
-        </div>
-      </footer>
-      <!-- End of Footer -->
-
-    </div>
-    <!-- End of Content Wrapper -->
-
-  </div>
-  <!-- End of Page Wrapper -->
-
-  <!-- Scroll to Top Button-->
-  <a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-  </a>
-
-  <!-- Logout Modal-->
-  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Bootstrap core JavaScript-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js" integrity="sha256-fzFFyH01cBVPYzl16KT40wqjhgPtq6FFUB6ckN2+GGw= sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o sha512-TqmAh0/sSbwSuVBODEagAoiUIeGRo8u95a41zykGfq5iPkO9oie8IKCgx7yAr1bfiBjZeuapjLgMdp9UMpCVYQ==" crossorigin="anonymous"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js">
-  </script>
-
-  <!-- Core plugin JavaScript-->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js" integrity="sha256-H3cjtrm/ztDeuhCN9I4yh4iN2Ybx/y1RM7rMmAesA0k=" crossorigin="anonymous"></script>
-
-  <!-- Custom scripts for all pages-->
-  <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
-
-  <!-- Page level plugins -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js" integrity="sha256-t5ZQTZsbQi8NxszC10CseKjJ5QeMw5NINtOXQrESGSU=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.bootstrap4.min.js" integrity="sha256-hJ44ymhBmRPJKIaKRf3DSX5uiFEZ9xB/qx8cNbJvIMU=" crossorigin="anonymous"></script>
-
-  <!-- Page level custom scripts -->
-  <script src="{{ url_for('static', filename='js/demo/datatables-demo.js') }}"></script>
-
-  <script>
-
+{% endblock %}
+{% block js %}
+<script>
 $(function () {
-				$('#startDate').daterangepicker({
-					singleDatePicker: true,
+        $('#startDate').daterangepicker({
+          singleDatePicker: true,
           timePicker: true,
           startDate :moment().startOf('year'),
-					locale: {
-						format: 'YYYY-MM-DD hh:mm:ss'
-					}
-				});
-			});
+          locale: {
+            format: 'YYYY-MM-DD hh:mm:ss'
+          }
+        });
+      });
 
       $(function () {
-				$('#endDate').daterangepicker({
-					singleDatePicker: true,
+        $('#endDate').daterangepicker({
+          singleDatePicker: true,
           timePicker: true,
           startDate :moment().add(1,'hours'),
-					locale: {
-						format: 'YYYY-MM-DD hh:mm:ss'
-					}
-				});
-			});
+          locale: {
+            format: 'YYYY-MM-DD hh:mm:ss'
+          }
+        });
+      });
 
     var unRegistered = [{
         "ID": 1,
@@ -434,7 +166,7 @@ $(function () {
         columnDefs: [{
           "targets": -1,
           "render": function (data, type, row) {
-            var action = '	<button type="button" class="btn btn-success" id="register' + data.ID +
+            var action = '  <button type="button" class="btn btn-success" id="register' + data.ID +
               '">add sensor</button> <button type="button" class="btn btn-danger" id="del">Delete</button>';
             return action;
           }
@@ -501,96 +233,96 @@ $(function () {
         width: '45rem',
         title: 'Register Sensors',
         html: '<form>\
-				<div class="form-row">\
-					<div class="col-md mb-3">\
-					<label for="validationServer01">Sensor Name</label>\
-					<input type="text" class="form-control " id="validationServer01">\
-					</div>\
-          <div class="col-md mb-3">\
-					<label for="validationServer01">Type</label>\
-					<input type="text" class="form-control " id="validationServer01" value="Air Conditioner" disabled>\
-					</div>\
-				</div>\
         <div class="form-row">\
-					<div class="col-md mb-3">\
-					<label for="validationServer01">Sensor Name</label>\
-					<input type="text" class="form-control " id="validationServer01">\
-					</div>\
           <div class="col-md mb-3">\
-					<label for="validationServer01">Type</label>\
-					<input type="text" class="form-control " id="validationServer01" value="Air Conditioner" disabled>\
-					</div>\
-				</div>\
+          <label for="validationServer01">Sensor Name</label>\
+          <input type="text" class="form-control " id="validationServer01">\
+          </div>\
+          <div class="col-md mb-3">\
+          <label for="validationServer01">Type</label>\
+          <input type="text" class="form-control " id="validationServer01" value="Air Conditioner" disabled>\
+          </div>\
+        </div>\
         <div class="form-row">\
-					<div class="col-md mb-3">\
-					<label for="validationServer01">Sensor Name</label>\
-					<input type="text" class="form-control " id="validationServer01">\
-					</div>\
           <div class="col-md mb-3">\
-					<label for="validationServer01">Type</label>\
-					<input type="text" class="form-control " id="validationServer01" value="Light" disabled>\
-					</div>\
-				</div>\
+          <label for="validationServer01">Sensor Name</label>\
+          <input type="text" class="form-control " id="validationServer01">\
+          </div>\
+          <div class="col-md mb-3">\
+          <label for="validationServer01">Type</label>\
+          <input type="text" class="form-control " id="validationServer01" value="Air Conditioner" disabled>\
+          </div>\
+        </div>\
         <div class="form-row">\
-					<div class="col-md mb-3">\
-					<label for="validationServer01">Sensor Name</label>\
-					<input type="text" class="form-control " id="validationServer01">\
-					</div>\
           <div class="col-md mb-3">\
-					<label for="validationServer01">Type</label>\
-					<input type="text" class="form-control " id="validationServer01" value="Light" disabled>\
-					</div>\
-				</div>\
-				<div class="form-row">\
-				  <div class="col-md-6 mb-3">\
-					<label for="validationServer04">Building</label>\
-					<select class="custom-select" id="validationServer04">\
-					  <option selected disabled value="">Building...</option>\
-					  <option>Informatics Building</option>\
-					  <option>Informatics Building</option>\
-					  <option>BUU Library</option>\
-					  <option>BUUIC</option>\
-					  <option>HU-SO</option>\
-					</select>\
-					\
-				  </div>\
-				  <div class="col-md-3 mb-3">\
-					<label for="validationServer04">Floor</label>\
-					<select class="custom-select" id="validationServer04">\
-					  <option selected disabled value="">Floor...</option>\
-					  <option>1</option>\
-					  <option>2</option>\
-					  <option>3</option>\
-					  <option>4</option>\
-					  <option>5</option>\
-					  <option>6</option>\
-					  <option>7</option>\
-					  <option>8</option>\
-					  <option>9</option>\
-					  <option>10</option>\
-					  <option>11</option>\
-					  <option>12</option>\
-					</select>\
-				  </div>\
-				  <div class="col-md-3 mb-3">\
-					<label for="validationServer05">Room</label>\
-					<select class="custom-select" id="validationServer04">\
-						<option selected disabled value="">Room...</option>\
-						<option>Room1</option>\
-						<option>Room2</option>\
-						<option>Room3</option>\
-						<option>Room4</option>\
-						<option>Room5</option>\
-						<option>Room6</option>\
-						<option>Room7</option>\
-						<option>Room8</option>\
-						<option>Room9</option>\
-						<option>Room10</option>\
-					  </select>\
-				  </div>\
-				</div>\
-				</div>\
-			  </form>',
+          <label for="validationServer01">Sensor Name</label>\
+          <input type="text" class="form-control " id="validationServer01">\
+          </div>\
+          <div class="col-md mb-3">\
+          <label for="validationServer01">Type</label>\
+          <input type="text" class="form-control " id="validationServer01" value="Light" disabled>\
+          </div>\
+        </div>\
+        <div class="form-row">\
+          <div class="col-md mb-3">\
+          <label for="validationServer01">Sensor Name</label>\
+          <input type="text" class="form-control " id="validationServer01">\
+          </div>\
+          <div class="col-md mb-3">\
+          <label for="validationServer01">Type</label>\
+          <input type="text" class="form-control " id="validationServer01" value="Light" disabled>\
+          </div>\
+        </div>\
+        <div class="form-row">\
+          <div class="col-md-6 mb-3">\
+          <label for="validationServer04">Building</label>\
+          <select class="custom-select" id="validationServer04">\
+            <option selected disabled value="">Building...</option>\
+            <option>Informatics Building</option>\
+            <option>Informatics Building</option>\
+            <option>BUU Library</option>\
+            <option>BUUIC</option>\
+            <option>HU-SO</option>\
+          </select>\
+          \
+          </div>\
+          <div class="col-md-3 mb-3">\
+          <label for="validationServer04">Floor</label>\
+          <select class="custom-select" id="validationServer04">\
+            <option selected disabled value="">Floor...</option>\
+            <option>1</option>\
+            <option>2</option>\
+            <option>3</option>\
+            <option>4</option>\
+            <option>5</option>\
+            <option>6</option>\
+            <option>7</option>\
+            <option>8</option>\
+            <option>9</option>\
+            <option>10</option>\
+            <option>11</option>\
+            <option>12</option>\
+          </select>\
+          </div>\
+          <div class="col-md-3 mb-3">\
+          <label for="validationServer05">Room</label>\
+          <select class="custom-select" id="validationServer04">\
+            <option selected disabled value="">Room...</option>\
+            <option>Room1</option>\
+            <option>Room2</option>\
+            <option>Room3</option>\
+            <option>Room4</option>\
+            <option>Room5</option>\
+            <option>Room6</option>\
+            <option>Room7</option>\
+            <option>Room8</option>\
+            <option>Room9</option>\
+            <option>Room10</option>\
+            </select>\
+          </div>\
+        </div>\
+        </div>\
+        </form>',
         focusConfirm: false
       });
     });
@@ -613,8 +345,5 @@ $(function () {
         }
       })
     });
-  </script>
-
-</body>
-
-</html>
+</script>
+{% endblock %}
