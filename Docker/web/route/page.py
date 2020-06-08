@@ -64,3 +64,7 @@ def conditions():
 @app.route("/sensor_view")
 def sensor_view():
 	return render_template("sensor_view.html")    
+    
+@app.route("/room_add")
+def room_add():
+	return render_template("room_add.html")   

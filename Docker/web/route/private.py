@@ -2,13 +2,13 @@ from flask import Blueprint, jsonify, request, escape
 from extensions import query, html_escape
 
 app = Blueprint('Private', __name__)
-    
+
 @app.route('/sensor/',methods=['GET'])
 def sensor_list():
     response = jsonify(query.sensor_list())
     return response
     
-@app.route('/room/',methods=['GET'])
+@app.route('/allroom/',methods=['GET'])
 def all_room_list():
     response = jsonify(query.all_room_list())
     return response
@@ -45,6 +45,11 @@ def register_del():
     #query.register_add(bomac,sensor)
     #return jsonify(query.register_add(bomac,sensor))
     
+@app.route('/room/',methods=['GET'])
+def room_list():
+    fid = request.args.get('fid')
+    return jsonify(query.room_list(fid))
+    
 @app.route('/room',methods=['POST'])
 def room_add():
     rname = html_escape(request.form['rname'])
@@ -65,6 +70,11 @@ def room_del():
     rid = request.args.get('id')
     query.room_del(rid)
     return '200 OK DEL ROOM'
+    
+@app.route('/floor/',methods=['GET'])
+def floor_list():
+    bid = request.args.get('bid')
+    return jsonify(query.floor_list(bid))
     
 @app.route('/floor/',methods=['POST'])
 def floor_add():
@@ -87,6 +97,9 @@ def floor_del():
     query.floor_del(fid)
     return '200 OK DEL FLOOR'
     
+@app.route('/building/',methods=['GET'])
+def building_list():
+    return jsonify(query.building_list())
     
 @app.route('/building/',methods=['POST'])
 def building_add():

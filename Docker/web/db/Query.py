@@ -80,6 +80,10 @@ class Query:
         self._cur.execute("DELETE FROM sensor WHERE boid = %s",(boid))   # waiting for rules to delete
         self._cur.execute("DELETE FROM board WHERE boid = %s",(boid))
         
+    def room_list(self,fid):
+        self._cur.execute("SELECT * FROM room where fid = %s",(fid))
+        res = self._cur.fetchall()
+        return res
     
     def room_add(self,rname,fid):
         self._cur.execute("INSERT INTO room (rname,fid) VALUES (%s,%s)",(rname,fid))
@@ -90,6 +94,11 @@ class Query:
     def room_del(self,rid):
         self._cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid SET board.register= 0 , board.rid=null WHERE room.rid = %s",(rid)) #SET board.rid to null and change board status to unregister
         self._cur.execute("DELETE FROM room WHERE rid = %s",(rid))
+    
+    def floor_list(self,bid):
+        self._cur.execute("SELECT * FROM floor where bid = %s",(bid))
+        res = self._cur.fetchall()
+        return res
     
     def floor_add(self,fname,bid):
         self._cur.execute("INSERT INTO floor (fname,bid) VALUES (%s,%s)",(fname,bid))
@@ -102,6 +111,12 @@ class Query:
         self._cur.execute("DELETE FROM room WHERE fid = %s",(fid))
         self._cur.execute("DELETE FROM floor WHERE fid = %s",(fid))
         
+    
+    def building_list(self):
+        self._cur.execute("SELECT * FROM building")
+        res = self._cur.fetchall()
+        return res
+    
     def building_add(self,bname):
         self._cur.execute("INSERT INTO building (bname) VALUES (%s)",(bname))
     

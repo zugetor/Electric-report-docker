@@ -451,7 +451,7 @@
 				</div>
 			</div>
 		</div>
-		<<<<<<< HEAD </form> <!-- DataTales Example -->
+		
 
 	</div>
 	<!-- /.container-fluid -->
@@ -609,13 +609,13 @@
 									data: 'tname'
 								},
 								{
-									"defaultContent": "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\">Edit</button>" +
-										"<button type=\"button\" class=\"btn btn-danger\" id=\"del\">Delete</button>"
+									"defaultContent": "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\">Edit</button>" +
+										"<button type=\"button\" class=\"btn btn-danger\" id=\"del\" name=\"del\">Delete</button>"
 								}
 							]
 						});
 
-						$('#tableSensor tbody').on('click', '#edit', function () {
+						$('#tableSensor tbody').on('click', "button[name='edit']" , function () {
 							var data = Table.row($(this).parents('tr')).data();
 							Swal.fire({
 								width: '45rem',
@@ -672,7 +672,7 @@
 
 						});
 
-						$('#tableSensor').on('click', '#del', function () {
+						$('#tableSensor').on('click', "button[name='del']", function () {
 							var data = Table.row($(this).parents('tr')).data();
 							Swal.fire({
 								title: 'Are you sure?',
