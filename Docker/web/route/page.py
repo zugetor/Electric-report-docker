@@ -34,7 +34,7 @@ def login():
 	if request.method == 'POST' and form.validate():
 		user = query.get_userLogin(form.username.data)
 		try:
-			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]):
+			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]) or user["is_active"] == 0:
 				flash('Please check your login credentials and try again.')
 				return redirect(url_for('Page.login'))
 		except:
