@@ -39,6 +39,16 @@
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                   </div>
+                  {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                      {% for message in messages %}
+                        <div class="alert alert-warning alert-dismissible" role="alert">
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                          {{message}}
+                        </div>
+                      {% endfor %}
+                    {% endif %}
+                  {% endwith %}
                   <form class="user" method="POST" action="{{ url_for('Page.login') }}">
                     <div class="form-group">
                       <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="Email Address or username">
