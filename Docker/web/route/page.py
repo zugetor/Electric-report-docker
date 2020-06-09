@@ -33,7 +33,11 @@ def login():
 	form = LoginForm(request.form)
 	if request.method == 'POST' and form.validate():
 		user = query.get_userLogin(form.username.data)
-		if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]):
+		try:
+			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]) or user["is_active"] == 0:
+				flash('Please check your login credentials and try again.')
+				return redirect(url_for('Page.login'))
+		except:
 			flash('Please check your login credentials and try again.')
 			return redirect(url_for('Page.login'))
 		login_user(user)
@@ -43,15 +47,13 @@ def login():
 @app.route("/register",methods=['GET','POST'])
 def register():
 	form = RegistrationForm(request.form)
-	if request.method == 'POST' and form.validate():
-		password = pbkdf2_sha256.using(rounds=8000, salt_size=10).hash(form.password.data)
+	if request.method == 'POST' and form.validate() and not query.get_userLogin(form.username.data) and not query.get_userLogin(form.email.data):
+		username = html_escape(form.username.data)
+		email = html_escape(form.email.data)
+		password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(html_escape(form.password.data))
+		query.register_user(username, email, password)
 		return redirect(url_for('Page.login'))
 	return render_template("register.html",form=form)
-
-@app.route("/test")
-@login_required
-def test():
-	return render_template("graph_view.html")
 
 @app.route('/logout')
 @login_required
@@ -86,4 +88,4 @@ def sensor_view():
     
 @app.route("/room_add")
 def room_add():
-	return render_template("room_add.html")   
+	return render_template("room_add.html")

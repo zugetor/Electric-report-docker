@@ -6,6 +6,7 @@
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-body">
+              <button type="button" class="btn btn-success mb-3" id="new">Add</button>
               <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
@@ -46,6 +47,10 @@
   $("#new, #edit").click(async function(){
     Swal.fire({
       width: '45rem',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Submit',
       title: 'Please specify conditions.',
       html: '<table class="table">\
         <thead>\
@@ -58,56 +63,56 @@
           <tr>\
             <td>\
               <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="checkbox1">\
-                <label class="form-check-label" for="checkbox1">Air Conditioner</label>\
+                <input class="form-check-input" type="checkbox" value="" id="aircon">\
+                <label class="form-check-label" for="aircon">Air Conditioner</label>\
               </div>\
             </td>\
             <td>\
-              <select class="form-control">\
-                <option>ON</option>\
-                <option>OFF</option>\
+              <select class="form-control" id="airstate">\
+                <option value="1">ON</option>\
+                <option value="0">OFF</option>\
               </select>\
             </td>\
             </tr>\
           <tr>\
             <td>\
               <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="checkbox2">\
-                <label class="form-check-label" for="checkbox2">Light</label>\
+                <input class="form-check-input" type="checkbox" value="" id="light">\
+                <label class="form-check-label" for="light">Light</label>\
               </div>\
             </td>\
             <td>\
-              <select class="form-control">\
-                <option>ON</option>\
-                <option>OFF</option>\
+              <select class="form-control"  id="lightstate">\
+                <option value="1">ON</option>\
+                <option value="0">OFF</option>\
               </select>\
             </td>\
           </tr>\
           <tr>\
             <td>\
               <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="checkbox3">\
-                <label class="form-check-label" for="checkbox3">Electricity</label>\
+                <input class="form-check-input" type="checkbox" value="" id="elect">\
+                <label class="form-check-label" for="elect">Electricity</label>\
               </div>\
             </td>\
             <td>\
-              <select class="form-control">\
-                <option>ON</option>\
-                <option>OFF</option>\
+              <select class="form-control" id="electstate">\
+                <option value="1">ON</option>\
+                <option value="0">OFF</option>\
               </select>\
             </td>\
           </tr>\
           <tr>\
             <td>\
               <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="checkbox2">\
-                <label class="form-check-label" for="checkbox2">Motion</label>\
+                <input class="form-check-input" type="checkbox" value="" id="motion">\
+                <label class="form-check-label" for="motion">Motion</label>\
               </div>\
             </td>\
             <td>\
-              <select class="form-control">\
-                <option>Detect</option>\
-                <option>Undetect</option>\
+              <select class="form-control" id="motionstate">\
+                <option value="1">Detect</option>\
+                <option value="0">Undetect</option>\
               </select>\
             </td>\
           </tr>\
@@ -121,16 +126,20 @@
         </select>\
       </div>\
         <div class="form-group">\
-        <label for="time">Time</label>\
-        <input type="text" class="form-control" name="daterange3" value="" />\
+        <label for="contime">Time</label>\
+        <input type="text" class="form-control" id="contime" value="" />\
       </div>',
       focusConfirm: false,
       preConfirm: () => {
-        console.log('Is checkbox1 checked:' + document.getElementById('checkbox1').checked);
-        console.log('Is checkbox2 checked:' + document.getElementById('checkbox2').checked);
+        console.log('Is Air checked:' + document.getElementById('aircon').checked+" "+ document.getElementById("airstate").value);
+        console.log('Is Light checked:' + document.getElementById('light').checked+" "+ document.getElementById("lightstate").value);
+        console.log('Is Electric checked:' + document.getElementById('elect').checked+" "+ document.getElementById("electstate").value);
+        console.log('Is Motion checked:' + document.getElementById('motion').checked+" "+ document.getElementById("motionstate").value);
+        console.log('Room: '+ document.getElementById("roomlab").value)
+        console.log('Time: '+ document.getElementById("contime").value)
       }
     });
-    await $('input[name="daterange3"]').daterangepicker({
+    await $('#contime').daterangepicker({
       timePicker: true,
       timePicker24Hour: true,
       timePickerIncrement: 1,
@@ -140,6 +149,11 @@
     }).on('show.daterangepicker', function (ev, picker) {
       picker.container.find(".calendar-table").hide();
     });
+    $('#aircon').prop('checked', true)
+    $("#airstate").val(0);
+    $("#roomlab").val("IF-5C01")
+    $('#contime').data('daterangepicker').setStartDate('11:11')
+    $('#contime').data('daterangepicker').setEndDate('22:22')
   });
   $("#del").click(function(){
     Swal.fire({
