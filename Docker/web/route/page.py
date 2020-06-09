@@ -48,8 +48,10 @@ def login():
 def register():
 	form = RegistrationForm(request.form)
 	if request.method == 'POST' and form.validate() and not query.get_userLogin(form.username.data) and not query.get_userLogin(form.email.data):
-		password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(form.password.data)
-		query.register_user(form.username.data, form.email.data, password)
+		username = html_escape(form.username.data)
+		email = html_escape(form.email.data)
+		password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(html_escape(form.password.data))
+		query.register_user(username, email, password)
 		return redirect(url_for('Page.login'))
 	return render_template("register.html",form=form)
 
@@ -86,4 +88,4 @@ def sensor_view():
     
 @app.route("/room_add")
 def room_add():
-	return render_template("room_add.html")   
+	return render_template("room_add.html")
