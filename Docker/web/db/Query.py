@@ -91,9 +91,13 @@ class Query:
 		self._cur.execute("INSERT INTO floor (fname,bid) VALUES (%s,%s)",(fname,bid))
 	
 	def floor_edit(self,fid,fname,bid):
+		if(fid == 1):
+			return
 		self._cur.execute("UPDATE floor SET fname = %s , bid = %s WHERE fid = %s",(fname,bid,fid))
 		
 	def floor_del(self,fid):
+		if(fid == 1):
+			return
 		self._cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid INNER JOIN floor ON room.fid=floor.fid SET board.register= 0 , board.rid=null WHERE floor.fid = %s",(fid))
 		self._cur.execute("DELETE FROM room WHERE fid = %s",(fid,))
 		self._cur.execute("DELETE FROM floor WHERE fid = %s",(fid,))
@@ -102,9 +106,13 @@ class Query:
 		self._cur.execute("INSERT INTO building (bname) VALUES (%s)",(bname,))
 	
 	def building_edit(self,bid,bname):
+		if(bid == 1):
+			return
 		self._cur.execute("UPDATE building SET bname = %s WHERE bid = %s",(bname,bid))
 		
 	def building_del(self,bid):
+		if(bid == 1):
+			return
 		self._cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid INNER JOIN floor ON room.fid=floor.fid INNER JOIN building ON building.bid=floor.bid SET  board.register= 0 , board.rid=null WHERE building.bid = %s",(bid,))
 		self._cur.execute("DELETE room FROM room INNER JOIN floor ON room.fid = floor.fid WHERE floor.bid = %s",(bid,))
 		self._cur.execute("DELETE FROM floor WHERE bid = %s",(bid,))
@@ -138,5 +146,10 @@ class Query:
 		
 	def room_list(self,fid):
 		self._cur.execute("SELECT * FROM room where fid = %s",(fid,))
+		res = self._cur.fetchall()
+		return res
+
+	def getAllType(self):
+		self._cur.execute("SELECT * FROM type")
 		res = self._cur.fetchall()
 		return res

@@ -36,27 +36,15 @@
 		Sensor Type :
 	</div>
 	<div class="form-row">
+		{% for i in _type %}
 		<div class="col-md-1 mb-3">
 			<div class="custom-control custom-checkbox">
-				<input type="checkbox" class="custom-control-input" id="type1" checked
-					value="Light">
-				<label class="custom-control-label" for="type1"> Light </label>
+				<input type="checkbox" class="custom-control-input" id="type{{i['tid']}}" data-type="" checked
+					value="{{i['tname']}}">
+				<label class="custom-control-label" for="type{{i['tid']}}">{{i["tname"]}}</label>
 			</div>
 		</div>
-		<div class="col-md-1 mb-3">
-			<div class="custom-control custom-checkbox">
-				<input type="checkbox" class="custom-control-input" id="type2" checked
-					value="Electricity">
-				<label class="custom-control-label" for="type2"> Electricity </label>
-			</div>
-		</div>
-		<div class="col-md-2 mb-3">
-			<div class="custom-control custom-checkbox">
-				<input type="checkbox" class="custom-control-input" id="type3" checked
-					value="Air Conditioner">
-				<label class="custom-control-label" for="type3"> Air Conditioner </label>
-			</div>
-		</div>
+		{% endfor %}
 	</div>
 
 	<div class="form-row">
@@ -92,6 +80,33 @@
 {% endblock %}
 {% block js %}
 <script>
+function shuffle(arra1) {
+    var ctr = arra1.length, temp, index;
+	// While there are elements in the array
+    while (ctr > 0) {
+		// Pick a random index
+        index = Math.floor(Math.random() * ctr);
+		// Decrease ctr by 1
+        ctr--;
+		// And swap the last element with it
+        temp = arra1[ctr];
+        arra1[ctr] = arra1[index];
+        arra1[index] = temp;
+    }
+    return arra1;
+}
+var type_color = Array.from($("input[data-type='']").map(function () {
+    var id = $(this).attr('id');
+    var type_name = $("label[for="+id+"]").text()
+    console.log(type_name)
+    return type_name
+    // Add to the array
+    //tempArray.push(id);
+}));
+var colors = shuffle(["aqua","beige","black","blue","brown","cyan","darkblue","darkcyan","darkgrey","darkgreen",
+"darkkhaki","darkmagenta","darkolivegreen","darkorange","darkorchid","darkred","darksalmon","darkviolet",
+"fuchsia","gold","green","indigo","khaki","lightblue","lightgreen","lightpink","lime","magenta",
+"maroon","navy","olive","orange","pink","purple","violet","red","silver",]);
 var Table;
 $( document ).ready(function() {
     console.log("ready!");
@@ -177,7 +192,14 @@ $( document ).ready(function() {
 	});	
 });
 
-$.fn.showData = function (data) {
+$.fn.showData = function (data,first=false) {
+	if(first)
+	{
+		data.forEach(function(elem){
+			elem["tname"] = `<span class='span-text-md badge ${colors[type_color.indexOf(elem["tname"])]}'>${elem["tname"]}</span>`
+		})
+	}
+	
 	Table = $('#tableSensor').DataTable({
 		data: data,
 		columns: [{
@@ -222,7 +244,7 @@ var getAllData = function(){
 				success: function (allData) {
 					if(Table)
 						Table.destroy();
-					$.fn.showData(allData);
+					$.fn.showData(allData,true);
 					let building = $('#building');
 					let floor = $('#floor');
 					let room = $('#room');
@@ -284,11 +306,12 @@ var getAllData = function(){
 							}
 						}
 
-						typeID = ['#type1', '#type2', '#type3'];
+						//typeID = ['#type1', '#type2', '#type3'];
+						typeID = $("input[data-type='']").map(function () { return "#"+this.id; }).get()
 						for (index = 0; index < typeID.length; index++) {
 							if (!$(typeID[index]).is(':checked')) {
 								filteredData = $(filteredData).filter(function (i, n) {
-									return n.tname != $(typeID[index]).val();
+									return $(n.tname).text() != $(typeID[index]).val();
 								});
 							}
 						}
