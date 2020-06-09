@@ -19,8 +19,9 @@ def register_list():
     
 @app.route('/sensor',methods=['POST'])
 def sensor_edit():
-    sid = request.get_json()['sid']
-    sname = html_escape(request.get_json()['sname'])
+    sid = request.form.get('id')
+    sname = html_escape(request.form.get('name'))
+    print(request.form)
     query.sensor_edit(sid,sname)
     response = jsonify({'Code':'200 ok'})
     return response

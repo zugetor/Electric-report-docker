@@ -2,114 +2,233 @@
 {% block title %}Energy Saving - Sensor View{% endblock %}
 {% block content %}
 <!-- Page Heading -->
-					<h1 class="h3 mb-2 text-gray-800">Sensor Managemnet</h1>
-					<form id="searchForm">
-						<div class="form-row">
-							<div class="col-md mb-3">
-								<label for="sName">Sensor Name</label>
-								<input type="text" class="form-control " id="sName" placeholder="Search...">
-							</div>
-						</div>
-						<div class="form-row">
-							<div class="col-md-6 mb-3">
-								<label for="building">Building</label>
-								<select class="custom-select" id="building">
-									<option selected value="">all</option>
+<h1 class="h3 mb-2 text-gray-800">Sensor Managemnet</h1>
+<form id="searchForm">
+	<div class="form-row">
+		<div class="col-md mb-3">
+			<label for="sName">Sensor Name</label>
+			<input type="text" class="form-control " id="sName" placeholder="Search...">
+		</div>
+	</div>
+	<div class="form-row">
+		<div class="col-md-6 mb-3">
+			<label for="building">Building</label>
+			<select class="custom-select" id="building">
+				<option selected value="">All</option>
 
-								</select>
+			</select>
 
-							</div>
-							<div class="col-md-3 mb-3">
-								<label for="floor">Floor</label>
-								<select class="custom-select" id="floor">
-									<option selected value="">all</option>
+		</div>
+		<div class="col-md-3 mb-3">
+			<label for="floor">Floor</label>
+			<select class="custom-select" id="floor">
+				<option selected value="">All</option>
 
-								</select>
-							</div>
-							<div class="col-md-3 mb-3">
-								<label for="room">Room</label>
-								<select class="custom-select" id="room">
-									<option selected value="">all</option>
+			</select>
+		</div>
+		<div class="col-md-3 mb-3">
+			<label for="room">Room</label>
+			<select class="custom-select" id="room">
+				<option selected value="">All</option>
 
-								</select>
-							</div>
-							Sensor Type :
-						</div>
-						<div class="form-row">
-							<div class="col-md-1 mb-3">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="type1" checked
-										value="Light">
-									<label class="custom-control-label" for="type1"> Light </label>
-								</div>
-							</div>
-							<div class="col-md-1 mb-3">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="type2" checked
-										value="Electricity">
-									<label class="custom-control-label" for="type2"> Electricity </label>
-								</div>
-							</div>
-							<div class="col-md-2 mb-3">
-								<div class="custom-control custom-checkbox">
-									<input type="checkbox" class="custom-control-input" id="type3" checked
-										value="Air Conditioner">
-									<label class="custom-control-label" for="type3"> Air Conditioner </label>
-								</div>
-							</div>
-						</div>
+			</select>
+		</div>
+		Sensor Type :
+	</div>
+	<div class="form-row">
+		<div class="col-md-1 mb-3">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="custom-control-input" id="type1" checked
+					value="Light">
+				<label class="custom-control-label" for="type1"> Light </label>
+			</div>
+		</div>
+		<div class="col-md-1 mb-3">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="custom-control-input" id="type2" checked
+					value="Electricity">
+				<label class="custom-control-label" for="type2"> Electricity </label>
+			</div>
+		</div>
+		<div class="col-md-2 mb-3">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="custom-control-input" id="type3" checked
+					value="Air Conditioner">
+				<label class="custom-control-label" for="type3"> Air Conditioner </label>
+			</div>
+		</div>
+	</div>
 
-						<div class="form-row">
-							<div class="col-md-8 mb-3">
-								<button class="btn btn-primary" type="submit">Search</button>
-							</div>
-						</div>
-					</form>
+	<div class="form-row">
+		<div class="col-md-8 mb-3">
+			<button class="btn btn-primary" type="submit">Search</button>
+		</div>
+	</div>
+</form>
 
-					<!-- DataTales Example -->
-					<div class="card shadow mb-4">
-						<div class="card-body">
-							<div class="table-responsive">
-								<table class="table table-bordered" id="tableSensor" width="100%" cellspacing="0">
-									<thead>
-										<tr>
-											<th>id</th>
-											<th>Name</th>
-											<th>MAC</th>
-											<th>Room</th>
-											<th>Floor</th>
-											<th>Building</th>
-											<th>Type</th>
-											<th>Action</th>
-										</tr>
-									</thead>
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+	<div class="card-body">
+		<div class="table-responsive">
+			<table class="table table-bordered" id="tableSensor" width="100%" cellspacing="0">
+				<thead>
+					<tr>
+						<th>id</th>
+						<th>Name</th>
+						<th>MAC</th>
+						<th>Room</th>
+						<th>Floor</th>
+						<th>Building</th>
+						<th>Type</th>
+						<th>Action</th>
+					</tr>
+				</thead>
 
 
-								</table>
-							</div>
-						</div>
-					</div>
+			</table>
+		</div>
+	</div>
+</div>
 {% endblock %}
 {% block js %}
 <script>
-	var Table;
-	$ajax = $.ajax({
+var Table;
+$( document ).ready(function() {
+    console.log("ready!");
+    getAllData();
+	$('#tableSensor').on('click', "button[name='del']", function () {
+		var data = Table.row($(this).parents('tr')).data();
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes'
+		}).then((result) => {
+			if (result.value) {
+				$.ajax({
+					url: "{{ url_for('Private.sensor_del') }}",
+					method: "GET",
+					data: {"id": data.sid}
+				}).then(function(res){
+					getAllData();
+					Swal.fire(
+						'Deleted!',
+						'Sensor has been deleted.',
+						'success'
+					)
+				})
+				.catch(function (err) {
+					console.log(err);
+				});			
+			}
+		});
+	});
+
+	$('#tableSensor').on('click', "button[name='edit']" , function () {
+		var data = Table.row($(this).parents('tr')).data();
+		Swal.fire({
+			width: '45rem',
+			title: 'Edit',
+			showCancelButton: true,
+			confirmButtonText: 'Confirm',
+			html: `<form id="">
+					<div class="form-row">
+						<div class="col-md mb-3">
+							<label for="validationServer01">Sensor Name</label>
+						<input type="text" class="form-control " id="edit_sname" value="${data.sname}">
+						<input type="hidden" class="form-control " id="edit_sid" value="${data.sid}">
+						</div>
+					</div>
+				  </form>`,
+			focusConfirm: false,
+			preConfirm: function () {
+				return new Promise((resolve,
+					reject) => {
+						resolve({
+							sname: $('input[id="edit_sname"]').val(),
+							sid: $('input[id="edit_sid"]').val()
+						});
+					});
+			}
+		}).then((result) => {
+			console.log(result.value.sname);
+			$.ajax({
+					url: "{{ url_for('Private.sensor_edit') }}",
+					method: "POST",
+					data: {
+						id: result.value.sid,
+						name: result.value.sname
+					}
+				}).then(function(res){
+					getAllData();
+					Swal.fire(
+						'Edited!',
+						'Sensor has been edited.',
+						'success'
+					)
+				})
+				.catch(function (err) {
+					console.log(err);
+				});
+		});
+	});	
+});
+
+$.fn.showData = function (data) {
+	Table = $('#tableSensor').DataTable({
+		data: data,
+		columns: [{
+				data: 'sid'
+			},
+			{
+				data: 'sname'
+			},
+			{
+				data: 'bomac'
+			},
+			{
+				data: 'rname'
+			},
+			{
+				data: 'fname'
+			},
+			{
+				data: 'bname'
+			},
+			{
+				data: 'tname'
+			},
+			{
+				"defaultContent": "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\">Edit</button>\n" +
+					"<button type=\"button\" class=\"btn btn-danger\" id=\"del\" name=\"del\">Delete</button>"
+			}
+		]
+	});
+};
+
+var getAllData = function(){
+	$.ajax({
 		type: 'GET',
 		url: '{{ url_for("Private.all_room_list") }}',
 		dataType: 'json',
 		success: function (roomData) {
-			$ajax = $.ajax({
+			$.ajax({
 				type: 'GET',
 				url: '{{ url_for("Private.sensor_list") }}',
 				dataType: 'json',
 				success: function (allData) {
+					if(Table)
+						Table.destroy();
+					$.fn.showData(allData);
 					let building = $('#building');
 					let floor = $('#floor');
 					let room = $('#room');
 
 					$.each(roomData, function (key, entry) {
-						building.append($('<option></option>').attr('value', entry.bid)
-							.text(entry.bname));
+						building.append($('<option></option>').attr('value', entry.bid).text(entry.bname));
 					})
 
 					$(building).change(function () {
@@ -122,10 +241,7 @@
 						$.each(roomData, function (key, entry) {
 							if (entry.bid == building.val()) {
 								$.each(entry.floor, function (key, entry2) {
-									floor.append($('<option></option>')
-										.attr('value', entry2.fid)
-										.text(entry2
-											.fname));
+									floor.append($('<option></option>').attr('value', entry2.fid).text(entry2.fname));
 								})
 							}
 						})
@@ -139,16 +255,8 @@
 							if (entry.bid == building.val()) {
 								$.each(entry.floor, function (key, entry2) {
 									if (entry2.fid == floor.val()) {
-										$.each(entry2.room, function (key,
-											entry3) {
-											room.append($(
-													'<option></option>'
-												).attr(
-													'value',
-													entry3.rid
-												)
-												.text(entry3
-													.rname));
+										$.each(entry2.room, function (key,entry3) {
+											room.append($('<option></option>').attr('value',entry3.rid).text(entry3.rname));
 										})
 									}
 								})
@@ -156,136 +264,8 @@
 						})
 					});
 
-					$.fn.showData = function (data) {
-						Table = $('#tableSensor').DataTable({
-							data: data,
-							columns: [{
-									data: 'sid'
-								},
-								{
-									data: 'sname'
-								},
-								{
-									data: 'bomac'
-								},
-								{
-									data: 'rname'
-								},
-								{
-									data: 'fname'
-								},
-								{
-									data: 'bname'
-								},
-								{
-									data: 'tname'
-								},
-								{
-									"defaultContent": "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\">Edit</button>\n" +
-										"<button type=\"button\" class=\"btn btn-danger\" id=\"del\" name=\"del\">Delete</button>"
-								}
-							]
-						});
-
-						$('#tableSensor tbody').on('click', "button[name='edit']" , function () {
-							var data = Table.row($(this).parents('tr')).data();
-							Swal.fire({
-								width: '45rem',
-								title: 'Edit',
-								showCancelButton: true,
-								confirmButtonText: 'Confirm',
-								html: `<form id="">
-			<div class="form-row">
-				<div class="col-md mb-3">
-					<label for="validationServer01">Sensor Name</label>
-				<input type="text" class="form-control " id="edit_sname" value="${data.sname}">
-				<input type="hidden" class="form-control " id="edit_sid" value="${data.sid}">
-				</div>
-			</div>
-		  </form>`,
-								focusConfirm: false,
-								preConfirm: function () {
-									return new Promise((resolve,
-										reject) => {
-											resolve({
-												sname: $(
-													'input[id="edit_sname"]'
-													)
-												.val(),
-												sid: $(
-														'input[id="edit_sid"]')
-													.val()
-											});
-										});
-								}
-							}).then((result) => {
-								console.log(result.value.sname);
-								$.ajax({
-										url: "{{ url_for('Private.sensor_edit') }}",
-										method: "POST",
-										data: JSON.stringify({
-											"sid": result.value.sid,
-											"sname": result.value.sname
-										}),
-										contentType: "application/json; charset=utf-8",
-										dataType: "json"
-									})
-									.catch(function (err) {
-										console.log(err);
-									});
-								Swal.fire(
-									'Edited!',
-									'Sensor has been edited.',
-									'success'
-								)
-
-
-							});
-
-						});
-
-						$('#tableSensor').on('click', "button[name='del']", function () {
-							var data = Table.row($(this).parents('tr')).data();
-							Swal.fire({
-								title: 'Are you sure?',
-								text: "You won't be able to revert this!",
-								icon: 'warning',
-								showCancelButton: true,
-								confirmButtonColor: '#3085d6',
-								cancelButtonColor: '#d33',
-								confirmButtonText: 'Yes'
-							}).then((result) => {
-								if (result.value) {
-									$.ajax({
-											url: "{{ url_for('Private.sensor_del') }}",
-											method: "GET",
-											data: {"id": data.sid},
-										contentType: "application/json; charset=utf-8",
-										dataType: "json"
-										}).then(function(res){
-											
-										})
-										.catch(function (err) {
-											console.log(err);
-										});
-									Swal.fire(
-										'Deleted!',
-										'Sensor has been deleted.',
-										'success'
-									)
-									
-								}
-							});
-
-						});
-
-					};
-
-					$(window).on('load', function () {
-						$.fn.showData(allData);
-					});
-
 					$("#searchForm").submit(function (event) {
+						event.preventDefault();	
 						var filteredData = allData;
 						if ($('#sName').val() != "") {
 							filteredData = $(filteredData).filter(function (i, n) {
@@ -312,16 +292,14 @@
 								});
 							}
 						}
-
-						$('#tableSensor tbody').empty();
 						Table.destroy();
 						$.fn.showData(filteredData);
-
-						event.preventDefault();
 					});
+
 				}
 			});
 		}
 	});
+};
 </script>
 {% endblock %}
