@@ -1,5 +1,5 @@
 flask
-PyMySQL
+PyMySQL[rsa]
 influxdb
 requests
 beautifulsoup4
@@ -8,4 +8,3 @@ flask_wtf
 WTForms
 email_validator
 passlib
-cryptography
