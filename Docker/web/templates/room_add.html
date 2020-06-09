@@ -1,390 +1,395 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Energy Saving - Sensor Register</title>
-
-    <!-- Custom fonts for this template -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css"
-        integrity="sha256-zmfNZmXoNWBMemUOo1XUGFfc0ihGGLYdgtJS3KCr/l0=" crossorigin="anonymous" />
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
-        integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
-    <!-- Custom styles for this template -->
-    <link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
-
-    <!-- Custom styles for this page -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap4.min.css"
-        integrity="sha256-F+DaKAClQut87heMIC6oThARMuWne8+WzxIDT7jXuPA=" crossorigin="anonymous" />
-
-    <!-- Old UI Version CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9.10.12/dist/sweetalert2.all.min.js"
-        integrity="sha256-HyVNOA4KTbmvCLxBoFNrj0FLZtj/RCWyg4zfUjIry0k=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css"
-        href="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-</head>
-
-<body id="page-top">
-
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-                <div class="sidebar-brand-icon rotate-n-15">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="sidebar-brand-text mx-3">Energy Saving <sup></sup></div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Monitor
-            </div>
-
-            <!-- Nav Item - Dashboard -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.graph_view') }}">
-                    <i class="fas fa-fw fa-chart-area"></i>
-                    <span>Dashboard</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Sensor Management
-            </div>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.sensor_view') }}">
-                    <i class="fas fa-eye"></i>
-                    <span>View All Sensor</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.sensor_add') }}">
-                    <i class="far fa-registered"></i>
-                    <span>Register Sensor</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.conditions') }}">
-                    <i class="far fa-clock"></i>
-                    <span>Rules Management</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Notification
-            </div>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.logs') }}">
-                    <i class="fas fa-clock"></i>
-                    <span>Logs</span></a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('Page.settings') }}">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>Setting</span></a>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-
-
-                    <!-- Topbar Navbar -->
-                    <ul class="navbar-nav ml-auto">
-
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-                        <li class="nav-item dropdown no-arrow d-sm-none">
-                            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-search fa-fw"></i>
-                            </a>
-                            <!-- Dropdown - Messages -->
-                            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                                aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto w-100 navbar-search">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Search for..." aria-label="Search"
-                                            aria-describedby="basic-addon2">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-primary" type="button">
-                                                <i class="fas fa-search fa-sm"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
+{% extends 'base.html' %}
+{% block title %}Energy Saving - Sensor View{% endblock %}
+{% block content %}
+<!-- Page Heading -->
+<h1 class="h3 mb-2 text-gray-800">Room Management</h1>
+<div class="row">
+    <div class="col-sm">
+        <div class="card shadow mb-4" id="building_card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm">
+                        <form id="bui_add">
+                            <div class="form-group">
+                                <label for="bui">Add Building:</label>
+                                <input type="text" class="form-control" placeholder="Enter building name" name="bname">
                             </div>
-                        </li>
-
-
-
-                        <!-- Nav Item - User Information -->
-                        <li class="nav-item dropdown no-arrow">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">IsDat</span>
-                                <img class="img-profile rounded-circle"
-                                    src="https://scontent.fbkk7-3.fna.fbcdn.net/v/t1.0-9/4504_1065207716213_1313626_n.jpg?_nc_cat=101&_nc_sid=85a577&_nc_eui2=AeEXhfUh_ckOBflAOpMsFBnJeNdjj2RlWsx412OPZGVazL8Aqn_Cg5K13QcpXmwouAtXSCrg-VcZBERhLgFjy-d1&_nc_ohc=BX9IiXBgDDgAX_hlZGH&_nc_ht=scontent.fbkk7-3.fna&oh=40360f32c89d5c081c222348dae121b3&oe=5ED6B24A">
-                            </a>
-                            <!-- Dropdown - User Information -->
-                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
-                                aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Profile
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Settings
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Activity Log
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
-                            </div>
-                        </li>
-
-                    </ul>
-
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-2 text-gray-800">Room Management</h1>
-
-
-
-
-
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <form action="/action_page.php">
-                                        <div class="form-group">
-                                          <label for="bui">Add Building:</label>
-                                          <input type="text" class="form-control" placeholder="Enter building name" id="bui">
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Add</button>
-                                      </form>
-                                </div>
-                            </div>
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="building" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>id</th>
-                                                    <th>Building</th>
-                                                </tr>
-                                            </thead>
-
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <form action="/action_page.php">
-                                        <div class="form-group">
-                                          <label for="email">Add Floor:</label>
-                                          <input type="text" class="form-control" placeholder="Enter floor name" id="flo" disabled>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary" disabled>Add</button>
-                                      </form>
-                                </div>
-                            </div>
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="floor" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>id</th>
-                                                    <th>Floor</th>
-                                                </tr>
-                                            </thead>
-
-
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm">
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <form action="/action_page.php">
-                                        <div class="form-group">
-                                          <label for="roo">Add Room:</label>
-                                          <input type="text" class="form-control" placeholder="Enter room name" id="roo" disabled>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary" disabled>Add</button>
-                                      </form>
-                                </div>
-                            </div>
-                            <div class="card shadow mb-4">
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered" id="room" width="100%" cellspacing="0">
-                                            <thead>
-                                                <tr>
-                                                    <th>id</th>
-                                                    <th>Room</th>
-                                                </tr>
-                                            </thead>
-
-
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </form>
                     </div>
-
-
-
-
-
-
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Enerygy Saving System &copy; 2020</span>
+                    <div class="col-sm">
+                        <form id="bui_edit">
+                            <div class="form-group">
+                                <label for="bui">Edit Building:</label>
+                                <input type="text" class="form-control" placeholder="Enter building name" name="bname">
+                                <input type="hidden" class="form-control" name="bid">
+                            </div>
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
                     </div>
                 </div>
-            </footer>
-            <!-- End of Footer -->
-
+                <hr class="sidebar-divider">
+                <form id="bui_del">
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" name="bid">
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
+                </form>
+            </div>
         </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="building" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Building</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+    <div class="col-sm">
+        <div class="card shadow mb-4" id="floor_card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm">
+                        <form id="flo_add">
+                            <div class="form-group">
+                                <label for="flo">Add Floor:</label>
+                                <input type="text" class="form-control" placeholder="Enter floor name" name="fname">
+                                <input type="hidden" class="form-control" name="bid">
+                            </div>
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </form>
+                    </div>
+                    <div class="col-sm">
+                        <form id="flo_edit">
+                            <div class="form-group">
+                                <label for="flo">Edit Floor:</label>
+                                <input type="text" class="form-control" placeholder="Enter floor name" name="fname">
+                                <input type="hidden" class="form-control" name="fid">
+                                <input type="hidden" class="form-control" name="bid">
+                            </div>
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
+                    </div>
+                </div>
+                <hr class="sidebar-divider">
+                <form id="flo_move">
+                    <div class="form-group">
+                        <label for="flo">Move Floor:</label>
+                        <input type="hidden" class="form-control" name="fid">
+                        <input type="hidden" class="form-control" name="fname">
+                        <select class="form-control" name="bid">
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Move</button>
+                </form>
+                <hr class="sidebar-divider">
+                <form id="flo_del">
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" name="fid">
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="floor" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Floor</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm">
+        <div class="card shadow mb-4" id="room_card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm">
+                        <form id="roo_add">
+                            <div class="form-group">
+                                <label for="roo">Add Room:</label>
+                                <input type="text" class="form-control" placeholder="Enter room name" id="rname"
+                                    name="rname">
+                                <input type="hidden" class="form-control" id="fid" name="fid">
+                            </div>
+                            <button type="submit" class="btn btn-success">Add</button>
+                        </form>
+                    </div>
+                    <div class="col-sm">
+                        <form id="roo_edit">
+                            <div class="form-group">
+                                <label for="roo">Edit Room:</label>
+                                <input type="text" class="form-control" placeholder="Enter room name" name="rname">
+                                <input type="hidden" class="form-control" name="rid">
+                                <input type="hidden" class="form-control" name="fid">
+                            </div>
+                            <button type="submit" class="btn btn-warning">Edit</button>
+                        </form>
+                    </div>
+                </div>
+                <hr class="sidebar-divider">
+                <form id="roo_move">
+                    <div class="form-group">
+                        <label for="roo">Move Room:</label>
+                        <input type="hidden" class="form-control" name="rid">
+                        <input type="hidden" class="form-control" name="rname">
+                        <select class="form-control" name="fid">
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Move</button>
+                </form>
+                <hr class="sidebar-divider">
+                <form id="roo_del">
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" name="rid">
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
+                </form>
+            </div>
+        </div>
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="room" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>id</th>
+                                <th>Room</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <!-- Bootstrap core JavaScript-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
-        integrity="sha256-fzFFyH01cBVPYzl16KT40wqjhgPtq6FFUB6ckN2+GGw= sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o sha512-TqmAh0/sSbwSuVBODEagAoiUIeGRo8u95a41zykGfq5iPkO9oie8IKCgx7yAr1bfiBjZeuapjLgMdp9UMpCVYQ=="
-        crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker@3.1.0/daterangepicker.min.js">
-    </script>
+    </div>
+</div>
 
-    <!-- Core plugin JavaScript-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"
-        integrity="sha256-H3cjtrm/ztDeuhCN9I4yh4iN2Ybx/y1RM7rMmAesA0k=" crossorigin="anonymous"></script>
 
-    <!-- Custom scripts for all pages-->
-    <script src="{{ url_for('static', filename='js/sb-admin-2.min.js') }}"></script>
+{% endblock %}
+{% block js %}
 
-    <!-- Page level plugins -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js"
-        integrity="sha256-t5ZQTZsbQi8NxszC10CseKjJ5QeMw5NINtOXQrESGSU=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/dataTables.bootstrap4.min.js"
-        integrity="sha256-hJ44ymhBmRPJKIaKRf3DSX5uiFEZ9xB/qx8cNbJvIMU=" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function () {
+        var building = $('#building').DataTable();
+        var floor = $('#floor').DataTable();
+        var room = $('#room').DataTable();
+        $("#floor_card *").children().prop('disabled', true);
+        $("#room_card *").children().prop('disabled', true);
+        updateBuilding();
 
-    <!-- Page level custom scripts -->
-    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js') }}"></script>
+        $('#building tbody').on('click', 'tr', function () {
+            var data = building.row($(this)).data();
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                floor.clear().draw();
+                room.clear().draw();
+                clearRoomCard();
+                clearFloorCard();
+                clearBuildingCard();
+                $("#floor_card *").children().prop('disabled', true);
+                $("#room_card *").children().prop('disabled', true);
+            } else {
+                building.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                updateFloor(data.bid);
+                $("#flo_add input[name=bid]").val(data.bid);
+                $("#bui_edit input[name=bid]").val(data.bid);
+                $("#bui_edit input[name=bname]").val(data.bname);
+                $("#bui_del input[name=bid]").val(data.bid);
+                $("#floor_card *").children().prop('disabled', false);
+                $("#room_card *").children().prop('disabled', false);
+            }
+        });
 
-    <script>
-        $(document).ready(function () {
-            var building = $('#building').DataTable({
+        $('#floor tbody').on('click', 'tr', function () {
+            var data = floor.row($(this)).data();
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                room.clear().draw();
+                clearRoomCard();
+                clearFloorCard();
+
+                $("#room_card *").children().prop('disabled', true);
+            } else {
+                floor.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                updateRoom(data.fid);
+                $("#roo_add input[name=fid]").val(data.fid);
+                $("#flo_edit input[name=fid]").val(data.fid);
+                $("#flo_edit input[name=fname]").val(data.fname);
+                $("#flo_edit input[name=bid]").val(data.bid);
+                $('#flo_move select[name=bid]').empty();
+
+                $.each(building.rows().data(), function (key, value) {
+                    if (value.bid == data.bid) {
+                        $('#flo_move select[name=bid]')
+                            .append($("<option selected></option>")
+                                .attr("value", value.bid)
+                                .text(value.bname));
+                    } else {
+                        $('#flo_move select[name=bid]')
+                            .append($("<option></option>")
+                                .attr("value", value.bid)
+                                .text(value.bname));
+                    }
+                });
+                $("#flo_move input[name=fid]").val(data.fid);
+                $("#flo_move input[name=fname]").val(data.fname);
+                $("#flo_del input[name=fid]").val(data.fid);
+                $("#room_card *").children().prop('disabled', false);
+            }
+        });
+
+        $('#room tbody').on('click', 'tr', function () {
+            var data = room.row($(this)).data();
+            if ($(this).hasClass('selected')) {
+                $(this).removeClass('selected');
+                clearRoomCard();
+            } else {
+                room.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                $("#roo_edit input[name=rid]").val(data.rid);
+                $("#roo_edit input[name=rname]").val(data.rname);
+                $("#roo_edit input[name=fid]").val(data.fid);
+                $('#roo_move select[name=fid]').empty();
+                $.each(floor.rows().data(), function (key, value) {
+                    if (value.fid == data.fid) {
+                        $('#roo_move select[name=fid]')
+                            .append($("<option selected></option>")
+                                .attr("value", value.fid)
+                                .text(value.fname));
+                    } else {
+                        $('#roo_move select[name=fid]')
+                            .append($("<option></option>")
+                                .attr("value", value.fid)
+                                .text(value.fname));
+                    }
+                });
+                $("#roo_move input[name=rid]").val(data.rid);
+                $("#roo_move input[name=rname]").val(data.rname);
+
+                $("#roo_del input[name=rid]").val(data.rid);
+            }
+
+        });
+
+        $('#bui_add').submit(function (event) {
+            $.post("{{ url_for('Private.building_add') }}", $('#bui_add').serialize())
+            updateBuilding();
+            event.preventDefault();
+        })
+
+        $('#flo_add').submit(function (event) {
+            alert($('#flo_add').serialize());
+            $.post("{{ url_for('Private.floor_add') }}", $('#flo_add').serialize())
+            updateFloor($("#flo_add input[name=bid]").val());
+            event.preventDefault();
+        })
+
+        $('#roo_add').submit(function (event) {
+            $.post("{{ url_for('Private.room_add') }}", $('#roo_add').serialize())
+            updateRoom($("#roo_add input[name=fid]").val());
+            event.preventDefault();
+        })
+
+        $('#bui_edit').submit(function (event) {
+            $.post("{{ url_for('Private.building_edit') }}", $('#bui_edit').serialize())
+            updateBuilding();
+            event.preventDefault();
+        })
+
+        $('#flo_edit').submit(function (event) {
+            $.post("{{ url_for('Private.floor_edit') }}", $('#flo_edit').serialize())
+            updateFloor($("#flo_edit input[name=bid]").val());
+            event.preventDefault();
+        })
+
+        $('#roo_edit').submit(function (event) {
+            $.post("{{ url_for('Private.room_edit') }}", $('#roo_edit').serialize())
+            updateRoom($("#roo_edit input[name=fid]").val());
+            event.preventDefault();
+        })
+
+        $('#bui_del').submit(function (event) {
+            $.get("{{ url_for('Private.building_del') }}", $('#bui_del').serialize())
+            updateBuilding();
+            event.preventDefault();
+        })
+
+        $('#flo_del').submit(function (event) {
+            $.get("{{ url_for('Private.floor_del') }}", $('#flo_del').serialize())
+            updateFloor($("#flo_add input[name=bid]").val());
+            event.preventDefault();
+        })
+
+        $('#roo_del').submit(function (event) {
+            $.get("{{ url_for('Private.room_del') }}", $('#roo_del').serialize())
+            updateRoom($("#roo_add input[name=fid]").val());
+            event.preventDefault();
+        })
+
+        $('#flo_move').submit(function (event) {
+            $.post("{{ url_for('Private.floor_edit') }}", $('#flo_move').serialize())
+            updateFloor($("#flo_add input[name=bid]").val());
+            event.preventDefault();
+        })
+
+        $('#roo_move').submit(function (event) {
+            $.post("{{ url_for('Private.room_edit') }}", $('#roo_move').serialize())
+            updateRoom($("#roo_add input[name=fid]").val());
+            event.preventDefault();
+        })
+
+        function clearBuildingCard() {
+            $("#bui_add input[name=fname]").val('');
+            $("#bui_edit input[name=bid]").val('');
+            $("#bui_edit input[name=bname]").val('');
+            $("#bui_del input[name=bid]").val('');
+        }
+
+        function clearFloorCard() {
+            $("#flo_add input[name=fname]").val('');
+            $("#flo_add input[name=bid]").val('');
+            $("#flo_edit input[name=fid]").val('');
+            $("#flo_edit input[name=fname]").val('');
+            $("#flo_edit input[name=bid]").val('');
+            $('#flo_move input[name=fid]').val('');
+            $('#flo_move input[name=fname]').val('');
+            $('#flo_move select[name=bid]').empty();
+            $("#flo_del input[name=rid]").val('');
+        }
+
+        function clearRoomCard() {
+            $("#roo_add input[name=rname]").val('');
+            $("#roo_add input[name=fid]").val('');
+            $("#roo_edit input[name=rid]").val('');
+            $("#roo_edit input[name=rname]").val('');
+            $("#roo_edit input[name=fid]").val('');
+            $('#roo_move input[name=rid]').val('');
+            $('#roo_move input[name=rname]').val('');
+            $('#roo_move select[name=fid]').empty();
+            $("#roo_del input[name=rid]").val('');
+        }
+
+        function updateBuilding() {
+            building.destroy();
+            floor.clear().draw();
+            room.clear().draw();
+            building = $('#building').DataTable({
                 ajax: {
                     "url": "{{ url_for('Private.building_list') }}",
                     "type": "GET",
@@ -396,102 +401,41 @@
                     data: "bname"
                 }]
             });
-            var floor = $('#floor').DataTable();
-            var room = $('#room').DataTable();
+        };
 
-            $('#building tbody').on('click', 'tr', function () {
-                var data = building.row($(this)).data();
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                    floor.clear().draw();
-                    room.clear().draw();
-                } else {
-                    building.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                    floor.destroy();
-                    room.clear().draw();
-                    floor = $('#floor').DataTable({
-                        ajax: {
-                            "url": "{{ url_for('Private.floor_list') }}/?bid=" + data.bid,
-                            "type": "GET",
-                            "dataSrc": "",
-                        },
-                        "columns": [{
-                            data: "fid"
-                        }, {
-                            data: "fname"
-                        }]
-                    });
-                }
-
+        function updateFloor(bid) {
+            floor.destroy();
+            room.clear().draw();
+            floor = $('#floor').DataTable({
+                ajax: {
+                    "url": "{{ url_for('Private.floor_list') }}/?bid=" + bid,
+                    "type": "GET",
+                    "dataSrc": "",
+                },
+                "columns": [{
+                    data: "fid"
+                }, {
+                    data: "fname"
+                }]
             });
+        };
 
-
-            $('#floor tbody').on('click', 'tr', function () {
-                var data = floor.row($(this)).data();
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                    room.clear().draw();
-                } else {
-                    floor.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                    room.destroy();
-                    room = $('#room').DataTable({
-                        ajax: {
-                            "url": "{{ url_for('Private.room_list') }}/?fid=" + data.fid,
-                            "type": "GET",
-                            "dataSrc": "",
-                        },
-                        "columns": [{
-                            data: "rid"
-                        }, {
-                            data: "rname"
-                        }]
-                    });
-                }
-
+        function updateRoom(fid) {
+            room.destroy();
+            room = $('#room').DataTable({
+                ajax: {
+                    "url": "{{ url_for('Private.room_list') }}/?fid=" + fid,
+                    "type": "GET",
+                    "dataSrc": "",
+                },
+                "columns": [{
+                    data: "rid"
+                }, {
+                    data: "rname"
+                }]
             });
+        };
 
-
-            $('#room tbody').on('click', 'tr', function () {
-                if ($(this).hasClass('selected')) {
-                    $(this).removeClass('selected');
-                } else {
-                    room.$('tr.selected').removeClass('selected');
-                    $(this).addClass('selected');
-                }
-
-            });
-
-
-
-
-            // $.fn.updateFloor = function (bid) {
-
-            //     $.ajax({
-            //             url: "{{ url_for('Private.floor_list') }}" + bid,
-            //             method: "GET",
-            //             contentType: "application/json; charset=utf-8"
-            //         })
-            //         .catch(function (err) {
-            //             console.log(err);
-            //         });
-            //     Table = $('#tableSensor').DataTable({
-            //         data: data,
-            //         columns: [{
-            //             "defaultContent": "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\">Edit</button>"
-            //         }]
-            //     });
-
-            //     $('#tableSensor tbody').on('click', "button[name='edit']", function () {
-            //         var data = Table.row($(this).parents('tr')).data();
-
-            //     });
-            // };
-
-        });
-    </script>
-
-</body>
-
-</html>
+    });
+</script>
+{% endblock %}

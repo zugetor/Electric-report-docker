@@ -39,7 +39,7 @@ class Query:
 				room = self._cur.fetchall()
 				for r in room: 
 					f['room'].append(r)
-				b['floor'].append(f)        
+				b['floor'].append(f)		
 		return building
 		
 	def sensor_edit(self,sid,sname):
@@ -57,7 +57,7 @@ class Query:
 			sensor = self._cur.fetchall()
 			for s in sensor:
 				bo['sensor'].append(s)
-			self._cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec  ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air FROM sensor WHERE boid = %s",(bo['boid']))
+			self._cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec	 ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air FROM sensor WHERE boid = %s",(bo['boid']))
 			count = self._cur.fetchall()
 			bo.update({'type':{'light':count[0]['light'],'elec':count[0]['elec'],'air':count[0]['air']}})
 					
@@ -78,7 +78,7 @@ class Query:
 			print('')
 		
 	def register_del(self,boid):
-		self._cur.execute("DELETE FROM sensor WHERE boid = %s",(boid))   # waiting for rules to delete
+		self._cur.execute("DELETE FROM sensor WHERE boid = %s",(boid))	 # waiting for rules to delete
 		self._cur.execute("DELETE FROM board WHERE boid = %s",(boid))
 		
 	
@@ -132,19 +132,19 @@ class Query:
 	#board.rid can be null
 	#sensor type_tid must change to only tid
 	
-    def building_list(self):
-        self._cur.execute("SELECT * FROM building")
-        res = self._cur.fetchall()
-        return res	
-    
-    def floor_list(self,bid):
-        self._cur.execute("SELECT * FROM floor where bid = %s",(bid))
-        res = self._cur.fetchall()
-        return res
-        
-    def room_list(self,fid):
-        self._cur.execute("SELECT * FROM room where fid = %s",(fid))
-        res = self._cur.fetchall()
-        return res
+	def building_list(self):
+		self._cur.execute("SELECT * FROM building")
+		res = self._cur.fetchall()
+		return res	
+	
+	def floor_list(self,bid):
+		self._cur.execute("SELECT * FROM floor where bid = %s",(bid))
+		res = self._cur.fetchall()
+		return res
+		
+	def room_list(self,fid):
+		self._cur.execute("SELECT * FROM room where fid = %s",(fid))
+		res = self._cur.fetchall()
+		return res
 	
 
