@@ -63,8 +63,6 @@ services:
      restart: always
      volumes:
        - ./db/mysql/initdb/:/docker-entrypoint-initdb.d
-     #Fix docker-toolbox error
-     command: --innodb_use_native_aio=0
 
    phpmyadmin:
      container_name: phpmyadmin

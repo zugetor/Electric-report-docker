@@ -19,24 +19,7 @@
                     </tr>
                   </thead>
                   
-                  <tbody id="conLst">
-          <tr>
-            <th scope="row">1</th>
-            <td>IF-11M210</td>
-            <td>
-              Air Conditioner ON</br>
-              Light OFF</br>
-              Electricity ON
-            </td>
-            <td>
-              08.00 - 17.00
-            </td>
-            <td>                
-              <button type="button" class="btn btn-warning" id="edit">Edit</button>
-              <button type="button" class="btn btn-danger" id="del">Delete</button>
-            </td>
-          </tr>
-        </tbody>
+                  
                 </table>
               </div>
             </div>
@@ -44,7 +27,9 @@
 {% endblock %}
 {% block js %}
 <script>
-  $("#new, #edit").click(async function(){
+  var roomlist = '';
+  var Table = $('#dataTable').DataTable();
+  $('#content').on('click', "#new, button[name='edit']" ,async function () {
     Swal.fire({
       width: '45rem',
       showCancelButton: true,
@@ -60,69 +45,30 @@
           </tr>\
         </thead>\
         <tbody id="conLst">\
+          {% for i in _type %}\
           <tr>\
             <td>\
               <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="aircon">\
-                <label class="form-check-label" for="aircon">Air Conditioner</label>\
+                <input class="form-check-input" type="checkbox" value="" name="type{{i['tid']}}" data-type="" data-id="{{i['tid']}}">\
+                <label class="form-check-label" for="type{{i['tid']}}">{{i["tname"]}}</label>\
               </div>\
             </td>\
             <td>\
-              <select class="form-control" id="airstate">\
-                <option value="1">ON</option>\
-                <option value="0">OFF</option>\
-              </select>\
-            </td>\
-            </tr>\
-          <tr>\
-            <td>\
-              <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="light">\
-                <label class="form-check-label" for="light">Light</label>\
-              </div>\
-            </td>\
-            <td>\
-              <select class="form-control"  id="lightstate">\
+              <select class="form-control custom-select" name="type{{i['tid']}}" data-type="" data-id="{{i['tid']}}">\
                 <option value="1">ON</option>\
                 <option value="0">OFF</option>\
               </select>\
             </td>\
           </tr>\
-          <tr>\
-            <td>\
-              <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="elect">\
-                <label class="form-check-label" for="elect">Electricity</label>\
-              </div>\
-            </td>\
-            <td>\
-              <select class="form-control" id="electstate">\
-                <option value="1">ON</option>\
-                <option value="0">OFF</option>\
-              </select>\
-            </td>\
-          </tr>\
-          <tr>\
-            <td>\
-              <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" id="motion">\
-                <label class="form-check-label" for="motion">Motion</label>\
-              </div>\
-            </td>\
-            <td>\
-              <select class="form-control" id="motionstate">\
-                <option value="1">Detect</option>\
-                <option value="0">Undetect</option>\
-              </select>\
-            </td>\
-          </tr>\
+          {% endfor %}\
         </tbody>\
       </table>\
       <div class="form-group">\
         <label for="roomlab">Room</label>\
-        <select class="form-control" id="roomlab">\
-          <option>IF-4C01</option>\
-          <option>IF-5C01</option>\
+        <select class="form-control custom-select mb-1" id="roomlab">'+roomlist+'</select>\
+        <select class="form-control custom-select" id="roomSta">\
+          <option value="1">Inuse</option>\
+          <option value="0">Free</option>\
         </select>\
       </div>\
         <div class="form-group">\
@@ -131,12 +77,59 @@
       </div>',
       focusConfirm: false,
       preConfirm: () => {
-        console.log('Is Air checked:' + document.getElementById('aircon').checked+" "+ document.getElementById("airstate").value);
-        console.log('Is Light checked:' + document.getElementById('light').checked+" "+ document.getElementById("lightstate").value);
-        console.log('Is Electric checked:' + document.getElementById('elect').checked+" "+ document.getElementById("electstate").value);
-        console.log('Is Motion checked:' + document.getElementById('motion').checked+" "+ document.getElementById("motionstate").value);
-        console.log('Room: '+ document.getElementById("roomlab").value)
-        console.log('Time: '+ document.getElementById("contime").value)
+        let type_chk = []
+        $("input[data-type='']").each(function(idx,elem){
+          let type_ena = $(elem).prop("checked") ? 1 : 0
+          let type_id = $(elem).attr("data-id")
+          let type_state = $(`select[data-id='${type_id}']`).val()
+          type_chk.push([type_id,type_ena,type_state])
+        })
+        let room = $("#roomlab").val()
+        let sta_time = $('#contime').data('daterangepicker').startDate.format('HH:mm');
+        let sto_time = $('#contime').data('daterangepicker').endDate.format('HH:mm');
+        let room_sta = $("#roomSta").val()
+        if(this.id != "new"){
+          let data = JSON.parse(decodeURIComponent($(this).attr("data")))
+          $.ajax({
+            url: "{{ url_for('Private.rule_edit') }}",
+            method: "POST",
+            data: { type:  JSON.stringify(type_chk),
+                    id:data["ruid"],
+                    sta_time:sta_time,
+                    sto_time:sto_time,
+                    room:room,
+                    state:room_sta
+                  }
+          }).then(function(res){
+            getRule()
+            Swal.fire(
+              'Edited!',
+              'Rule has been edit.',
+              'success'
+            )
+          })
+          return
+        }
+        $.ajax({
+          url: "{{ url_for('Private.rule_add') }}",
+          method: "POST",
+          data: { type:  JSON.stringify(type_chk),
+                  sta_time:sta_time,
+                  sto_time:sto_time,
+                  room:room,
+                  state:room_sta
+                }
+        }).then(function(res){
+          getRule()
+          Swal.fire(
+            'Added!',
+            'Rule has been Add.',
+            'success'
+          )
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
       }
     });
     await $('#contime').daterangepicker({
@@ -149,13 +142,20 @@
     }).on('show.daterangepicker', function (ev, picker) {
       picker.container.find(".calendar-table").hide();
     });
-    $('#aircon').prop('checked', true)
-    $("#airstate").val(0);
-    $("#roomlab").val("IF-5C01")
-    $('#contime').data('daterangepicker').setStartDate('11:11')
-    $('#contime').data('daterangepicker').setEndDate('22:22')
+    if(this.id != "new"){
+      let data = JSON.parse(decodeURIComponent($(this).attr("data")))
+      $("#roomlab").val(data["ro.rid"])
+      $("#roomSta").val(data["rstate"])  
+      $('#contime').data('daterangepicker').setStartDate(data["st_time"])
+      $('#contime').data('daterangepicker').setEndDate(data["end_time"])
+      data["type"].forEach(function(elem2){
+        let enabled = (elem2["enabled"] == 1 ? true : false)
+        $("input[data-id='"+elem2["tid"]+"'").prop("checked",enabled)
+        $("select[data-id='"+elem2["tid"]+"'").val(elem2["state"])
+      })
+    }
   });
-  $("#del").click(function(){
+  $('table').on('click', "button[name='del']" , function () {
     Swal.fire({
       title: 'Are you sure?',
       text: "You won't be able to revert this!",
@@ -166,13 +166,72 @@
       confirmButtonText: 'Yes'
     }).then((result) => {
       if (result.value) {
-        Swal.fire(
-          'Deleted!',
-          'Your condition has been deleted.',
-          'success'
-        )
+        $.ajax({
+          url: "{{ url_for('Private.rule_del') }}",
+          data:{id:$(this).attr("data-id")},
+          method: "GET"
+        }).then(function(res){
+          getRule()
+          Swal.fire(
+            'Deleted!',
+            'Your condition has been deleted.',
+            'success'
+          )
+        })
+        .catch(function (err) {
+          console.log(err);
+        });
       }
     })
   });
+
+  var getRule = function(){
+    $.ajax({
+      url: "{{ url_for('Private.rule_view') }}",
+      method: "GET"
+    }).then(function(res){
+      initTable(res)
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+  };
+
+  var initTable = function(data){
+    Table.clear();
+    data.forEach(function(elem){
+      _rowType = "<table class=\"table\">"
+      elem["type"].forEach(function(elem2){
+        _rowType += "<tr><td>" + elem2["tname"] + "</td><td>" + (elem2["enabled"] == 1 ? "Enable" : "Disable") + "</td><td>" + (elem2["state"] == 1 ? "ON" : "OFF")  + "</td></tr>"
+      })
+      _rowType += "</table>"
+      Table.row.add( [
+            elem["ruid"],
+            elem["rname"],
+            _rowType,
+            elem["st_time"] + " - " + elem["end_time"],
+            "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\" data=\""+encodeURIComponent(JSON.stringify(elem))+"\">Edit</button>\n" +
+            "<button type=\"button\" class=\"btn btn-danger\" id=\"del\" name=\"del\" data-id=\""+elem["ruid"]+"\">Delete</button>"
+        ] ).draw( false );
+    })
+  };
+
+$( document ).ready(function() {
+  $.ajax({
+    url: "{{ url_for('Private.sensor_list') }}",
+    method: "GET"
+  }).then(function(res){
+    res.forEach((elem)=>{
+      if(roomlist.indexOf(elem["rname"]) == -1){
+        let newOpt = $('<option></option>').attr('value', elem["rid"]).text(elem["rname"])
+        roomlist += newOpt[0].outerHTML
+      }
+    })
+  })
+  .catch(function (err) {
+    console.log(err);
+  });
+  getRule()
+})
 </script>
 {% endblock %}
