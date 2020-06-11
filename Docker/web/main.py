@@ -8,7 +8,7 @@ app.config.from_object(DevelopmentConfig)
 
 mysql.init_app(app.config)
 influx.init_app(app.config)
-query.init_db(mysql.get_connection(), mysql.get_cursor(), influx.get_client())
+query.init_db(mysql.get_connection(), influx.get_client())
 
 app.register_blueprint(page.app)
 app.register_blueprint(private.app, url_prefix="/api/private")

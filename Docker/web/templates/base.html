@@ -18,6 +18,7 @@
 
 	<!-- Custom styles for this template-->
 	<link href="{{ url_for('static', filename='css/sb-admin-2.min.css') }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename='css/color.css') }}" rel="stylesheet">
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"
 		integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
@@ -33,7 +34,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@0.7.4"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/dataTables.bootstrap4.min.css" integrity="sha256-F+DaKAClQut87heMIC6oThARMuWne8+WzxIDT7jXuPA=" crossorigin="anonymous" />
-
+	<style type="text/css">{% block css %}{% endblock %}</style>
 </head>
 
 <body id="page-top">

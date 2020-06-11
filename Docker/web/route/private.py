@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, escape
-from extensions import query, html_escape
+from extensions import query, html_escape, toHourandMin
+import json, time
 
 app = Blueprint('Private', __name__)
 
@@ -17,7 +18,7 @@ def all_room_list():
 def register_list():
     return jsonify(query.register_list())
     
-@app.route('/sensor',methods=['POST'])
+@app.route('/sensor/',methods=['POST'])
 def sensor_edit():
     sid = request.form.get('id')
     sname = html_escape(request.form.get('name'))
@@ -120,3 +121,39 @@ def building_del():
     bid = request.args.get('bid')
     query.building_del(bid)
     return '200 OK DEL BUILDING'
+
+@app.route('/rule/',methods=['POST'])
+def rule_add():
+    _type = json.loads(request.form.get('type'))
+    st = request.form.get('sta_time')
+    sto = request.form.get('sto_time')
+    room = request.form.get('room')
+    rstate = request.form.get('state')
+    query.AddRule(_type,st,sto,rstate,room)
+    return jsonify({'Code':'200 OK'})
+
+@app.route('/rule/edit',methods=['POST'])
+def rule_edit():
+    _id = request.form.get('id')
+    _type = json.loads(request.form.get('type'))
+    st = request.form.get('sta_time')
+    sto = request.form.get('sto_time')
+    room = request.form.get('room')
+    rstate = request.form.get('state')
+    query.UpdateRule(_id,_type,st,sto,rstate,room)
+    return jsonify({'Code':'200 OK'})
+
+@app.route('/rule/',methods=['GET'])
+def rule_view():
+    rule = query.getRule()
+    for i in rule:
+        i["type"] = query.getRuletype(i["ruid"])
+        i["st_time"] = toHourandMin(i["st_time"])
+        i["end_time"] = toHourandMin(i["end_time"])
+    return jsonify(rule)
+
+@app.route("/rule/del",methods=["GET"])
+def rule_del():
+    _id = request.args.get('id')
+    query.DeleteRule(_id)
+    return jsonify({'Code':'200 OK'})

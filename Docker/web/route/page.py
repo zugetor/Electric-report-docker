@@ -80,11 +80,13 @@ def sensor_add():
 
 @app.route("/conditions")
 def conditions():
-	return render_template("sensor_condition.html")
+	_type = query.getAllType()
+	return render_template("sensor_condition.html",_type=_type)
 
 @app.route("/sensor_view")
 def sensor_view():
-	return render_template("sensor_view.html")    
+	_type = query.getAllType()
+	return render_template("sensor_view.html",_type=_type)    
     
 @app.route("/room_add")
 def room_add():
