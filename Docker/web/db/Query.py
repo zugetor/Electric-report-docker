@@ -238,3 +238,8 @@ class Query:
 		_cur.execute("DELETE FROM rule_has_type WHERE ruid = %s",(ruid,))
 		_cur.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
 		self._CloseCursor(_cur)
+
+	def new_log(self,message):
+		_cur = self._newCursor()
+		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
+		self._CloseCursor(_cur)
