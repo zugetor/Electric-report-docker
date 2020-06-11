@@ -68,7 +68,7 @@ def room_edit():
     
 @app.route('/room/del',methods=['GET'])
 def room_del():
-    rid = request.args.get('id')
+    rid = request.args.get('rid')
     query.room_del(rid)
     return '200 OK DEL ROOM'
     
@@ -94,7 +94,7 @@ def floor_edit():
     
 @app.route('/floor/del',methods=['GET'])
 def floor_del():
-    fid = request.args.get('id')
+    fid = request.args.get('fid')
     query.floor_del(fid)
     return '200 OK DEL FLOOR'
     
@@ -117,6 +117,6 @@ def building_edit():
     
 @app.route('/building/del',methods=['GET'])
 def building_del():
-    bid = request.args.get('id')
+    bid = request.args.get('bid')
     query.building_del(bid)
     return '200 OK DEL BUILDING'

@@ -1,14 +1,34 @@
 {% extends 'base.html' %}
 {% block title %}Energy Saving - Sensor View{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Room Management</h1>
 <div class="row">
     <div class="col-sm">
         <div class="card shadow mb-4" id="building_card">
+
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs pull-right" id="buildingTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#bui_add_card" role="tab"
+                            aria-selected="true">Add</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#bui_edit_card" role="tab"
+                            aria-selected="false">Edit</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#bui_del_card" role="tab"
+                            aria-selected="false">Delete</a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="card-body">
-                <div class="row">
-                    <div class="col-sm">
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="bui_add_card" role="tabpanel">
                         <form id="bui_add">
                             <div class="form-group">
                                 <label for="bui">Add Building:</label>
@@ -17,7 +37,7 @@
                             <button type="submit" class="btn btn-success">Add</button>
                         </form>
                     </div>
-                    <div class="col-sm">
+                    <div class="tab-pane fade" id="bui_edit_card" role="tabpanel">
                         <form id="bui_edit">
                             <div class="form-group">
                                 <label for="bui">Edit Building:</label>
@@ -27,14 +47,16 @@
                             <button type="submit" class="btn btn-warning">Edit</button>
                         </form>
                     </div>
-                </div>
-                <hr class="sidebar-divider">
-                <form id="bui_del">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" name="bid">
+                    <div class="tab-pane fade" id="bui_del_card" role="tabpanel">
+                        <form id="bui_del">
+                            <div class="form-group">
+                                <label for="flo">Delete Building:</label>
+                                <input type="hidden" class="form-control" name="bid">
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-block btn-lg">Delete</button>
+                        </form>
                     </div>
-                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
-                </form>
+                </div>
             </div>
         </div>
         <div class="card shadow mb-4">
@@ -54,9 +76,31 @@
     </div>
     <div class="col-sm">
         <div class="card shadow mb-4" id="floor_card">
+
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs pull-right" id="floorTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#flo_add_card" role="tab"
+                            aria-selected="true">Add</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#flo_edit_card" role="tab"
+                            aria-selected="false">Edit</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#flo_move_card" role="tab"
+                            aria-selected="false">Move</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#flo_del_card" role="tab"
+                            aria-selected="false">Delete</a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="card-body">
-                <div class="row">
-                    <div class="col-sm">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="flo_add_card" role="tabpanel">
                         <form id="flo_add">
                             <div class="form-group">
                                 <label for="flo">Add Floor:</label>
@@ -66,7 +110,7 @@
                             <button type="submit" class="btn btn-success">Add</button>
                         </form>
                     </div>
-                    <div class="col-sm">
+                    <div class="tab-pane fade" id="flo_edit_card" role="tabpanel">
                         <form id="flo_edit">
                             <div class="form-group">
                                 <label for="flo">Edit Floor:</label>
@@ -77,28 +121,33 @@
                             <button type="submit" class="btn btn-warning">Edit</button>
                         </form>
                     </div>
+                    <div class="tab-pane fade" id="flo_move_card" role="tabpanel">
+
+                        <form id="flo_move">
+                            <div class="form-group">
+                                <label for="flo">Move Floor:</label>
+                                <input type="hidden" class="form-control" name="fid">
+                                <input type="hidden" class="form-control" name="fname">
+                                <select class="form-control" name="bid">
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Move</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="flo_del_card" role="tabpanel">
+                        <form id="flo_del">
+                            <div class="form-group">
+                                <label for="flo">Delete Floor:</label>
+                                <input type="hidden" class="form-control" name="fid">
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-block btn-lg">Delete</button>
+                        </form>
+                    </div>
                 </div>
-                <hr class="sidebar-divider">
-                <form id="flo_move">
-                    <div class="form-group">
-                        <label for="flo">Move Floor:</label>
-                        <input type="hidden" class="form-control" name="fid">
-                        <input type="hidden" class="form-control" name="fname">
-                        <select class="form-control" name="bid">
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Move</button>
-                </form>
-                <hr class="sidebar-divider">
-                <form id="flo_del">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" name="fid">
-                    </div>
-                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
-                </form>
             </div>
         </div>
         <div class="card shadow mb-4">
+
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="floor" width="100%" cellspacing="0">
@@ -115,9 +164,31 @@
     </div>
     <div class="col-sm">
         <div class="card shadow mb-4" id="room_card">
+
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs pull-right" id="roomTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#roo_add_card" role="tab"
+                            aria-selected="true">Add</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#roo_edit_card" role="tab"
+                            aria-selected="false">Edit</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#roo_move_card" role="tab"
+                            aria-selected="false">Move</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#roo_del_card" role="tab"
+                            aria-selected="false">Delete</a>
+                    </li>
+                </ul>
+            </div>
+
             <div class="card-body">
-                <div class="row">
-                    <div class="col-sm">
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="roo_add_card" role="tabpanel">
                         <form id="roo_add">
                             <div class="form-group">
                                 <label for="roo">Add Room:</label>
@@ -128,7 +199,7 @@
                             <button type="submit" class="btn btn-success">Add</button>
                         </form>
                     </div>
-                    <div class="col-sm">
+                    <div class="tab-pane fade" id="roo_edit_card" role="tabpanel">
                         <form id="roo_edit">
                             <div class="form-group">
                                 <label for="roo">Edit Room:</label>
@@ -139,25 +210,28 @@
                             <button type="submit" class="btn btn-warning">Edit</button>
                         </form>
                     </div>
+                    <div class="tab-pane fade" id="roo_move_card" role="tabpanel">
+                        <form id="roo_move">
+                            <div class="form-group">
+                                <label for="roo">Move Room:</label>
+                                <input type="hidden" class="form-control" name="rid">
+                                <input type="hidden" class="form-control" name="rname">
+                                <select class="form-control" name="fid">
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Move</button>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="roo_del_card" role="tabpanel">
+                        <form id="roo_del">
+                            <div class="form-group">
+                                <label for="flo">Delete Room:</label>
+                                <input type="hidden" class="form-control" name="rid">
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-block btn-lg">Delete</button>
+                        </form>
+                    </div>
                 </div>
-                <hr class="sidebar-divider">
-                <form id="roo_move">
-                    <div class="form-group">
-                        <label for="roo">Move Room:</label>
-                        <input type="hidden" class="form-control" name="rid">
-                        <input type="hidden" class="form-control" name="rname">
-                        <select class="form-control" name="fid">
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Move</button>
-                </form>
-                <hr class="sidebar-divider">
-                <form id="roo_del">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" name="rid">
-                    </div>
-                    <button type="submit" class="btn btn-danger btn-block">Delete</button>
-                </form>
             </div>
         </div>
         <div class="card shadow mb-4">
@@ -177,7 +251,6 @@
 
     </div>
 </div>
-
 
 {% endblock %}
 {% block js %}
@@ -211,7 +284,6 @@
                 $("#bui_edit input[name=bname]").val(data.bname);
                 $("#bui_del input[name=bid]").val(data.bid);
                 $("#floor_card *").children().prop('disabled', false);
-                $("#room_card *").children().prop('disabled', false);
             }
         });
 
@@ -222,12 +294,14 @@
                 room.clear().draw();
                 clearRoomCard();
                 clearFloorCard();
+                $("#flo_add input[name=bid]").val(data.bid);
 
                 $("#room_card *").children().prop('disabled', true);
             } else {
                 floor.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 updateRoom(data.fid);
+                $("#flo_add input[name=bid]").val(data.bid);
                 $("#roo_add input[name=fid]").val(data.fid);
                 $("#flo_edit input[name=fid]").val(data.fid);
                 $("#flo_edit input[name=fname]").val(data.fname);
@@ -259,9 +333,10 @@
             if ($(this).hasClass('selected')) {
                 $(this).removeClass('selected');
                 clearRoomCard();
+                $("#roo_add input[name=fid]").val(data.fid);
             } else {
-                room.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
+                $("#roo_add input[name=fid]").val(data.fid);
                 $("#roo_edit input[name=rid]").val(data.rid);
                 $("#roo_edit input[name=rname]").val(data.rname);
                 $("#roo_edit input[name=fid]").val(data.fid);
@@ -289,67 +364,163 @@
 
         $('#bui_add').submit(function (event) {
             $.post("{{ url_for('Private.building_add') }}", $('#bui_add').serialize())
+            added();
             updateBuilding();
             event.preventDefault();
         })
 
         $('#flo_add').submit(function (event) {
-            alert($('#flo_add').serialize());
             $.post("{{ url_for('Private.floor_add') }}", $('#flo_add').serialize())
+            added();
             updateFloor($("#flo_add input[name=bid]").val());
             event.preventDefault();
         })
 
         $('#roo_add').submit(function (event) {
             $.post("{{ url_for('Private.room_add') }}", $('#roo_add').serialize())
+            added();
             updateRoom($("#roo_add input[name=fid]").val());
             event.preventDefault();
         })
 
         $('#bui_edit').submit(function (event) {
+            if (building.rows('.selected').data().length != 1) {
+                Swal.fire(
+                'Cannot Edit',
+                'Please select only 1 item to edit',
+                'warning'
+            )}else{
             $.post("{{ url_for('Private.building_edit') }}", $('#bui_edit').serialize())
+            edited();
             updateBuilding();
+            }
             event.preventDefault();
         })
 
         $('#flo_edit').submit(function (event) {
+            if (floor.rows('.selected').data().length != 1) {
+                Swal.fire(
+                'Cannot Edit',
+                'Please select only 1 item to edit',
+                'warning'
+            )}else{
             $.post("{{ url_for('Private.floor_edit') }}", $('#flo_edit').serialize())
-            updateFloor($("#flo_edit input[name=bid]").val());
+            edited();
+            updateFloor($("#flo_edit input[name=bid]").val());}
             event.preventDefault();
         })
 
         $('#roo_edit').submit(function (event) {
-            $.post("{{ url_for('Private.room_edit') }}", $('#roo_edit').serialize())
-            updateRoom($("#roo_edit input[name=fid]").val());
+            if (room.rows('.selected').data().length != 1) {
+                Swal.fire(
+                'Cannot Edit',
+                'Please select only 1 item to edit',
+                'warning'
+            )
+            } 
+            else {
+                $.post("{{ url_for('Private.room_edit') }}", $('#roo_edit').serialize())
+                edited();
+                updateRoom($("#roo_edit input[name=fid]").val());
+                
+            }
             event.preventDefault();
         })
 
         $('#bui_del').submit(function (event) {
-            $.get("{{ url_for('Private.building_del') }}", $('#bui_del').serialize())
-            updateBuilding();
+            if (building.rows('.selected').data().length != 1) {
+                Swal.fire(
+                'Cannot Delete',
+                'Please select only 1 item to delete',
+                'warning'
+            )}else{
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    $.get("{{ url_for('Private.building_del') }}", $('#bui_del').serialize());
+                    updateBuilding();
+                }
+            })
+            }
             event.preventDefault();
         })
 
         $('#flo_del').submit(function (event) {
-            $.get("{{ url_for('Private.floor_del') }}", $('#flo_del').serialize())
-            updateFloor($("#flo_add input[name=bid]").val());
+            if (floor.rows('.selected').data().length != 1) {
+                Swal.fire(
+                    'Cannot Delete',
+                'Please select only 1 item to delete',
+                'warning'
+            )}else{
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    $.get("{{ url_for('Private.floor_del') }}", $('#flo_del').serialize());
+                    updateFloor($("#flo_add input[name=bid]").val());
+                }
+            })
+            }
             event.preventDefault();
         })
 
         $('#roo_del').submit(function (event) {
-            $.get("{{ url_for('Private.room_del') }}", $('#roo_del').serialize())
-            updateRoom($("#roo_add input[name=fid]").val());
+            
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    $.each(room.rows('.selected').data(), function (key, value) {
+                        $('#roo_del input[name=rid]').val(value.rid);
+                        $.get("{{ url_for('Private.room_del') }}", $('#roo_del')
+                            .serialize())
+                    });
+                    updateRoom($("#roo_add input[name=fid]").val());
+                }
+            })
             event.preventDefault();
         })
 
         $('#flo_move').submit(function (event) {
+            if (floor.rows('.selected').data().length != 1) {
+                Swal.fire(
+                    'Cannot move',
+                'Please select only 1 item to move',
+                'warning'
+            )}else{
             $.post("{{ url_for('Private.floor_edit') }}", $('#flo_move').serialize())
+            moved();
             updateFloor($("#flo_add input[name=bid]").val());
+            }
             event.preventDefault();
         })
 
         $('#roo_move').submit(function (event) {
-            $.post("{{ url_for('Private.room_edit') }}", $('#roo_move').serialize())
+            $.each(room.rows('.selected').data(), function (key, value) {
+                $('#roo_move input[name=rname]').val(value.rname);
+                $('#roo_move input[name=rid]').val(value.rid);
+                $.post("{{ url_for('Private.room_edit') }}", $('#roo_move').serialize())
+            });
+            moved();
             updateRoom($("#roo_add input[name=fid]").val());
             event.preventDefault();
         })
@@ -434,6 +605,30 @@
                     data: "rname"
                 }]
             });
+        };
+
+        function added() {
+            Swal.fire(
+                'Added',
+                'success',
+                'success'
+            )
+        };
+
+        function edited() {
+            Swal.fire(
+                'Edited',
+                'success',
+                'success'
+            )
+        };
+
+        function moved() {
+            Swal.fire(
+                'Moved',
+                'success',
+                'success'
+            )
         };
 
     });
