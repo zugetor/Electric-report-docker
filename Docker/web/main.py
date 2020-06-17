@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from route import private, page
+from route import private, page, public
 from config import ProductionConfig, DevelopmentConfig, TestingConfig
 from extensions import mysql, influx, query, html_escape
 
@@ -12,6 +12,7 @@ query.init_db(mysql.get_connection(), influx.get_client())
 
 app.register_blueprint(page.app)
 app.register_blueprint(private.app, url_prefix="/api/private")
+app.register_blueprint(public.app, url_prefix="/api/public")
 
 @app.route("/")
 def index():

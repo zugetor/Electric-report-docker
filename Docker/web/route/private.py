@@ -157,3 +157,10 @@ def rule_del():
     _id = request.args.get('id')
     query.DeleteRule(_id)
     return jsonify({'Code':'200 OK'})
+
+@app.route("/autoadd",methods=["POST"])
+def auto_add():
+    prefix = request.form.get('prefix')
+    data = json.loads(request.form.get('data'))
+    query.auto_add_room(prefix,data)
+    return jsonify({'Code':'200 OK'})
