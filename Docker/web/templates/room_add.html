@@ -681,11 +681,10 @@
         let tryRegex = function(pattern,data){
             let patt = new RegExp(pattern);
             let res = patt.exec(data);
-            if(res){
-                console.log(res)
+            if(res && res.length > 1 && res[1].length > 0){
                 return res[1];
             }
-            return "";
+            return "Not available";
         };
 
         let getRegex = async function(){
@@ -694,12 +693,13 @@
             let res = [];
             let data = await $.get( "{{ url_for('Public.room_list') }}", { prefix: prefix } ).then()
             data.forEach(function(val){
-                res.push([val,tryRegex(pattern,val)])
+                let floor = tryRegex(pattern,val);
+                res.push([val,floor])
             })
             return res
         };
 
-        let buildPreview = async function(regexLst){
+        let buildPreview = function(regexLst){
             let row = ""
             regexLst.forEach(function(val){
                 row += `<tr>\
@@ -720,7 +720,7 @@
 
         $("#PrevPatt").click(async function(){
             let regexlst = await getRegex()
-            let htmlPrev = await buildPreview(regexlst)
+            let htmlPrev = buildPreview(regexlst)
             Swal.fire(
                 'Match Floor',
                 htmlPrev,
@@ -731,7 +731,8 @@
         $("#SendPatt").click(async function(){
             let prefix = $("#AUbui").val()
             let regexlst = await getRegex()
-            let htmlPrev = await buildPreview(regexlst)
+            regexlst = regexlst.filter((val)=>{return val[1] != "Not available"})
+            let htmlPrev = buildPreview(regexlst)
             Swal.fire({
               title: 'Do you really want to submit?',
               icon: 'info',
