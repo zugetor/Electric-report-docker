@@ -743,7 +743,6 @@
               cancelButtonText: 'No',
             }).then((result) => {
               if (result.value) {
-                console.log(regexlst)
                 $.post( "{{ url_for('Private.auto_add') }}", { prefix: prefix, data: JSON.stringify(regexlst) } );
                 updateBuilding();
                 Swal.fire(

@@ -242,6 +242,7 @@ class Query:
 
 	def new_log(self,message):
 		_cur = self._newCursor()
+		_cur.execute("DELETE FROM logs WHERE create_time <  (CURRENT_TIMESTAMP - INTERVAL 3 MONTH)")
 		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
 		self._CloseCursor(_cur)
 
@@ -256,6 +257,7 @@ class Query:
 			_cur.execute("SELECT bid FROM building WHERE bprefix = %s",(building[0]["prefix"],))
 			bid = _cur.fetchone()["bid"]
 			floor = list(set([x[1] for x in data]))
+			floor.sort()
 			floor_id = {}
 			for i in floor:
 				_cur.execute("""INSERT INTO floor (fname, bid) 
