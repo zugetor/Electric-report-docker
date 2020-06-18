@@ -95,6 +95,7 @@ CREATE TABLE IF NOT EXISTS `electric_mon`.`board` (
   `bomac` VARCHAR(20) NULL,
   `register` TINYINT NULL,
   `rid` INT NOT NULL,
+  `time` TIMESTAMP NOT NULL,
   PRIMARY KEY (`boid`),
   INDEX `fk_board_room1_idx` (`rid` ASC),
   CONSTRAINT `fk_board_room1`
@@ -199,7 +200,14 @@ CREATE TABLE IF NOT EXISTS `electric_mon`.`logs` (
   `lid` INT NOT NULL AUTO_INCREMENT,
   `message` TEXT NULL,
   `create_time` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`lid`))
+  `ruid` INT NOT NULL,
+  INDEX `fk_logs_rule1_idx` (`ruid` ASC),
+  PRIMARY KEY (`lid`),
+  CONSTRAINT `fk_logs_rule1`
+    FOREIGN KEY (`ruid`)
+    REFERENCES `electric_mon`.`rule` (`ruid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 

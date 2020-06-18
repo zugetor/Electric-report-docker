@@ -5,7 +5,7 @@ class Query:
 	def __init__(self):
 		self._conn = None
 		self._client = None
-		
+
 	def init_db(self,conn,client):
 		self._conn = conn
 		self._client = client
@@ -15,18 +15,18 @@ class Query:
 
 	def _CloseCursor(self,cursor):
 		return cursor.close()
-		
+
 	def demo2(self):
 		result = self._client.query("SELECT * FROM mqtt_consumer;")
 		return result.raw
-		
+
 	def sensor_list(self):
 		_cur = self._newCursor()
 		_cur.execute("SELECT s.sid,s.sname,t.tname,r.rname,f.fname,b.bname,bo.bomac,r.rid,f.fid,b.bid FROM sensor AS s INNER JOIN board AS bo ON (s.boid=bo.boid) INNER JOIN room AS r ON (bo.rid=r.rid) INNER JOIN floor AS f ON (r.fid=f.fid) INNER JOIN building AS b ON (f.bid=b.bid) INNER JOIN type as t ON (s.tid=t.tid)")
 		res = _cur.fetchall()
 		self._CloseCursor(_cur)
 		return res
-		
+
 	def all_room_list(self):
 		_cur = self._newCursor()
 		_cur.execute("SELECT * FROM building")
@@ -39,38 +39,38 @@ class Query:
 				f.update({'room':[]})
 				_cur.execute("SELECT rid,rname FROM room WHERE fid = %s",(f['fid'],))
 				room = _cur.fetchall()
-				for r in room: 
+				for r in room:
 					f['room'].append(r)
 				b['floor'].append(f)
-		self._CloseCursor(_cur)   
+		self._CloseCursor(_cur)
 		return building
-		
+
 	def sensor_edit(self,sid,sname):
 		_cur = self._newCursor()
 		_cur.execute("UPDATE sensor SET sname = %s WHERE sid = %s",(sname,sid))
 		self._CloseCursor(_cur)
-		
+
 	def sensor_del(self,sid):
 		_cur = self._newCursor()
 		_cur.execute("DELETE FROM sensor WHERE sid = %s",(sid,))
 		self._CloseCursor(_cur)
-		
+
 	def register_list(self):
 		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM board")
+		_cur.execute("SELECT bo.boid,bo.bomac,bo.register,bo.time,bo.rid,f.fid,b.bid,r.rname,f.fname,b.bname FROM board as bo INNER JOIN room as r ON bo.rid=r.rid INNER JOIN floor as f ON f.fid=r.fid INNER JOIN building as b ON b.bid=f.bid")
 		board = _cur.fetchall()
 		for bo in board:
 			bo.update({'sensor':[]})
-			_cur.execute("SELECT sid,sname FROM sensor WHERE boid = %s",(bo['boid']))
+			_cur.execute("SELECT s.sid,s.sname,s.tid,t.tname FROM sensor as s INNER JOIN type as t ON s.tid=t.tid WHERE boid = %s",(bo['boid']))
 			sensor = _cur.fetchall()
 			for s in sensor:
 				bo['sensor'].append(s)
-			_cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec  ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air FROM sensor WHERE boid = %s",(bo['boid']))
+			_cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air ,COUNT(CASE WHEN tid = 4 THEN 1 END) AS motion FROM sensor WHERE boid = %s",(bo['boid']))
 			count = _cur.fetchall()
-			bo.update({'type':{'light':count[0]['light'],'elec':count[0]['elec'],'air':count[0]['air']}})
+			bo.update({'type':{'light':count[0]['light'],'electricity':count[0]['elec'],'air conditioner':count[0]['air'],'motion':count[0]['motion']}})
 		self._CloseCursor(_cur)
 		return board
-		
+
 	def register_add(self,bomac,sensor):
 		_cur = self._newCursor()
 		_cur.execute("INSERT INTO board (bomac,register) VALUES (%s, 0)",(bomac,))
@@ -80,49 +80,48 @@ class Query:
 			#_cur.execute("INSERT INTO sensor (tid,boid) VALUES (%s, %s)",(s['tid'],board['boid'])) #waiting for param valid
 			print('')
 		self._CloseCursor(_cur)
-		
+
 	def register_register(self,boid,sensor,rid):
 		_cur = self._newCursor()
 		_cur.execute("UPDATE board SET rid=%s , register = 1 WHERE boid = %s",(rid,boid))
 		for s in sensor:
-			#_cur.execute("UPDATE sensor SET sname=%s WHERE sid = %s",(s['sname'],s['sid'])) #waiting for param valid
-			print('')
+			_cur.execute("UPDATE sensor SET sname=%s WHERE sid=%s",(s['name'],s['id']))
 		self._CloseCursor(_cur)
-		
+
 	def register_del(self,boid):
 		_cur = self._newCursor()
-		_cur.execute("DELETE FROM sensor WHERE boid = %s",(boid,))   # waiting for rules to delete
+		_cur.execute("DELETE FROM sensor WHERE boid = %s",(boid,))
 		_cur.execute("DELETE FROM board WHERE boid = %s",(boid,))
 		self._CloseCursor(_cur)
-	
+
 	def room_add(self,rname,fid):
 		_cur = self._newCursor()
 		_cur.execute("INSERT INTO room (rname,fid) VALUES (%s,%s)",(rname,fid))
 		self._CloseCursor(_cur)
-	
+
 	def room_edit(self,rid,rname,fid):
 		_cur = self._newCursor()
 		_cur.execute("UPDATE room SET rname = %s , fid = %s WHERE rid = %s",(rname,fid,rid))
 		self._CloseCursor(_cur)
-		
+
 	def room_del(self,rid):
 		_cur = self._newCursor()
 		_cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid SET board.register= 0 , board.rid=null WHERE room.rid = %s",(rid)) #SET board.rid to null and change board status to unregister
 		_cur.execute("DELETE FROM room WHERE rid = %s",(rid,))
 		self._CloseCursor(_cur)
-	
+
 	def floor_add(self,fname,bid):
 		_cur = self._newCursor()
 		_cur.execute("INSERT INTO floor (fname,bid) VALUES (%s,%s)",(fname,bid))
 		self._CloseCursor(_cur)
-	
+
 	def floor_edit(self,fid,fname,bid):
 		_cur = self._newCursor()
 		if(fid == 1):
 			return
 		_cur.execute("UPDATE floor SET fname = %s , bid = %s WHERE fid = %s",(fname,bid,fid))
 		self._CloseCursor(_cur)
-		
+
 	def floor_del(self,fid):
 		if(fid == 1):
 			return
@@ -131,24 +130,24 @@ class Query:
 		_cur.execute("DELETE FROM room WHERE fid = %s",(fid,))
 		_cur.execute("DELETE FROM floor WHERE fid = %s",(fid,))
 		self._CloseCursor(_cur)
-		
+
 	def building_add(self,bname):
 		_cur = self._newCursor()
 		_cur.execute("INSERT INTO building (bname) VALUES (%s)",(bname,))
 		self._CloseCursor(_cur)
-	
+
 	def building_edit(self,bid,bname):
 		if(bid == 1):
 			return
 		_cur = self._newCursor()
 		_cur.execute("UPDATE building SET bname = %s WHERE bid = %s",(bname,bid))
 		self._CloseCursor(_cur)
-		
+
 	def building_del(self,bid):
 		if(bid == 1):
 			return
 		_cur = self._newCursor()
-		_cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid INNER JOIN floor ON room.fid=floor.fid INNER JOIN building ON building.bid=floor.bid SET  board.register= 0 , board.rid=null WHERE building.bid = %s",(bid,))
+		_cur.execute("UPDATE board INNER JOIN room ON board.rid = room.rid INNER JOIN floor ON room.fid=floor.fid INNER JOIN building ON building.bid=floor.bid SET	 board.register= 0 , board.rid=null WHERE building.bid = %s",(bid,))
 		_cur.execute("DELETE room FROM room INNER JOIN floor ON room.fid = floor.fid WHERE floor.bid = %s",(bid,))
 		_cur.execute("DELETE FROM floor WHERE bid = %s",(bid,))
 		_cur.execute("DELETE FROM building WHERE bid = %s",(bid,))
@@ -173,23 +172,23 @@ class Query:
 		res = _cur.fetchone()
 		self._CloseCursor(_cur)
 		return res
-		
+
 	#board.rid can be null
-	
+
 	def building_list(self):
 		_cur = self._newCursor()
 		_cur.execute("SELECT * FROM building")
 		res = _cur.fetchall()
 		self._CloseCursor(_cur)
-		return res	
-	
+		return res
+
 	def floor_list(self,bid):
 		_cur = self._newCursor()
 		_cur.execute("SELECT * FROM floor where bid = %s",(bid,))
 		res = _cur.fetchall()
 		self._CloseCursor(_cur)
 		return res
-		
+
 	def room_list(self,fid):
 		_cur = self._newCursor()
 		_cur.execute("SELECT * FROM room where fid = %s",(fid,))
@@ -243,3 +242,32 @@ class Query:
 		_cur = self._newCursor()
 		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
 		self._CloseCursor(_cur)
+
+	def get_logs(self):
+		_cur = self._newCursor()
+		_cur.execute("SELECT l.ruid,l.lid,l.message,l.create_time,r.rname,f.fname,b.bname FROM logs as l INNER JOIN rule as ru ON l.ruid=ru.ruid INNER JOIN room as r ON ru.rid=r.rid INNER JOIN floor as f ON r.fid=f.fid INNER JOIN building as b ON f.bid=b.bid")
+		res = _cur.fetchall()
+		for r in res:
+			_cur.execute("SELECT tname FROM rule_has_type as rht INNER JOIN type as t ON rht.tid=t.tid WHERE rht.ruid = %s and rht.enabled = 1",(r['ruid']))
+			logType = _cur.fetchall()
+			r.update({"type":logType})
+		self._CloseCursor(_cur)
+		return res
+	
+	def summary_logs(self):
+		_cur = self._newCursor()
+		_cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air ,COUNT(CASE WHEN tid = 4 THEN 1 END) AS motion FROM rule_has_type")
+		temp1 = _cur.fetchall()
+		_cur.execute("SELECT COUNT(lid) as sum_logs FROM logs")
+		temp2 = _cur.fetchall()
+		_cur.execute('''SELECT CONCAT(b.bname," floor ",f.fname," ",r.rname) as most_report,COUNT(ru.rid) AS count_room FROM logs as l INNER JOIN rule as ru ON ru.ruid=l.ruid INNER JOIN room as r ON ru.rid=r.rid INNER JOIN floor as f ON r.fid=f.fid INNER JOIN building as b ON f.bid=b.bid GROUP BY ru.rid ORDER BY count_room DESC LIMIT 1''')
+		temp3 = _cur.fetchall()
+		_cur.execute("SELECT create_time as lastest FROM logs ORDER BY lid DESC LIMIT 1")
+		temp4 = _cur.fetchall()
+		res={}
+		res.update(temp1[0])
+		res.update(temp2[0])
+		res.update(temp3[0])
+		res.update(temp4[0])
+		self._CloseCursor(_cur)
+		return res

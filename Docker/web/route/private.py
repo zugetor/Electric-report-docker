@@ -14,7 +14,7 @@ def all_room_list():
     response = jsonify(query.all_room_list())
     return response
     
-@app.route('/register/',methods=['GET'])
+@app.route('/register',methods=['GET'])
 def register_list():
     return jsonify(query.register_list())
     
@@ -38,14 +38,15 @@ def sensor_del():
 def register_del():
     boid = request.args.get('id')
     query.register_del(boid)
-    return jsonify({'Code':'200 ok'})
+    
 
-#@app.route('/register',methods=['POST'])
-#def register_add():
-    #bomac = request.form['bomac']
-    #sensor = request.form['sensor']
-    #query.register_add(bomac,sensor)
-    #return jsonify(query.register_add(bomac,sensor))
+@app.route('/register',methods=['POST'])
+def register_register():
+    boid = request.form['id']
+    room = request.form['room']
+    sensor = json.loads(request.form.get('sensor'))
+    query.register_register(boid,sensor,room)
+    return jsonify({'Code':'200 ok'})
     
 @app.route('/room/',methods=['GET'])
 def room_list():
@@ -157,3 +158,12 @@ def rule_del():
     _id = request.args.get('id')
     query.DeleteRule(_id)
     return jsonify({'Code':'200 OK'})
+    
+    
+@app.route('/logs/',methods=['GET'])
+def logs_list():
+    return jsonify(query.get_logs())
+    
+@app.route('/sumLogs/',methods=['GET'])
+def summary_logs():
+    return jsonify(query.summary_logs())
