@@ -8,3 +8,4 @@ flask_wtf
 WTForms
 email_validator
 passlib
+pandas

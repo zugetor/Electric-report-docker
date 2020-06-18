@@ -1,19 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Energy Saving - Sensor View{% endblock %}
+{% block title %}Energy Saving - Room Management{% endblock %}
 {% block css %}
     .selected{
       background-color: rgba(192,192,192,0.5);
     }
+    tr[role="row"]:hover {
+        cursor:pointer;
+    }
 {% endblock %}
 {% block content %}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
 <!-- Page Heading -->
 <h1 class="h3 mb-2 text-gray-800">Room Management</h1>
 <div class="row">
     <div class="col-sm">
         <div class="card shadow mb-4" id="building_card">
-
             <div class="card-header">
+                <h4 class="text-center">Building</h4>
                 <ul class="nav nav-tabs card-header-tabs pull-right" id="buildingTab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#bui_add_card" role="tab"
@@ -27,16 +29,20 @@
                         <a class="nav-link" data-toggle="tab" href="#bui_del_card" role="tab"
                             aria-selected="false">Delete</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#bui_auto_card" role="tab"
+                            aria-selected="false">Auto Add</a>
+                    </li>
                 </ul>
             </div>
 
             <div class="card-body">
 
                 <div class="tab-content">
-                    <div class="tab-pane fade show active" id="bui_add_card" role="tabpanel">
+                    <div class="tab-pane fade show active" id="bui_add_card" role="tabpanel">                        
                         <form id="bui_add">
                             <div class="form-group">
-                                <label for="bui">Add Building:</label>
+                                <label>Add Building:</label>
                                 <input type="text" class="form-control" placeholder="Enter building name" name="bname">
                             </div>
                             <button type="submit" class="btn btn-success">Add</button>
@@ -45,7 +51,7 @@
                     <div class="tab-pane fade" id="bui_edit_card" role="tabpanel">
                         <form id="bui_edit">
                             <div class="form-group">
-                                <label for="bui">Edit Building:</label>
+                                <label>Edit Building:</label>
                                 <input type="text" class="form-control" placeholder="Enter building name" name="bname">
                                 <input type="hidden" class="form-control" name="bid">
                             </div>
@@ -55,11 +61,29 @@
                     <div class="tab-pane fade" id="bui_del_card" role="tabpanel">
                         <form id="bui_del">
                             <div class="form-group">
-                                <label for="flo">Delete Building:</label>
+                                <label>Delete Building:</label>
                                 <input type="hidden" class="form-control" name="bid">
                             </div>
                             <button type="submit" class="btn btn-danger btn-block btn-lg">Delete</button>
                         </form>
+                    </div>
+                    <div class="tab-pane fade" id="bui_auto_card" role="tabpanel">
+                        <div id="bui_auto">
+                            <div class="form-group">
+                                <label>Building:</label>
+                                <select class="form-control" id="AUbui">
+                                    {% for x in building %}
+                                        <option value='{{ x["prefix"] }}'>{{ x["prefix"] }} - {{ x["name"] }}</option>
+                                    {% endfor %}  
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="AUbui">Floor Pattern(Regex):</label>
+                                <input type="text" class="form-control" name="fpattern" placeholder="Enter floor pattern" value="([0-9]*)[A-Z]*[0-9]{2}">
+                            </div>
+                            <button class="btn btn-info btn-block btn-lg" id="PrevPatt">Preview Pattern</button>
+                            <button class="btn btn-success btn-block btn-lg"  id="SendPatt">Submit</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,8 +105,12 @@
     </div>
     <div class="col-sm">
         <div class="card shadow mb-4" id="floor_card">
-
             <div class="card-header">
+                <h4 class="text-center">Floor</h4>
+                <div class="row">
+                    <div class="col-4">Select Building</div>
+                    <div class="col"><input type="text" class="form-control" name="lbBuild" autocomplete="off" readonly=""></div>
+                </div>
                 <ul class="nav nav-tabs card-header-tabs pull-right" id="floorTab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#flo_add_card" role="tab"
@@ -108,7 +136,7 @@
                     <div class="tab-pane fade show active" id="flo_add_card" role="tabpanel">
                         <form id="flo_add">
                             <div class="form-group">
-                                <label for="flo">Add Floor:</label>
+                                <label>Add Floor:</label>
                                 <input type="text" class="form-control" placeholder="Enter floor name" name="fname">
                                 <input type="hidden" class="form-control" name="bid">
                             </div>
@@ -118,7 +146,7 @@
                     <div class="tab-pane fade" id="flo_edit_card" role="tabpanel">
                         <form id="flo_edit">
                             <div class="form-group">
-                                <label for="flo">Edit Floor:</label>
+                                <label>Edit Floor:</label>
                                 <input type="text" class="form-control" placeholder="Enter floor name" name="fname">
                                 <input type="hidden" class="form-control" name="fid">
                                 <input type="hidden" class="form-control" name="bid">
@@ -130,7 +158,7 @@
 
                         <form id="flo_move">
                             <div class="form-group">
-                                <label for="flo">Move Floor:</label>
+                                <label>Move Floor:</label>
                                 <input type="hidden" class="form-control" name="fid">
                                 <input type="hidden" class="form-control" name="fname">
                                 <select class="form-control" name="bid">
@@ -142,7 +170,7 @@
                     <div class="tab-pane fade" id="flo_del_card" role="tabpanel">
                         <form id="flo_del">
                             <div class="form-group">
-                                <label for="flo">Delete Floor:</label>
+                                <label>Delete Floor:</label>
                                 <input type="hidden" class="form-control" name="fid">
                             </div>
                             <button type="submit" class="btn btn-danger btn-block btn-lg">Delete</button>
@@ -152,7 +180,6 @@
             </div>
         </div>
         <div class="card shadow mb-4">
-
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered" id="floor" width="100%" cellspacing="0">
@@ -169,8 +196,16 @@
     </div>
     <div class="col-sm">
         <div class="card shadow mb-4" id="room_card">
-
             <div class="card-header">
+                <h4 class="text-center">Room</h4>
+                <div class="row mb-2">
+                    <div class="col-4">Select Building</div>
+                    <div class="col"><input type="text" class="form-control" name="lbBuild" autocomplete="off" readonly=""></div>
+                </div>
+                 <div class="row">
+                    <div class="col-4">Select Floor</div>
+                    <div class="col"><input type="text" class="form-control" name="lbFloor" autocomplete="off" readonly=""></div>
+                </div>
                 <ul class="nav nav-tabs card-header-tabs pull-right" id="roomTab" role="tablist">
                     <li class="nav-item">
                         <a class="nav-link active" data-toggle="tab" href="#roo_add_card" role="tab"
@@ -196,7 +231,7 @@
                     <div class="tab-pane fade show active" id="roo_add_card" role="tabpanel">
                         <form id="roo_add">
                             <div class="form-group">
-                                <label for="roo">Add Room:</label>
+                                <label>Add Room:</label>
                                 <input type="text" class="form-control" placeholder="Enter room name" id="rname"
                                     name="rname">
                                 <input type="hidden" class="form-control" id="fid" name="fid">
@@ -207,7 +242,7 @@
                     <div class="tab-pane fade" id="roo_edit_card" role="tabpanel">
                         <form id="roo_edit">
                             <div class="form-group">
-                                <label for="roo">Edit Room:</label>
+                                <label>Edit Room:</label>
                                 <input type="text" class="form-control" placeholder="Enter room name" name="rname">
                                 <input type="hidden" class="form-control" name="rid">
                                 <input type="hidden" class="form-control" name="fid">
@@ -218,7 +253,7 @@
                     <div class="tab-pane fade" id="roo_move_card" role="tabpanel">
                         <form id="roo_move">
                             <div class="form-group">
-                                <label for="roo">Move Room:</label>
+                                <label>Move Room:</label>
                                 <input type="hidden" class="form-control" name="rid">
                                 <input type="hidden" class="form-control" name="rname">
                                 <select class="form-control" name="fid">
@@ -280,7 +315,12 @@
                 clearBuildingCard();
                 $("#floor_card *").children().prop('disabled', true);
                 $("#room_card *").children().prop('disabled', true);
+                $("input[name='lbBuild']").val("");
+                $("input[name='lbFloor']").val("");
             } else {
+                let selectBuilding = $(this).find("td")[1];
+                $("input[name='lbBuild']").val($(selectBuilding).text());
+                $("input[name='lbFloor']").val("");
                 building.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 updateFloor(data.bid);
@@ -300,9 +340,11 @@
                 clearRoomCard();
                 clearFloorCard();
                 $("#flo_add input[name=bid]").val(data.bid);
-
                 $("#room_card *").children().prop('disabled', true);
+                $("input[name='lbFloor']").val("");
             } else {
+                let selectFloor = $(this).find("td")[1]
+                $("input[name='lbFloor']").val($(selectFloor).text());
                 floor.$('tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 updateRoom(data.fid);
@@ -636,6 +678,82 @@
             )
         };
 
+        let tryRegex = function(pattern,data){
+            let patt = new RegExp(pattern);
+            let res = patt.exec(data);
+            if(res && res.length > 1 && res[1].length > 0){
+                return res[1];
+            }
+            return "Not available";
+        };
+
+        let getRegex = async function(){
+            let pattern = $("input[name='fpattern']").val()
+            let prefix = $("#AUbui").val()
+            let res = [];
+            let data = await $.get( "{{ url_for('Public.room_list') }}", { prefix: prefix } ).then()
+            data.forEach(function(val){
+                let floor = tryRegex(pattern,val);
+                res.push([val,floor])
+            })
+            return res
+        };
+
+        let buildPreview = function(regexLst){
+            let row = ""
+            regexLst.forEach(function(val){
+                row += `<tr>\
+                        <td>${val[0]}</td>\
+                        <td>${val[1]}</td>\
+                    </tr>`;
+            })
+            let raw_table = `<table class="table">\
+                                <thead>\
+                                    <tr>\
+                                        <th scope="col">Room</th>\
+                                        <th scope="col">Floor</th>\
+                                    </tr>\
+                                </thead>\
+                                <tbody>${row}</tbody></table>`;
+            return raw_table;
+        };
+
+        $("#PrevPatt").click(async function(){
+            let regexlst = await getRegex()
+            let htmlPrev = buildPreview(regexlst)
+            Swal.fire(
+                'Match Floor',
+                htmlPrev,
+                'info'
+            )
+        });
+
+        $("#SendPatt").click(async function(){
+            let prefix = $("#AUbui").val()
+            let regexlst = await getRegex()
+            regexlst = regexlst.filter((val)=>{return val[1] != "Not available"})
+            let htmlPrev = buildPreview(regexlst)
+            Swal.fire({
+              title: 'Do you really want to submit?',
+              icon: 'info',
+              html:htmlPrev,
+              showCancelButton: true,
+              focusConfirm: false,
+              confirmButtonText: 'Yes',
+              cancelButtonText: 'No',
+            }).then((result) => {
+              if (result.value) {
+                console.log(regexlst)
+                $.post( "{{ url_for('Private.auto_add') }}", { prefix: prefix, data: JSON.stringify(regexlst) } );
+                updateBuilding();
+                Swal.fire(
+                  'Submit!',
+                  'Your data has been Added.',
+                  'success'
+                )
+              }
+            });
+        });
     });
 </script>
 {% endblock %}

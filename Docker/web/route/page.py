@@ -4,6 +4,7 @@ from login import login_required, login_user, logout_user
 from extensions import query, html_escape
 from flask_wtf import RecaptchaField
 from passlib.hash import pbkdf2_sha256
+import reg
 
 app = Blueprint('Page', __name__)
 
@@ -90,4 +91,5 @@ def sensor_view():
     
 @app.route("/room_add")
 def room_add():
-	return render_template("room_add.html")
+	reg_building = reg.getAllBuilding()
+	return render_template("room_add.html",building=reg_building)

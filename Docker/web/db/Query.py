@@ -1,3 +1,4 @@
+import reg
 import json
 
 class Query:
@@ -271,3 +272,28 @@ class Query:
 		res.update(temp4[0])
 		self._CloseCursor(_cur)
 		return res
+
+	def auto_add_room(self,prefix,data):
+		_cur = self._newCursor()
+		building = reg.getAllBuilding()
+		building = list(filter(lambda x: x["prefix"].lower() == prefix.lower(), building))
+		if(building):
+			_cur.execute("""INSERT INTO building (bname, bprefix, burl) 
+				SELECT * FROM (SELECT %s AS bname, %s AS bprefix, %s AS burl) AS tmp 
+				WHERE NOT EXISTS ( SELECT bprefix FROM building WHERE bprefix = %s )""",(building[0]["name"],building[0]["prefix"],building[0]["url"],building[0]["prefix"]))
+			_cur.execute("SELECT bid FROM building WHERE bprefix = %s",(building[0]["prefix"],))
+			bid = _cur.fetchone()["bid"]
+			floor = list(set([x[1] for x in data]))
+			floor_id = {}
+			for i in floor:
+				_cur.execute("""INSERT INTO floor (fname, bid) 
+					SELECT * FROM (SELECT %s AS fname, %s AS bid) AS tmp 
+					WHERE NOT EXISTS ( SELECT fname, bid FROM floor WHERE fname = %s AND bid = %s)""",(i,bid,i,bid))
+				_cur.execute("SELECT fid FROM floor WHERE fname = %s AND bid = %s",(i,bid))
+				floor_id[i] = str(_cur.fetchone()["fid"])
+			for i in data:
+				_cur.execute("""INSERT INTO room (rname, fid ) 
+					SELECT * FROM (SELECT %s AS rname, %s AS fid ) AS tmp 
+					WHERE NOT EXISTS ( SELECT rname, fid  FROM room WHERE rname = %s AND fid = %s)""",(i[0],floor_id[i[1]],i[0],floor_id[i[1]]))
+		self._CloseCursor(_cur)
+

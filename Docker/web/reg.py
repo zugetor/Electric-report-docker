@@ -22,7 +22,7 @@ def getAllBuilding():
 			prefix = a.text
 			name = i.find_all("td")[2].text
 			href = url_nosub + a["href"] #Get href from a tag
-			res.append([prefix,name,href])
+			res.append({"prefix":prefix,"name":name,"url":href})
 	return res
 
 def getAllRoomList(url):
