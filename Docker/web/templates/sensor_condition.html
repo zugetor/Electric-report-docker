@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Energy Saving - Sensor Condition{% endblock %}
+{% block css %}.text-unset{text-align: unset !important;}{% endblock %}
 {% block content %}
           <!-- Page Heading -->
           <h1 class="h3 mb-2 text-gray-800">Condition Managemnet</h1>
@@ -12,14 +13,10 @@
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Room</th>
-            <th>Type</th>
-            <th>Time</th>
-            <th>Action</th>
+                      <th>Name</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
-                  
-                  
                 </table>
               </div>
             </div>
@@ -31,75 +28,30 @@
   var Table = $('#dataTable').DataTable();
   $('#content').on('click', "#new, button[name='edit']" ,async function () {
     Swal.fire({
-      width: '45rem',
+      width: '60rem',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Submit',
       title: 'Please specify conditions.',
-      html: '<table class="table">\
-        <thead>\
-          <tr>\
-            <th scope="col">Type</th>\
-            <th scope="col">Action</th>\
-          </tr>\
-        </thead>\
-        <tbody id="conLst">\
-          {% for i in _type %}\
-          <tr>\
-            <td>\
-              <div class="form-check">\
-                <input class="form-check-input" type="checkbox" value="" name="type{{i['tid']}}" data-type="" data-id="{{i['tid']}}">\
-                <label class="form-check-label" for="type{{i['tid']}}">{{i["tname"]}}</label>\
-              </div>\
-            </td>\
-            <td>\
-              <select class="form-control custom-select" name="type{{i['tid']}}" data-type="" data-id="{{i['tid']}}">\
-                <option value="1">ON</option>\
-                <option value="0">OFF</option>\
-              </select>\
-            </td>\
-          </tr>\
-          {% endfor %}\
-        </tbody>\
-      </table>\
-      <div class="form-group">\
-        <label for="roomlab">Room</label>\
-        <select class="form-control custom-select mb-1" id="roomlab">'+roomlist+'</select>\
-        <select class="form-control custom-select" id="roomSta">\
-          <option value="1">Inuse</option>\
-          <option value="0">Free</option>\
-        </select>\
-      </div>\
-        <div class="form-group">\
-        <label for="contime">Time</label>\
-        <input type="text" class="form-control" id="contime" value="" />\
-      </div>',
+      html: '<div id="alert-builder-plugins"></div>',
       focusConfirm: false,
+      customClass: {
+        content: 'text-unset text-white'
+      },
       preConfirm: () => {
-        let type_chk = []
-        $("input[data-type='']").each(function(idx,elem){
-          let type_ena = $(elem).prop("checked") ? 1 : 0
-          let type_id = $(elem).attr("data-id")
-          let type_state = $(`select[data-id='${type_id}']`).val()
-          type_chk.push([type_id,type_ena,type_state])
-        })
-        let room = $("#roomlab").val()
-        let sta_time = $('#contime').data('daterangepicker').startDate.format('HH:mm');
-        let sto_time = $('#contime').data('daterangepicker').endDate.format('HH:mm');
-        let room_sta = $("#roomSta").val()
+        var result = $('#alert-builder-plugins').queryBuilder('getRules');
+        if (result && !$.isEmptyObject(result)) {
+          alert(JSON.stringify(result, null, 2));
+        }else{
+          return false;
+        }
         if(this.id != "new"){
           let data = JSON.parse(decodeURIComponent($(this).attr("data")))
           $.ajax({
             url: "{{ url_for('Private.rule_edit') }}",
             method: "POST",
-            data: { type:  JSON.stringify(type_chk),
-                    id:data["ruid"],
-                    sta_time:sta_time,
-                    sto_time:sto_time,
-                    room:room,
-                    state:room_sta
-                  }
+            data: { }
           }).then(function(res){
             getRule()
             Swal.fire(
@@ -113,12 +65,7 @@
         $.ajax({
           url: "{{ url_for('Private.rule_add') }}",
           method: "POST",
-          data: { type:  JSON.stringify(type_chk),
-                  sta_time:sta_time,
-                  sto_time:sto_time,
-                  room:room,
-                  state:room_sta
-                }
+          data: { }
         }).then(function(res){
           getRule()
           Swal.fire(
@@ -132,29 +79,108 @@
         });
       }
     });
-    await $('#contime').daterangepicker({
-      timePicker: true,
-      timePicker24Hour: true,
-      timePickerIncrement: 1,
-      locale: {
-        format: 'HH:mm'
-      }
-    }).on('show.daterangepicker', function (ev, picker) {
-      picker.container.find(".calendar-table").hide();
+
+   // var rules_plugins = { };
+
+    $('#alert-builder-plugins').queryBuilder({
+      plugins: [
+        'sortable',
+        'filter-description',
+        'unique-filter',
+        'bt-tooltip-errors',
+        'bt-selectpicker',
+        'bt-checkbox'
+      ],
+      operators: [
+        { type: 'equal', optgroup: 'basic' },
+        { type: 'not_equal', optgroup: 'basic' },
+        { type: 'greater', optgroup: 'basic' },
+        { type: 'greater_or_equal', optgroup: 'basic' },
+        { type: 'less', optgroup: 'basic' },
+        { type: 'less_or_equal', optgroup: 'basic' },
+        { type: 'all_contain', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] },
+        { type: 'any_contain', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] }],
+      filters: [{
+        id: 'type',
+        label: 'Type',
+        type: 'string',
+        input: roomCheckBox,
+        description: 'This filter uses Awesome Bootstrap Checkboxes',
+        operators: ['all_contain', 'any_contain'],
+        validation: {
+          min: 1
+        }
+      },{
+        id: 'dow',
+        label: 'Day of Week',
+        type: 'integer',
+        input: 'checkbox',
+        values: [
+          'Sunday',
+          'Monday',
+          'Tuesday',
+          'Wednesday',
+          'Thursday',
+          'Friday',
+          'Saturday'
+        ],
+        validation: {
+          min: 1
+        },
+        description: 'This filter uses Awesome Bootstrap Checkboxes',
+        operators: ['any_contain'],
+      },{
+        id: 'room',
+        label: 'Room',
+        type: 'integer',
+        input: 'checkbox',
+        values: [
+          'IF-4C01',
+          'IF-4C02',
+          'IF-11M280'
+        ],
+        validation: {
+          min: 1
+        },
+        description: 'This filter uses Awesome Bootstrap Checkboxes',
+        operators: ['any_contain'],
+      },{
+        id: 'rate',
+        label: '24-hour clock',
+        type: 'integer',
+        validation: {
+          min: 1,
+          max: 24
+        },
+        plugin: 'slider',
+        plugin_config: {
+          min: 1,
+          max: 24,
+          value: 1
+        },
+        operators: ['equal','not_equal','greater', 'greater_or_equal','less', 'less_or_equal'],
+        valueSetter: function(rule, value) {
+          if (rule.operator.nb_inputs == 1) value = [value];
+          rule.$el.find('.rule-value-container input').each(function(i) {
+            $(this).slider('setValue', value[i] || 0);
+          });
+        },
+        valueGetter: function(rule) {
+          var value = [];
+          rule.$el.find('.rule-value-container input').each(function() {
+            value.push($(this).slider('getValue'));
+          });
+          return rule.operator.nb_inputs == 1 ? value[0] : value;
+        }
+      }],
+      isInline:false,
+      //rules: rules_plugins
+    }).on("afterUpdateRuleFilter.queryBuilder", function() {
+      $('.query-builder select').selectpicker();
     });
-    if(this.id != "new"){
-      let data = JSON.parse(decodeURIComponent($(this).attr("data")))
-      $("#roomlab").val(data["ro.rid"])
-      $("#roomSta").val(data["rstate"])  
-      $('#contime').data('daterangepicker').setStartDate(data["st_time"])
-      $('#contime').data('daterangepicker').setEndDate(data["end_time"])
-      data["type"].forEach(function(elem2){
-        let enabled = (elem2["enabled"] == 1 ? true : false)
-        $("input[data-id='"+elem2["tid"]+"'").prop("checked",enabled)
-        $("select[data-id='"+elem2["tid"]+"'").val(elem2["state"])
-      })
-    }
+
   });
+
   $('table').on('click', "button[name='del']" , function () {
     Swal.fire({
       title: 'Are you sure?',
@@ -163,7 +189,7 @@
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes'
+      confirmButtonText: 'Yes',
     }).then((result) => {
       if (result.value) {
         $.ajax({
@@ -233,5 +259,31 @@ $( document ).ready(function() {
   });
   getRule()
 })
+
+let vaildLen = function(value,rule){
+  return value.length > 0
+}
+
+let roomCheckBox = function(){
+  return '<div class="form-row ml-2 mt-1">\
+            <div class="custom-control custom-checkbox custom-control-inline mt-2">\
+              <input type="checkbox" name="" id="test" value="0" class="custom-control-input">\
+              <label for="test" class="custom-control-label">Electric</label>\
+            </div>\
+            <div class="col">\
+              <select class="form-control"><option>ON</option><option>OFF</option></select>\
+            </div>\
+          </div>\
+          <div class="form-row ml-2 mt-1">\
+            <div class="custom-control custom-checkbox custom-control-inline mt-2">\
+              <input type="checkbox" name="" id="test2" value="0" class="custom-control-input">\
+              <label for="test2" class="custom-control-label">Motion</label>\
+            </div>\
+            <div class="col">\
+              <select class="form-control"><option>ON</option><option>OFF</option></select>\
+            </div>\
+          </div>'
+};
+
 </script>
 {% endblock %}
