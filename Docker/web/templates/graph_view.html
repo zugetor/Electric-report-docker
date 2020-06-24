@@ -2,1053 +2,1171 @@
 {% block title %}Energy Saving - Charts{% endblock %}
 {% block content %}
 <h1 class="h3 mb-2 text-gray-800">Dashboard</h1>
-<form>
-	<div class="form-row">
-		<div class="col-md mb-3">
-			<label for="validationServer01">Sensor Name</label>
-			<input type="text" class="form-control " id="validationServer01"
-									placeholder="Search...">
-			</div>
-		</div>
-		<div class="form-row">
-			<div class="col-md-6 mb-3">
-				<label for="validationServer04">Building</label>
-				<select class="custom-select" id="validationServer04">
-					<option selected value="">all</option>
-					<option>Informatics Building</option>
-					<option>BUU Library</option>
-					<option>BUUIC</option>
-					<option>HU-SO</option>
-				</select>
-			</div>
-			<div class="col-md-3 mb-3">
-				<label for="validationServer04">Floor</label>
-				<select class="custom-select" id="validationServer04">
-					<option selected value="">all</option>
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option>5</option>
-					<option>6</option>
-					<option>7</option>
-					<option>8</option>
-					<option>9</option>
-					<option>10</option>
-					<option>11</option>
-					<option>12</option>
-				</select>
-			</div>
-			<div class="col-md-3 mb-3">
-				<label for="validationServer05">Room</label>
-				<select class="custom-select" id="validationServer04">
-					<option selected value="">all</option>
-					<option>Room1</option>
-					<option>Room2</option>
-					<option>Room3</option>
-					<option>Room4</option>
-					<option>Room5</option>
-					<option>Room6</option>
-					<option>Room7</option>
-					<option>Room8</option>
-					<option>Room9</option>
-					<option>Room10</option>
-				</select>
-			</div>
-							Sensor Type :
-						
-		</div>
-		<div class="form-row">
-			<div class="col-md-1 mb-3">
-				<div class="custom-control custom-checkbox">
-					<input type="checkbox" class="custom-control-input" id="customCheck1" checked>
-						<label class="custom-control-label" for="customCheck1"> Light </label>
-					</div>
-				</div>
-				<div class="col-md-1 mb-3">
-					<div class="custom-control custom-checkbox">
-						<input type="checkbox" class="custom-control-input" id="customCheck2" checked>
-							<label class="custom-control-label" for="customCheck2"> Electricity </label>
-						</div>
-					</div>
-					<div class="col-md-2 mb-3">
-						<div class="custom-control custom-checkbox">
-							<input type="checkbox" class="custom-control-input" id="customCheck3" checked>
-								<label class="custom-control-label" for="customCheck3"> Air Conditioner </label>
-							</div>
+<div class="row">
+	<div class="col">
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<form id="searchForm">
+					<div class="form-row">
+						<div class="col-md mb-3">
+							<label for="sName">Sensor Name</label>
+							<input type="text" class="form-control " id="sName" placeholder="Search...">
 						</div>
 					</div>
 					<div class="form-row">
-						<div class="col-md-8 mb-3">
-							<button class="btn btn-primary" type="button" id="search">search</button>
-							<button class="btn btn-primary" type="button" id="add">Add to Dashboard</button>
+						<div class="col-md-6 mb-3">
+							<label for="building">Building</label>
+							<select class="custom-select" id="building">
+								<option selected value="">All</option>
+
+							</select>
+
+						</div>
+						<div class="col-md-3 mb-3">
+							<label for="floor">Floor</label>
+							<select class="custom-select" id="floor">
+								<option selected value="">All</option>
+
+							</select>
+						</div>
+						<div class="col-md-3 mb-3">
+							<label for="room">Room</label>
+							<select class="custom-select" id="room">
+								<option selected value="">All</option>
+
+							</select>
+						</div>
+						Sensor Type :
+					</div>
+					<div class="form-row">
+						<!-- {% for i in _type %}
+		<div class="col-md-1 mb-3">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="custom-control-input" id="type{{i['tid']}}" data-type="" checked
+					value="{{i['tname']}}">
+				<label class="custom-control-label" for="type{{i['tid']}}">{{i["tname"]}}</label>
+			</div>
+		</div>
+		{% endfor %} -->
+						<div class="col-md-2 mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
+									value="Light" name="typeFilter">
+								<label class="custom-control-label" for="Light">Light</label>
+							</div>
+						</div>
+						<div class="col-md-2 mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Electricity" data-type=""
+									checked value="Electricity" name="typeFilter">
+								<label class="custom-control-label" for="Electricity">Electricity</label>
+							</div>
+						</div>
+						<div class="col-md-2 mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Air Conditioner" data-type=""
+									checked value="Air Conditioner" name="typeFilter">
+								<label class="custom-control-label" for="Air Conditioner">Air Conditioner</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="col-md-8 mt-2">
+							<button class="btn btn-primary mr-3" type="button" id="search">Search</button>
+							<button class="btn btn-primary mr-3" type="button" id="addToDash">Add to Dashboard</button>
 						</div>
 					</div>
 				</form>
-				<br>
-					<div class="row">
-						<div class="col-2">
-							<button class="btn btn-success" type="button" id="Bcompare">Compare</button>
-							<button class="btn btn-danger" type="button" id="Bcombine">Combine</button>
-							<button class="btn btn-warning" type="button" id="Bseparate">Separate</button>
-						</div>
-						<div class="col-2">
-							<label>Time range:</label>
-							<input type="text" name="daterange" />
-						</div>
-						<div class="col-2">
-							<label>Chart type:</label>
-							<select id="type">
-								<option value="line">Line</option>
-								<option value="bar">Bar</option>
-							</select>
-							<select id="unit">
-								<option value="second">Second</option>
-								<option value="minute">Minute</option>
-								<option value="hour">Hour</option>
-								<option value="day" selected>Day</option>
-								<option value="month">Month</option>
-								<option value="year">Year</option>
-							</select>
-							<button id="update" class="btn btn-outline-primary">update</button>
-						</div>
-						<div class="col-2">
-							<button class="btn btn-outline-success" id="refresh">refresh</button>
-							<button class="btn btn-outline-danger" id="clear">clear</button>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="display compact" id="dashboard" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<th>type</th>
+								<th>name</th>
+								<th>action</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-2">
+		<button class="btn btn-success" type="button" id="Bcompare">Compare</button>
+		<button class="btn btn-danger" type="button" id="Bcombine">Combine</button>
+		<button class="btn btn-warning" type="button" id="Bseparate">Separate</button>
+	</div>
+	<div class="col-2">
+		<label>Time range:</label>
+		<input type="text" name="daterange" />
+	</div>
+	<div class="col-2">
+		<label>Chart type:</label>
+		<select id="type">
+			<option value="line">Line</option>
+			<option value="bar">Bar</option>
+		</select>
+		<select id="unit">
+			<option value="second">Second</option>
+			<option value="minute">Minute</option>
+			<option value="hour">Hour</option>
+			<option value="day" selected>Day</option>
+			<option value="month">Month</option>
+			<option value="year">Year</option>
+		</select>
+		<button id="update" class="btn btn-outline-primary">update</button>
+	</div>
+	<div class="col-2">
+		<button class="btn btn-outline-success" id="refresh">refresh</button>
+		<button class="btn btn-outline-danger" id="clear">clear</button>
+	</div>
+</div>
+<br>
+<!-- Content Row -->
+<br>
+<br>
+<center>
+	<div id="compare">
+		<div style="width:1000px">
+			<canvas id="chart1"></canvas>
+		</div>
+	</div>
+	<div id="combine">
+		<div class="row">
+			<!-- Earnings (Monthly) Card Example -->
+			<div class="col-xl-4 col-md-6 mb-4">
+				<div class="card border-left-info shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Watt</div>
+								<div class="row no-gutters align-items-center">
+									<div class="col-auto">
+										<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1.4 kWh</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-plug fa-2x text-gray-300"></i>
+							</div>
 						</div>
 					</div>
-					<br>
-						<!-- Content Row -->
-						<br>
-							<br>
-								<center>
-									<div id="compare">
-										<div style="width:1000px">
-											<canvas id="chart1"></canvas>
-										</div>
-									</div>
-									<div id="combine">
-										<div class="row">
-											<!-- Earnings (Monthly) Card Example -->
-											<div class="col-xl-4 col-md-6 mb-4">
-												<div class="card border-left-info shadow h-100 py-2">
-													<div class="card-body">
-														<div class="row no-gutters align-items-center">
-															<div class="col mr-2">
-																<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Watt</div>
-																<div class="row no-gutters align-items-center">
-																	<div class="col-auto">
-																		<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1.4 kWh</div>
-																	</div>
-																</div>
-															</div>
-															<div class="col-auto">
-																<i class="fas fa-plug fa-2x text-gray-300"></i>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-											<!-- Pending Requests Card Example -->
-											<div class="col-xl-4 col-md-6 mb-4">
-												<div class="card border-left-warning shadow h-100 py-2">
-													<div class="card-body">
-														<div class="row no-gutters align-items-center">
-															<div class="col mr-2">
-																<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Ampere</div>
-																<div class="h5 mb-0 font-weight-bold text-gray-800">5 A</div>
-															</div>
-															<div class="col-auto">
-																<i class="far fa-lightbulb fa-2x text-gray-300"></i>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-											<div class="col-xl-4 col-md-6 mb-4">
-												<div class="card border-left-danger shadow h-100 py-2">
-													<div class="card-body">
-														<div class="row no-gutters align-items-center">
-															<div class="col mr-2">
-																<div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Voltage</div>
-																<div class="h5 mb-0 font-weight-bold text-gray-800">220 V</div>
-															</div>
-															<div class="col-auto">
-																<i class="fas fa-wind fa-2x text-gray-300"></i>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-										<br>
-											<br>
-												<div style="width:1000px">
-													<canvas id="chart2"></canvas>
-												</div>
-											</div>
-											<div id="separate">
-												<div style="width:1000px">
-													<canvas id="chart3"></canvas>
-												</div>
-												<div style="width:1000px">
-													<canvas id="chart4"></canvas>
-												</div>
-												<div style="width:1000px">
-													<canvas id="chart5"></canvas>
-												</div>
-											</div>
-										</center>
-										<!-- /.container-fluid -->
-										<div id="compare">
-											<div style="width:1000px">
-												<canvas id="chart1"></canvas>
-											</div>
-										</div>
-										<div id="combine">
-											<div style="width:1000px">
-												<canvas id="chart2"></canvas>
-											</div>
-										</div>
-										<div id="separate">
-											<div style="width:1000px">
-												<canvas id="chart3"></canvas>
-											</div>
-											<div style="width:1000px">
-												<canvas id="chart4"></canvas>
-											</div>
-											<div style="width:1000px">
-												<canvas id="chart5"></canvas>
-											</div>
-										</div>
+				</div>
+			</div>
+			<!-- Pending Requests Card Example -->
+			<div class="col-xl-4 col-md-6 mb-4">
+				<div class="card border-left-warning shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Ampere</div>
+								<div class="h5 mb-0 font-weight-bold text-gray-800">5 A</div>
+							</div>
+							<div class="col-auto">
+								<i class="far fa-lightbulb fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-xl-4 col-md-6 mb-4">
+				<div class="card border-left-danger shadow h-100 py-2">
+					<div class="card-body">
+						<div class="row no-gutters align-items-center">
+							<div class="col mr-2">
+								<div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Voltage</div>
+								<div class="h5 mb-0 font-weight-bold text-gray-800">220 V</div>
+							</div>
+							<div class="col-auto">
+								<i class="fas fa-wind fa-2x text-gray-300"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<br>
+		<br>
+		<div style="width:1000px">
+			<canvas id="chart2"></canvas>
+		</div>
+	</div>
+	<div id="separate">
+		<div style="width:1000px">
+			<canvas id="chart3"></canvas>
+		</div>
+		<div style="width:1000px">
+			<canvas id="chart4"></canvas>
+		</div>
+		<div style="width:1000px">
+			<canvas id="chart5"></canvas>
+		</div>
+	</div>
+</center>
+<!-- /.container-fluid -->
+<div id="compare">
+	<div style="width:1000px">
+		<canvas id="chart1"></canvas>
+	</div>
+</div>
+<div id="combine">
+	<div style="width:1000px">
+		<canvas id="chart2"></canvas>
+	</div>
+</div>
+<div id="separate">
+	<div style="width:1000px">
+		<canvas id="chart3"></canvas>
+	</div>
+	<div style="width:1000px">
+		<canvas id="chart4"></canvas>
+	</div>
+	<div style="width:1000px">
+		<canvas id="chart5"></canvas>
+	</div>
+</div>
 {% endblock %}
 {% block js %}
 <script>
-			$(function () {
-				$('input[name="daterange"]').daterangepicker({
-					timePicker: true,
-					startDate: moment().startOf('hour'),
-					endDate: moment().startOf('hour').add(32, 'hour'),
-					locale: {
-						format: 'M/DD hh:mm A'
-					}
-				});
-			});
+	var getRoomData = function () {
+		$.ajax({
+			type: 'GET',
+			url: '{{ url_for("Private.all_room_list") }}',
+			dataType: 'json',
+			success: function (roomData) {
+				let building = $('#building');
+				let floor = $('#floor');
+				let room = $('#room');
+				$.each(roomData, function (key, entry) {
+					building.append($('<option></option>').attr('value', entry.bid).text(entry
+						.bname));
+				})
 
-			$("#compare").hide();
-			$("#combine").hide();
-			$("#separate").hide();
-
-			$("#Bcompare").click(function () {
-				$("#compare").show();
-				$("#combine").hide();
-				$("#separate").hide();
-			});
-			$("#Bcombine").click(function () {
-				$("#combine").show();
-				$("#compare").hide();
-				$("#separate").hide();
-			});
-			$("#Bseparate").click(function () {
-				$("#separate").show();
-				$("#combine").hide();
-				$("#compare").hide();
-			});
-
-			$("#search").click(function () {
-				Swal.fire({
-					width: '45rem',
-					title: 'Please select sensor to add to dashboard',
-					html: '<table class="table">\
-						<thead class="thead-dark">\
-							<tr>\
-								<th scope="col">#</th>\
-								<th scope="col">Sensor Name</th>\
-								<th scope="col">Room</th>\
-								<th scope="col">Floor</th>\
-								<th scope="col">Building</th>\
-								<th scope="col">Type</th>\
-								<th scope="col">Action</th>\
-							</tr>\
-						</thead>\
-						<tbody id="conLst">\
-							<tr>\
-								<th scope="row">1</th>\
-								<td>Air Conditioner 1 - IF4C01</td>\
-								<td>\
-									IF4C01\
-								</td>\
-								<td>\
-									4\
-								</td>\
-								<td>\
-								Informatics Building\
-								</td>\
-								<td>\
-									Air Conditioner\
-									</td>\
-								<td>\
-									<div class="form-check">\
-	  <label class="form-check-label">\
-		<input type="checkbox" class="form-check-input" value="">\
-	  </label>\
-	</div>\
-								</td>\
-							</tr>\
-							<tr>\
-								<th scope="row">5</th>\
-								<td>Air Conditioner 2 - IF4C01</td>\
-								<td>\
-									IF4C01\
-								</td>\
-								<td>\
-									4\
-								</td>\
-								<td>\
-								Informatics Building\
-								</td>\
-								<td>\
-									Air Conditioner\
-									</td>\
-									<td>\
-										<div class="form-check">\
-	  <label class="form-check-label">\
-		<input type="checkbox" class="form-check-input" value="">\
-	  </label>\
-	</div>\
-								</td>\
-							</tr>\
-							<tr>\
-								<th scope="row">11</th>\
-								<td>Light 1 - IF4C01</td>\
-								<td>\
-									IF4C01\
-								</td>\
-								<td>\
-									4\
-								</td>\
-								<td>\
-								Informatics Building\
-								</td>\
-								<td>\
-									Light\
-									</td>\
-								<td>\
-									<div class="form-check">\
-	  <label class="form-check-label">\
-		<input type="checkbox" class="form-check-input" value="">\
-	  </label>\
-	</div>\
-								</td>\
-							</tr>\
-						</tbody>\
-					</table>',
-					focusConfirm: false
-				});
-			});
-
-			function generateData() {
-				var unit = document.getElementById('unit').value;
-
-				function unitLessThanDay() {
-					return unit === 'second' || unit === 'minute' || unit === 'hour';
-				}
-
-				function beforeNineThirty(date) {
-					return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
-				}
-
-				// Returns true if outside 9:30am-4pm on a weekday
-				function outsideMarketHours(date) {
-					if (date.isoWeekday() > 5) {
-						return true;
-					}
-					if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
-						return true;
-					}
-					return false;
-				}
-
-				function randomNumber(min, max) {
-					return Math.random() * (max - min) + min;
-				}
-
-				function randomBar(date, lastClose) {
-					var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
-					var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
-					return {
-						t: date.valueOf(),
-						y: close
-					};
-				}
-
-				var date = moment('Jan 01 1990', 'MMM DD YYYY');
-				var now = moment();
-				var data = [];
-				var lessThanDay = unitLessThanDay();
-				for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
-					if (outsideMarketHours(date)) {
-						if (!lessThanDay || !beforeNineThirty(date)) {
-							date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
+				$(building).change(function () {
+					floor.empty();
+					floor.append('<option selected value="">All</option>');
+					floor.prop('selectedIndex', 0);
+					room.empty();
+					room.append('<option selected value="">All</option>');
+					room.prop('selectedIndex', 0);
+					$.each(roomData, function (key, entry) {
+						if (entry.bid == building.val()) {
+							$.each(entry.floor, function (key, entry2) {
+								floor.append($('<option></option>').attr('value',
+									entry2.fid).text(entry2.fname));
+							})
 						}
-						if (lessThanDay) {
-							date = date.hour(9).minute(30).second(0);
-						}
-					}
-					data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
-				}
+					})
+				});
 
-				return data;
+				$(floor).change(function () {
+					room.empty();
+					room.append('<option selected value="">All</option>');
+					room.prop('selectedIndex', 0);
+					$.each(roomData, function (key, entry) {
+						if (entry.bid == building.val()) {
+							$.each(entry.floor, function (key, entry2) {
+								if (entry2.fid == floor.val()) {
+									$.each(entry2.room, function (key, entry3) {
+										room.append($('<option></option>')
+											.attr('value', entry3.rid)
+											.text(entry3
+												.rname));
+									})
+								}
+							})
+						}
+					})
+				});
+
 			}
+		});
+	}
 
-			var ctx1 = document.getElementById('chart1').getContext('2d');
-			ctx1.canvas.width = 1000;
-			ctx1.canvas.height = 300;
+	getRoomData();
 
-			var color = Chart.helpers.color;
-			var cfg1 = {
-				data: {
-					datasets: [{
-							label: 'IF - 4C01',
-							backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.red,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						},
-						{
-							label: 'IF - 4C02',
-							backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.blue,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						},
-						{
-							label: 'IF - 4C03',
-							backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.green,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						}
-					]
-				},
-				options: {
-					animation: {
-						duration: 0
-					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							distribution: 'series',
-							offset: true,
-							gridLines: {
-								display: false,
-								drawBorder: false
-							},
-							ticks: {
-								major: {
-									enabled: true,
-									fontStyle: 'bold'
-								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 75,
-								maxRotation: 0,
-								sampleSize: 100
-							},
-							afterBuildTicks: function (scale, ticks) {
-								var majorUnit = scale._majorUnit;
-								var firstTick = ticks[0];
-								var i, ilen, val, tick, currMajor, lastMajor;
+	var dashboardArray = [];
+	var typeFilter = "Light|Electricity|Air Conditioner";
+	$('input:checkbox').on('change', function () {
+		typeFilter = $('input:checkbox[name="typeFilter"]:checked').map(
+			function () {
+				return this.value;
+			}).get().join('|');
 
-								val = moment(ticks[0].value);
-								if ((majorUnit === 'minute' && val.second() === 0) ||
-									(majorUnit === 'hour' && val.minute() === 0) ||
-									(majorUnit === 'day' && val.hour() === 9) ||
-									(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-									(majorUnit === 'year' && val.month() === 0)) {
-									firstTick.major = true;
-								} else {
-									firstTick.major = false;
-								}
-								lastMajor = val.get(majorUnit);
+	});
+	var dashboard = $('#dashboard').DataTable();
+	var updateDashboard = function () {
+		dashboard.destroy();
+		dashboard = $('#dashboard').DataTable({
+			data: dashboardArray,
+			columns: [{
+				data: 'type'
+			}, {
+				data: 'name'
+			}],
+			pageLength: 5,
+			lengthMenu: [
+				[5, 10, 20],
+				[5, 10, 20]
+			]
+		});
+	}
+	updateDashboard();
 
-								for (i = 1, ilen = ticks.length; i < ilen; i++) {
-									tick = ticks[i];
-									val = moment(tick.value);
-									currMajor = val.get(majorUnit);
-									tick.major = currMajor !== lastMajor;
-									lastMajor = currMajor;
-								}
-								return ticks;
-							}
-						}],
-						yAxes: [{
-							gridLines: {
-								color: "rgb(234, 236, 244)",
-								zeroLineColor: "rgb(234, 236, 244)",
-								drawBorder: false,
-								borderDash: [2],
-								zeroLineBorderDash: [2]
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Watt'
-							}
-						}]
-					},
-					pan: {
-						enabled: true,
-						mode: "x",
-						speed: 100,
-						threshold: 100
-					},
-					zoom: {
-						enabled: true,
-						drag: false,
-						mode: "x",
-					},
-					tooltips: {
-						intersect: false,
-						mode: 'index',
-						callbacks: {
-							label: function (tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
-						}
-					}
+	$("#addToDash").click(function () {
+		if ($('#building').val() != "") {
+			if ($('#floor').val() != "") {
+				if ($('#room').val() != "") {
+					dashboardArray.push({
+						'type': 'room',
+						'id': $('#room').val(),
+						'name': $("#room option:selected").html()
+					});
+				} else {
+					dashboardArray.push({
+						'type': 'floor',
+						'id': $('#floor').val(),
+						'name': $("#floor option:selected").html()
+					});
 				}
-			};
+			} else {
+				dashboardArray.push({
+					'type': 'building',
+					'id': $('#building').val(),
+					'name': $("#building option:selected").html()
+				});
+			}
+		} else {
+			Swal.fire(
+				'Cannot add to Dashboard',
+				'Please select at least 1 item to add',
+				'warning'
+			)
+		}
+		updateDashboard();
+	});
 
-			var ctx2 = document.getElementById('chart2').getContext('2d');
-			ctx2.canvas.width = 1000;
-			ctx2.canvas.height = 300;
+	$("#compare").hide();
+	$("#combine").hide();
+	$("#separate").hide();
 
-			var color = Chart.helpers.color;
-			var cfg2 = {
-				data: {
-					datasets: [{
-						label: 'IF - 4C01 & IF - 4C02 & IF - 4C03',
-						backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
-						borderColor: window.chartColors.yellow,
-						data: generateData(),
-						type: 'line',
-						pointRadius: 0,
-						fill: false,
-						lineTension: 0,
-						borderWidth: 2
+	$("#Bcompare").click(function () {
+		$("#compare").show();
+		$("#combine").hide();
+		$("#separate").hide();
+	});
+	$("#Bcombine").click(function () {
+		$("#combine").show();
+		$("#compare").hide();
+		$("#separate").hide();
+	});
+	$("#Bseparate").click(function () {
+		$("#separate").show();
+		$("#combine").hide();
+		$("#compare").hide();
+	});
+
+	$("#search").click(function () {
+		Swal.fire({
+			width: '60rem',
+			title: 'Please select sensor to add to dashboard',
+			html: '<div class="card shadow mb-4">\
+    <div class="card-body">\
+        <div class="table-responsive">\
+            <table class="table table-bordered" id="sensor_list" width="100%" cellspacing="0">\
+                <thead>\
+                    <tr>\
+                        <th>#</th>\
+                        <th>Sensor Name</th>\
+                        <th>Room</th>\
+                        <th>Floor</th>\
+                        <th>Building</th>\
+                        <th>Type</th>\
+                    </tr>\
+                </thead>\
+                <tbody>\
+                </tbody>\
+            </table>\
+        </div>\
+    </div>\
+</div>',
+			focusConfirm: false,
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Select',
+			onBeforeOpen: function () {
+				sensors = $('#sensor_list').DataTable({
+					ajax: {
+						"url": "{{ url_for('Private.sensor_list') }}",
+						"type": "GET",
+						"dataSrc": "",
+					},
+					columns: [{
+						data: 'sid'
+					}, {
+						data: 'sname'
+					}, {
+						data: 'rname'
+					}, {
+						data: 'fname'
+					}, {
+						data: 'bname'
+					}, {
+						data: 'tname'
 					}]
+				});
+
+				sensors.columns(1).search($('#sName').val()).draw();
+
+				if ($('#building').val() != "") {
+					sensors.columns(4).search($("#building option:selected").html()).draw();
+				}
+				if ($('#floor').val() != "") {
+					sensors.columns(3).search($("#floor option:selected").html()).draw();
+				}
+				if ($('#room').val() != "") {
+					sensors.columns(2).search($("#room option:selected").html()).draw();
+				}
+
+				sensors.column(5).search(typeFilter, true, false, false).draw(false);
+
+				$('#sensor_list tbody').on('click', 'tr', function () {
+					$(this).toggleClass('selected');
+				});
+
+			},
+			preConfirm: () => {
+				data = sensors.rows('.selected').data();
+				$.each(data, function (index, value) {
+					dashboardArray.push({
+						'type': 'sensor',
+						'id': value.sid,
+						'name': value.sname
+					});
+				});
+				$.each(dashboardArray, function (index, value) {
+					console.log(value);
+				});
+				updateDashboard();
+			}
+		});
+	});
+
+	function generateData() {
+		var unit = document.getElementById('unit').value;
+
+		function unitLessThanDay() {
+			return unit === 'second' || unit === 'minute' || unit === 'hour';
+		}
+
+		function beforeNineThirty(date) {
+			return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
+		}
+
+		// Returns true if outside 9:30am-4pm on a weekday
+		function outsideMarketHours(date) {
+			if (date.isoWeekday() > 5) {
+				return true;
+			}
+			if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
+				return true;
+			}
+			return false;
+		}
+
+		function randomNumber(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+
+		function randomBar(date, lastClose) {
+			var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
+			var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
+			return {
+				t: date.valueOf(),
+				y: close
+			};
+		}
+
+		var date = moment('Jan 01 1990', 'MMM DD YYYY');
+		var now = moment();
+		var data = [];
+		var lessThanDay = unitLessThanDay();
+		for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
+			if (outsideMarketHours(date)) {
+				if (!lessThanDay || !beforeNineThirty(date)) {
+					date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
+				}
+				if (lessThanDay) {
+					date = date.hour(9).minute(30).second(0);
+				}
+			}
+			data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
+		}
+
+		return data;
+	}
+
+	var ctx1 = document.getElementById('chart1').getContext('2d');
+	ctx1.canvas.width = 1000;
+	ctx1.canvas.height = 300;
+
+	var color = Chart.helpers.color;
+	var cfg1 = {
+		data: {
+			datasets: [{
+					label: 'IF - 4C01',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
 				},
-				options: {
-					animation: {
-						duration: 0
+				{
+					label: 'IF - 4C02',
+					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.blue,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				},
+				{
+					label: 'IF - 4C03',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
+		},
+		options: {
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					gridLines: {
+						display: false,
+						drawBorder: false
 					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							distribution: 'series',
-							offset: true,
-							ticks: {
-								major: {
-									enabled: true,
-									fontStyle: 'bold'
-								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 75,
-								maxRotation: 0,
-								sampleSize: 100
-							},
-							afterBuildTicks: function (scale, ticks) {
-								var majorUnit = scale._majorUnit;
-								var firstTick = ticks[0];
-								var i, ilen, val, tick, currMajor, lastMajor;
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
+						},
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
+					},
+					afterBuildTicks: function (scale, ticks) {
+						var majorUnit = scale._majorUnit;
+						var firstTick = ticks[0];
+						var i, ilen, val, tick, currMajor, lastMajor;
 
-								val = moment(ticks[0].value);
-								if ((majorUnit === 'minute' && val.second() === 0) ||
-									(majorUnit === 'hour' && val.minute() === 0) ||
-									(majorUnit === 'day' && val.hour() === 9) ||
-									(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-									(majorUnit === 'year' && val.month() === 0)) {
-									firstTick.major = true;
-								} else {
-									firstTick.major = false;
-								}
-								lastMajor = val.get(majorUnit);
-
-								for (i = 1, ilen = ticks.length; i < ilen; i++) {
-									tick = ticks[i];
-									val = moment(tick.value);
-									currMajor = val.get(majorUnit);
-									tick.major = currMajor !== lastMajor;
-									lastMajor = currMajor;
-								}
-								return ticks;
-							}
-						}],
-						yAxes: [{
-							gridLines: {
-								drawBorder: false
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Closing price ($)'
-							}
-						}]
-					},
-					pan: {
-						enabled: true,
-						mode: "x",
-						speed: 100,
-						threshold: 100
-					},
-					zoom: {
-						enabled: true,
-						drag: false,
-						mode: "x",
-					},
-					tooltips: {
-						intersect: false,
-						mode: 'index',
-						callbacks: {
-							label: function (tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
+						val = moment(ticks[0].value);
+						if ((majorUnit === 'minute' && val.second() === 0) ||
+							(majorUnit === 'hour' && val.minute() === 0) ||
+							(majorUnit === 'day' && val.hour() === 9) ||
+							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+							(majorUnit === 'year' && val.month() === 0)) {
+							firstTick.major = true;
+						} else {
+							firstTick.major = false;
 						}
+						lastMajor = val.get(majorUnit);
+
+						for (i = 1, ilen = ticks.length; i < ilen; i++) {
+							tick = ticks[i];
+							val = moment(tick.value);
+							currMajor = val.get(majorUnit);
+							tick.major = currMajor !== lastMajor;
+							lastMajor = currMajor;
+						}
+						return ticks;
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						color: "rgb(234, 236, 244)",
+						zeroLineColor: "rgb(234, 236, 244)",
+						drawBorder: false,
+						borderDash: [2],
+						zeroLineBorderDash: [2]
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Watt'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "x",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "x",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
 					}
 				}
-			};
+			}
+		}
+	};
 
-			var ctx3 = document.getElementById('chart3').getContext('2d');
-			ctx3.canvas.width = 1000;
-			ctx3.canvas.height = 300;
+	var ctx2 = document.getElementById('chart2').getContext('2d');
+	ctx2.canvas.width = 1000;
+	ctx2.canvas.height = 300;
 
-			var color = Chart.helpers.color;
-			var cfg3 = {
-				data: {
-					datasets: [{
-							label: 'IF - 4C01 | Light',
-							backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.red,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
+	var color = Chart.helpers.color;
+	var cfg2 = {
+		data: {
+			datasets: [{
+				label: 'IF - 4C01 & IF - 4C02 & IF - 4C03',
+				backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
+				borderColor: window.chartColors.yellow,
+				data: generateData(),
+				type: 'line',
+				pointRadius: 0,
+				fill: false,
+				lineTension: 0,
+				borderWidth: 2
+			}]
+		},
+		options: {
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
 						},
-						{
-							label: 'IF - 4C01 | Electricity',
-							backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.green,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						},
-						{
-							label: 'IF - 4C01 | Air Conditioner',
-							backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.blue,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						}
-					]
-				},
-				options: {
-					animation: {
-						duration: 0
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
 					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							distribution: 'series',
-							offset: true,
-							ticks: {
-								major: {
-									enabled: true,
-									fontStyle: 'bold'
-								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 75,
-								maxRotation: 0,
-								sampleSize: 100
-							},
-							afterBuildTicks: function (scale, ticks) {
-								var majorUnit = scale._majorUnit;
-								var firstTick = ticks[0];
-								var i, ilen, val, tick, currMajor, lastMajor;
+					afterBuildTicks: function (scale, ticks) {
+						var majorUnit = scale._majorUnit;
+						var firstTick = ticks[0];
+						var i, ilen, val, tick, currMajor, lastMajor;
 
-								val = moment(ticks[0].value);
-								if ((majorUnit === 'minute' && val.second() === 0) ||
-									(majorUnit === 'hour' && val.minute() === 0) ||
-									(majorUnit === 'day' && val.hour() === 9) ||
-									(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-									(majorUnit === 'year' && val.month() === 0)) {
-									firstTick.major = true;
-								} else {
-									firstTick.major = false;
-								}
-								lastMajor = val.get(majorUnit);
-
-								for (i = 1, ilen = ticks.length; i < ilen; i++) {
-									tick = ticks[i];
-									val = moment(tick.value);
-									currMajor = val.get(majorUnit);
-									tick.major = currMajor !== lastMajor;
-									lastMajor = currMajor;
-								}
-								return ticks;
-							}
-						}],
-						yAxes: [{
-							gridLines: {
-								drawBorder: false
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Closing price ($)'
-							}
-						}]
-					},
-					pan: {
-						enabled: true,
-						mode: "x",
-						speed: 100,
-						threshold: 100
-					},
-					zoom: {
-						enabled: true,
-						drag: false,
-						mode: "x",
-					},
-					tooltips: {
-						intersect: false,
-						mode: 'index',
-						callbacks: {
-							label: function (tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
+						val = moment(ticks[0].value);
+						if ((majorUnit === 'minute' && val.second() === 0) ||
+							(majorUnit === 'hour' && val.minute() === 0) ||
+							(majorUnit === 'day' && val.hour() === 9) ||
+							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+							(majorUnit === 'year' && val.month() === 0)) {
+							firstTick.major = true;
+						} else {
+							firstTick.major = false;
 						}
+						lastMajor = val.get(majorUnit);
+
+						for (i = 1, ilen = ticks.length; i < ilen; i++) {
+							tick = ticks[i];
+							val = moment(tick.value);
+							currMajor = val.get(majorUnit);
+							tick.major = currMajor !== lastMajor;
+							lastMajor = currMajor;
+						}
+						return ticks;
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						drawBorder: false
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Closing price ($)'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "x",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "x",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
 					}
 				}
-			};
+			}
+		}
+	};
 
-			var ctx4 = document.getElementById('chart4').getContext('2d');
-			ctx4.canvas.width = 1000;
-			ctx4.canvas.height = 300;
+	var ctx3 = document.getElementById('chart3').getContext('2d');
+	ctx3.canvas.width = 1000;
+	ctx3.canvas.height = 300;
 
-			var color = Chart.helpers.color;
-			var cfg4 = {
-				data: {
-					datasets: [{
-							label: 'IF - 4C02 - Light1',
-							backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.red,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						},
-						{
-							label: 'IF - 4C02 | Light2',
-							backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.green,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						}
-					]
+	var color = Chart.helpers.color;
+	var cfg3 = {
+		data: {
+			datasets: [{
+					label: 'IF - 4C01 | Light',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
 				},
-				options: {
-					animation: {
-						duration: 0
+				{
+					label: 'IF - 4C01 | Electricity',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				},
+				{
+					label: 'IF - 4C01 | Air Conditioner',
+					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.blue,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
+		},
+		options: {
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
+						},
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
 					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							distribution: 'series',
-							offset: true,
-							ticks: {
-								major: {
-									enabled: true,
-									fontStyle: 'bold'
-								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 75,
-								maxRotation: 0,
-								sampleSize: 100
-							},
-							afterBuildTicks: function (scale, ticks) {
-								var majorUnit = scale._majorUnit;
-								var firstTick = ticks[0];
-								var i, ilen, val, tick, currMajor, lastMajor;
+					afterBuildTicks: function (scale, ticks) {
+						var majorUnit = scale._majorUnit;
+						var firstTick = ticks[0];
+						var i, ilen, val, tick, currMajor, lastMajor;
 
-								val = moment(ticks[0].value);
-								if ((majorUnit === 'minute' && val.second() === 0) ||
-									(majorUnit === 'hour' && val.minute() === 0) ||
-									(majorUnit === 'day' && val.hour() === 9) ||
-									(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-									(majorUnit === 'year' && val.month() === 0)) {
-									firstTick.major = true;
-								} else {
-									firstTick.major = false;
-								}
-								lastMajor = val.get(majorUnit);
-
-								for (i = 1, ilen = ticks.length; i < ilen; i++) {
-									tick = ticks[i];
-									val = moment(tick.value);
-									currMajor = val.get(majorUnit);
-									tick.major = currMajor !== lastMajor;
-									lastMajor = currMajor;
-								}
-								return ticks;
-							}
-						}],
-						yAxes: [{
-							gridLines: {
-								drawBorder: false
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Closing price ($)'
-							}
-						}]
-					},
-					pan: {
-						enabled: true,
-						mode: "x",
-						speed: 100,
-						threshold: 100
-					},
-					zoom: {
-						enabled: true,
-						drag: false,
-						mode: "x",
-					},
-					tooltips: {
-						intersect: false,
-						mode: 'index',
-						callbacks: {
-							label: function (tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
+						val = moment(ticks[0].value);
+						if ((majorUnit === 'minute' && val.second() === 0) ||
+							(majorUnit === 'hour' && val.minute() === 0) ||
+							(majorUnit === 'day' && val.hour() === 9) ||
+							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+							(majorUnit === 'year' && val.month() === 0)) {
+							firstTick.major = true;
+						} else {
+							firstTick.major = false;
 						}
+						lastMajor = val.get(majorUnit);
+
+						for (i = 1, ilen = ticks.length; i < ilen; i++) {
+							tick = ticks[i];
+							val = moment(tick.value);
+							currMajor = val.get(majorUnit);
+							tick.major = currMajor !== lastMajor;
+							lastMajor = currMajor;
+						}
+						return ticks;
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						drawBorder: false
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Closing price ($)'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "x",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "x",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
 					}
 				}
-			};
+			}
+		}
+	};
 
-			var ctx5 = document.getElementById('chart5').getContext('2d');
-			ctx5.canvas.width = 1000;
-			ctx5.canvas.height = 300;
+	var ctx4 = document.getElementById('chart4').getContext('2d');
+	ctx4.canvas.width = 1000;
+	ctx4.canvas.height = 300;
 
-			var color = Chart.helpers.color;
-			var cfg5 = {
-				data: {
-					datasets: [{
-							label: 'IF - 4C03 | Light',
-							backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.red,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						},
-						{
-							label: 'IF - 4C03 | Electricity',
-							backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-							borderColor: window.chartColors.green,
-							data: generateData(),
-							type: 'line',
-							pointRadius: 0,
-							fill: false,
-							lineTension: 0,
-							borderWidth: 2
-						}
-					]
+	var color = Chart.helpers.color;
+	var cfg4 = {
+		data: {
+			datasets: [{
+					label: 'IF - 4C02 - Light1',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
 				},
-				options: {
-					animation: {
-						duration: 0
+				{
+					label: 'IF - 4C02 | Light2',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
+		},
+		options: {
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
+						},
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
 					},
-					scales: {
-						xAxes: [{
-							type: 'time',
-							distribution: 'series',
-							offset: true,
-							ticks: {
-								major: {
-									enabled: true,
-									fontStyle: 'bold'
-								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 75,
-								maxRotation: 0,
-								sampleSize: 100
-							},
-							afterBuildTicks: function (scale, ticks) {
-								var majorUnit = scale._majorUnit;
-								var firstTick = ticks[0];
-								var i, ilen, val, tick, currMajor, lastMajor;
+					afterBuildTicks: function (scale, ticks) {
+						var majorUnit = scale._majorUnit;
+						var firstTick = ticks[0];
+						var i, ilen, val, tick, currMajor, lastMajor;
 
-								val = moment(ticks[0].value);
-								if ((majorUnit === 'minute' && val.second() === 0) ||
-									(majorUnit === 'hour' && val.minute() === 0) ||
-									(majorUnit === 'day' && val.hour() === 9) ||
-									(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-									(majorUnit === 'year' && val.month() === 0)) {
-									firstTick.major = true;
-								} else {
-									firstTick.major = false;
-								}
-								lastMajor = val.get(majorUnit);
-
-								for (i = 1, ilen = ticks.length; i < ilen; i++) {
-									tick = ticks[i];
-									val = moment(tick.value);
-									currMajor = val.get(majorUnit);
-									tick.major = currMajor !== lastMajor;
-									lastMajor = currMajor;
-								}
-								return ticks;
-							}
-						}],
-						yAxes: [{
-							gridLines: {
-								drawBorder: false
-							},
-							scaleLabel: {
-								display: true,
-								labelString: 'Closing price ($)'
-							}
-						}]
-					},
-					pan: {
-						enabled: true,
-						mode: "x",
-						speed: 100,
-						threshold: 100
-					},
-					zoom: {
-						enabled: true,
-						drag: false,
-						mode: "x",
-					},
-					tooltips: {
-						intersect: false,
-						mode: 'index',
-						callbacks: {
-							label: function (tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
+						val = moment(ticks[0].value);
+						if ((majorUnit === 'minute' && val.second() === 0) ||
+							(majorUnit === 'hour' && val.minute() === 0) ||
+							(majorUnit === 'day' && val.hour() === 9) ||
+							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+							(majorUnit === 'year' && val.month() === 0)) {
+							firstTick.major = true;
+						} else {
+							firstTick.major = false;
 						}
+						lastMajor = val.get(majorUnit);
+
+						for (i = 1, ilen = ticks.length; i < ilen; i++) {
+							tick = ticks[i];
+							val = moment(tick.value);
+							currMajor = val.get(majorUnit);
+							tick.major = currMajor !== lastMajor;
+							lastMajor = currMajor;
+						}
+						return ticks;
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						drawBorder: false
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Closing price ($)'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "x",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "x",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
 					}
 				}
-			};
-			var chart1 = new Chart(ctx1, cfg1);
-			var chart2 = new Chart(ctx2, cfg2);
-			var chart3 = new Chart(ctx3, cfg3);
-			var chart4 = new Chart(ctx4, cfg4);
-			var chart5 = new Chart(ctx5, cfg5);
+			}
+		}
+	};
 
-			document.getElementById('update').addEventListener('click', function () {
-				var type = document.getElementById('type').value;
-				var dataset1 = chart1.config.data.datasets[0];
-				dataset1.type = type;
-				dataset1.data = generateData();
-				var dataset2 = chart1.config.data.datasets[1];
-				dataset2.type = type;
-				dataset2.data = generateData();
-				var dataset3 = chart1.config.data.datasets[2];
-				dataset3.type = type;
-				dataset3.data = generateData();
-				chart1.update();
+	var ctx5 = document.getElementById('chart5').getContext('2d');
+	ctx5.canvas.width = 1000;
+	ctx5.canvas.height = 300;
 
-				var dataset4 = chart2.config.data.datasets[0];
-				dataset4.type = type;
-				dataset4.data = generateData();
-				chart2.update();
+	var color = Chart.helpers.color;
+	var cfg5 = {
+		data: {
+			datasets: [{
+					label: 'IF - 4C03 | Light',
+					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.red,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				},
+				{
+					label: 'IF - 4C03 | Electricity',
+					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
+					borderColor: window.chartColors.green,
+					data: generateData(),
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
+		},
+		options: {
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
+						},
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
+					},
+					afterBuildTicks: function (scale, ticks) {
+						var majorUnit = scale._majorUnit;
+						var firstTick = ticks[0];
+						var i, ilen, val, tick, currMajor, lastMajor;
 
-				var dataset5 = chart3.config.data.datasets[0];
-				dataset5.type = type;
-				dataset5.data = generateData();
-				var dataset6 = chart3.config.data.datasets[1];
-				dataset6.type = type;
-				dataset6.data = generateData();
-				var dataset7 = chart3.config.data.datasets[2];
-				dataset7.type = type;
-				dataset7.data = generateData();
-				chart3.update();
+						val = moment(ticks[0].value);
+						if ((majorUnit === 'minute' && val.second() === 0) ||
+							(majorUnit === 'hour' && val.minute() === 0) ||
+							(majorUnit === 'day' && val.hour() === 9) ||
+							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
+							(majorUnit === 'year' && val.month() === 0)) {
+							firstTick.major = true;
+						} else {
+							firstTick.major = false;
+						}
+						lastMajor = val.get(majorUnit);
 
-				var dataset8 = chart4.config.data.datasets[0];
-				dataset8.type = type;
-				dataset8.data = generateData();
-				var dataset9 = chart4.config.data.datasets[1];
-				dataset9.type = type;
-				dataset9.data = generateData();
-				chart4.update();
+						for (i = 1, ilen = ticks.length; i < ilen; i++) {
+							tick = ticks[i];
+							val = moment(tick.value);
+							currMajor = val.get(majorUnit);
+							tick.major = currMajor !== lastMajor;
+							lastMajor = currMajor;
+						}
+						return ticks;
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						drawBorder: false
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Closing price ($)'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "x",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "x",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
+					}
+				}
+			}
+		}
+	};
+	var chart1 = new Chart(ctx1, cfg1);
+	var chart2 = new Chart(ctx2, cfg2);
+	var chart3 = new Chart(ctx3, cfg3);
+	var chart4 = new Chart(ctx4, cfg4);
+	var chart5 = new Chart(ctx5, cfg5);
 
-				var dataset10 = chart5.config.data.datasets[0];
-				dataset10.type = type;
-				dataset10.data = generateData();
-				var dataset11 = chart5.config.data.datasets[1];
-				dataset11.type = type;
-				dataset11.data = generateData();
+	document.getElementById('update').addEventListener('click', function () {
+		var type = document.getElementById('type').value;
+		var dataset1 = chart1.config.data.datasets[0];
+		dataset1.type = type;
+		dataset1.data = generateData();
+		var dataset2 = chart1.config.data.datasets[1];
+		dataset2.type = type;
+		dataset2.data = generateData();
+		var dataset3 = chart1.config.data.datasets[2];
+		dataset3.type = type;
+		dataset3.data = generateData();
+		chart1.update();
 
-				chart5.update();
-			});
+		var dataset4 = chart2.config.data.datasets[0];
+		dataset4.type = type;
+		dataset4.data = generateData();
+		chart2.update();
+
+		var dataset5 = chart3.config.data.datasets[0];
+		dataset5.type = type;
+		dataset5.data = generateData();
+		var dataset6 = chart3.config.data.datasets[1];
+		dataset6.type = type;
+		dataset6.data = generateData();
+		var dataset7 = chart3.config.data.datasets[2];
+		dataset7.type = type;
+		dataset7.data = generateData();
+		chart3.update();
+
+		var dataset8 = chart4.config.data.datasets[0];
+		dataset8.type = type;
+		dataset8.data = generateData();
+		var dataset9 = chart4.config.data.datasets[1];
+		dataset9.type = type;
+		dataset9.data = generateData();
+		chart4.update();
+
+		var dataset10 = chart5.config.data.datasets[0];
+		dataset10.type = type;
+		dataset10.data = generateData();
+		var dataset11 = chart5.config.data.datasets[1];
+		dataset11.type = type;
+		dataset11.data = generateData();
+
+		chart5.update();
+	});
 </script>
 {% endblock %}
