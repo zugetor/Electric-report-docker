@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Energy Saving - Sensor Condition{% endblock %}
-{% block css %}.text-unset{text-align: unset !important;}{% endblock %}
+{% block css %}.text-unset{text-align: unset !important;}.swal2-input{color: #000;}{% endblock %}
 {% block content %}
           <!-- Page Heading -->
           <h1 class="h3 mb-2 text-gray-800">Condition Managemnet</h1>
@@ -27,26 +27,37 @@
   var roomlist = '';
   var Table = $('#dataTable').DataTable();
   $('#content').on('click', "#new, button[name='edit']" ,async function () {
-    Swal.fire({
-      width: '60rem',
+    Swal.mixin({
+      confirmButtonText: 'Next &rarr;',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      progressSteps: ['1', '2'],
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Submit',
-      title: 'Please specify conditions.',
-      html: '<div id="alert-builder-plugins"></div>',
-      focusConfirm: false,
+      width: '60rem',
       customClass: {
         content: 'text-unset text-white'
-      },
-      preConfirm: () => {
-        var result = $('#alert-builder-plugins').queryBuilder('getRules');
-        if (result && !$.isEmptyObject(result)) {
-          alert(JSON.stringify(result, null, 2));
-        }else{
-          return false;
+      }
+    }).queue([
+      {
+        title: 'Please specify conditions.',
+        html: '<div id="alert-builder-plugins"></div>',
+        preConfirm: (res) => {
+          var result = $('#alert-builder-plugins').queryBuilder('getRules');
+          if (result && !$.isEmptyObject(result)) {
+            return JSON.stringify(result, null);
+          }else{
+            return false;
+          }
         }
-        if(this.id != "new"){
+      },
+      {
+        title:'Please specify a name.',
+        input: 'text',
+        confirmButtonText: 'Submit',
+      }
+    ]).then((result) => {
+      if (result.value) {
+        console.log(result.value)
+        /*if(this.id != "new"){
           let data = JSON.parse(decodeURIComponent($(this).attr("data")))
           $.ajax({
             url: "{{ url_for('Private.rule_edit') }}",
@@ -76,12 +87,11 @@
         })
         .catch(function (err) {
           console.log(err);
-        });
+        });*/
       }
-    });
+    })
 
    // var rules_plugins = { };
-
     $('#alert-builder-plugins').queryBuilder({
       plugins: [
         'sortable',
