@@ -13,7 +13,7 @@ INSERT INTO `room` (`rid`, `rname`, `fid`) VALUES (NULL, 'IF-4C01', '5'),(NULL, 
 INSERT INTO `room` (`rid`, `rname`, `fid`) VALUES (NULL, 'BUUIC-1-1', '14'),(NULL, 'BUUIC-1-2', '14'),(NULL, 'BUUIC-1-3', '14'),(NULL, 'BUUIC-1-3', '15');
 INSERT INTO `room` (`rid`, `rname`, `fid`) VALUES (NULL, 'BUUIC-2-1', '15'),(NULL, 'BUUIC-2-2', '15'),(NULL, 'BUUIC-2-3', '15');
 
-INSERT INTO `board` (`boid`, `bomac`, `register`, `rid`,`time`) VALUES (NULL, '7B-D3-A3-2B-20-30', '0', '12','2020-06-14 05:04:18'), (NULL, 'AA-BB-CC-DD-EE-FF', '0', '12','2020-05-13 05:04:28'), (NULL, '1C-87-63-7F-9C-2B', '0', '13','2020-04-01 05:20:56'), (NULL, 'DE-17-D0-F2-73-43', '0', '14','2020-01-01 05:21:04'), (NULL, '13-1F-03-14-B7-C5', '0', '15','2020-02-10 05:21:13');
+INSERT INTO `board` (`boid`, `bomac`, `register`, `rid`) VALUES (NULL, '7B-D3-A3-2B-20-30', '0', '12'), (NULL, 'AA-BB-CC-DD-EE-FF', '0', '12'), (NULL, '1C-87-63-7F-9C-2B', '0', '13'), (NULL, 'DE-17-D0-F2-73-43', '0', '14'), (NULL, '13-1F-03-14-B7-C5', '0', '15');
 
 INSERT INTO `type` (`tid`, `tname`) VALUES (NULL, 'Light'), (NULL, 'Electricity'), (NULL, 'Air Conditioner'), (NULL, 'Motion');
 

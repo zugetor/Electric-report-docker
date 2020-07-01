@@ -204,39 +204,26 @@ class Query:
 		self._CloseCursor(_cur)
 		return res
 
-	def AddRule(self,_type,st_time,end_time,rstate,rid):
+	def AddRule(self,rname,rjson):
 		_cur = self._newCursor()
-		'''_cur.execute("INSERT INTO `rule` (`ruid`, `st_time`, `end_time`, `rstate`, `rid`) VALUES (NULL, %s, %s, %s, %s)",(st_time,end_time,rstate,rid))
-		insid = _cur.lastrowid
-		for i in _type:
-			_cur.execute("INSERT INTO `rule_has_type` (`ruid`, `tid`, `state`, `enabled`) VALUES (%s, %s, %s, %s)",(insid,i[0],i[2],i[1]))'''
+		_cur.execute('INSERT INTO `rule` (`ruid`, `rname`, `rjson`) VALUES (NULL, %s, %s)',(rname,rjson))
 		self._CloseCursor(_cur)
 
-	def UpdateRule(self,ruid,_type,st_time,end_time,rstate,rid):
+	def UpdateRule(self,ruid,rname,rjson):
 		_cur = self._newCursor()
-		'''_cur.execute("UPDATE `rule` SET st_time = %s,end_time = %s,rstate = %s,rid = %s WHERE ruid = %s",(st_time,end_time,rstate,rid,ruid))
-		for i in _type:
-			_cur.execute("UPDATE `rule_has_type` SET `state` = %s, `enabled` = %s WHERE ruid = %s AND tid = %s",(i[2],i[1],ruid,i[0]))'''
+		_cur.execute("UPDATE `rule` SET rname = %s,rjson = %s WHERE ruid = %s",(rname,rjson,ruid))
 		self._CloseCursor(_cur)
 
 	def getRule(self):
 		_cur = self._newCursor()
-		'''_cur.execute("SELECT * FROM rule ru INNER JOIN room ro on ru.rid = ro.rid")
-		res = _cur.fetchall()'''
+		_cur.execute("SELECT * FROM rule")
+		res = _cur.fetchall()
 		self._CloseCursor(_cur)
-		#return res
-
-	def getRuletype(self,ruid):
-		_cur = self._newCursor()
-		'''_cur.execute("SELECT t.tid, t.tname, rt.enabled, rt.state FROM rule r INNER JOIN rule_has_type rt ON r.ruid = rt.ruid INNER JOIN type t ON rt.tid = t.tid WHERE r.ruid = %s",(ruid,))
-		res = _cur.fetchall()'''
-		self._CloseCursor(_cur)
-		#return res
+		return res
 
 	def DeleteRule(self,ruid):
 		_cur = self._newCursor()
-		'''_cur.execute("DELETE FROM rule_has_type WHERE ruid = %s",(ruid,))
-		_cur.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))'''
+		_cur.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
 		self._CloseCursor(_cur)
 
 	def new_log(self,message):
