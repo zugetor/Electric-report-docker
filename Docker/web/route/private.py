@@ -125,32 +125,22 @@ def building_del():
 
 @app.route('/rule/',methods=['POST'])
 def rule_add():
-    _type = json.loads(request.form.get('type'))
-    st = request.form.get('sta_time')
-    sto = request.form.get('sto_time')
-    room = request.form.get('room')
-    rstate = request.form.get('state')
-    query.AddRule(_type,st,sto,rstate,room)
+    name = request.form.get('name')
+    data = request.form.get('data')
+    query.AddRule(name,data)
     return jsonify({'Code':'200 OK'})
 
 @app.route('/rule/edit',methods=['POST'])
 def rule_edit():
     _id = request.form.get('id')
-    _type = json.loads(request.form.get('type'))
-    st = request.form.get('sta_time')
-    sto = request.form.get('sto_time')
-    room = request.form.get('room')
-    rstate = request.form.get('state')
-    query.UpdateRule(_id,_type,st,sto,rstate,room)
+    name = request.form.get('name')
+    data = request.form.get('data')
+    query.UpdateRule(_id,name,data)
     return jsonify({'Code':'200 OK'})
 
 @app.route('/rule/',methods=['GET'])
 def rule_view():
     rule = query.getRule()
-    for i in rule:
-        i["type"] = query.getRuletype(i["ruid"])
-        i["st_time"] = toHourandMin(i["st_time"])
-        i["end_time"] = toHourandMin(i["end_time"])
     return jsonify(rule)
 
 @app.route("/rule/del",methods=["GET"])

@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}Energy Saving - Sensor Condition{% endblock %}
-{% block css %}.text-unset{text-align: unset !important;}.swal2-input{color: #000;}{% endblock %}
+{% block css %}
+.text-unset{text-align: unset !important;}
+.swal2-input{color: #000;}
+{% endblock %}
 {% block content %}
           <!-- Page Heading -->
           <h1 class="h3 mb-2 text-gray-800">Condition Managemnet</h1>
@@ -24,7 +27,8 @@
 {% endblock %}
 {% block js %}
 <script>
-  var roomlist = '';
+  var BuildingData = {};
+  var Buildinglist = [];
   var Table = $('#dataTable').DataTable();
   $('#content').on('click', "#new, button[name='edit']" ,async function () {
     Swal.mixin({
@@ -53,16 +57,18 @@
         title:'Please specify a name.',
         input: 'text',
         confirmButtonText: 'Submit',
+        inputValue: getName(this),
+        inputValidator: (value) => { return !value && 'Please enter a name.' }
       }
     ]).then((result) => {
       if (result.value) {
         console.log(result.value)
-        /*if(this.id != "new"){
+        if(this.id != "new"){
           let data = JSON.parse(decodeURIComponent($(this).attr("data")))
           $.ajax({
             url: "{{ url_for('Private.rule_edit') }}",
             method: "POST",
-            data: { }
+            data: {id:data["ruid"],name:result.value[1],data:result.value[0] }
           }).then(function(res){
             getRule()
             Swal.fire(
@@ -76,7 +82,7 @@
         $.ajax({
           url: "{{ url_for('Private.rule_add') }}",
           method: "POST",
-          data: { }
+          data: {name:result.value[1],data:result.value[0] }
         }).then(function(res){
           getRule()
           Swal.fire(
@@ -87,11 +93,15 @@
         })
         .catch(function (err) {
           console.log(err);
-        });*/
+        });
       }
     })
 
-   // var rules_plugins = { };
+    var rules_data = null;
+    if(this.id != "new"){
+      let data = JSON.parse(decodeURIComponent($(this).attr("data")))
+      rules_data = JSON.parse(data["rjson"])
+    }
     $('#alert-builder-plugins').queryBuilder({
       plugins: [
         'sortable',
@@ -108,18 +118,20 @@
         { type: 'greater_or_equal', optgroup: 'basic' },
         { type: 'less', optgroup: 'basic' },
         { type: 'less_or_equal', optgroup: 'basic' },
-        { type: 'all_contain', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] },
-        { type: 'any_contain', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] }],
+        { type: 'all_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] },
+        { type: 'any_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] }],
       filters: [{
         id: 'type',
         label: 'Type',
         type: 'string',
-        input: roomCheckBox,
-        description: 'This filter uses Awesome Bootstrap Checkboxes',
-        operators: ['all_contain', 'any_contain'],
+        input: typeCheckBox,
+        description: 'Please choose the type you want to check and status.',
+        operators: ['all_true', 'any_true'],
         validation: {
           min: 1
-        }
+        },
+        valueSetter: setTypeVal,
+        valueGetter: getTypeVal
       },{
         id: 'dow',
         label: 'Day of Week',
@@ -137,23 +149,43 @@
         validation: {
           min: 1
         },
-        description: 'This filter uses Awesome Bootstrap Checkboxes',
-        operators: ['any_contain'],
+        description: 'Please select day you want to check the sensor.',
+        operators: ['any_true'],
       },{
         id: 'room',
         label: 'Room',
-        type: 'integer',
-        input: 'checkbox',
-        values: [
-          'IF-4C01',
-          'IF-4C02',
-          'IF-11M280'
-        ],
+        type: 'string',
+        input: roomBox,
         validation: {
           min: 1
         },
-        description: 'This filter uses Awesome Bootstrap Checkboxes',
-        operators: ['any_contain'],
+        description: 'Please select room you want to check the sensor.',
+        operators: ['equal'],
+        valueSetter: setSelectVal,
+        valueGetter: getSelectVal
+      },{
+        id: 'floor',
+        label: 'Floor',
+        type: 'integer',
+        input: floorBox,
+        validation: {
+          min: 1
+        },
+        description: 'Please select floor you want to check the sensor.',
+        operators: ['equal'],
+        valueSetter: setSelectVal,
+        valueGetter: getSelectVal
+      },{
+        id: 'building',
+        label: 'Building',
+        type: 'string',
+        input: "select",
+        values: Buildinglist,
+        validation: {
+          min: 1
+        },
+        description: 'Please select building you want to check the sensor.',
+        operators: ['equal']
       },{
         id: 'rate',
         label: '24-hour clock',
@@ -168,6 +200,7 @@
           max: 24,
           value: 1
         },
+        description: 'Please choose when you want to check the sensor.',
         operators: ['equal','not_equal','greater', 'greater_or_equal','less', 'less_or_equal'],
         valueSetter: function(rule, value) {
           if (rule.operator.nb_inputs == 1) value = [value];
@@ -176,7 +209,7 @@
           });
         },
         valueGetter: function(rule) {
-          var value = [];
+          let value = [];
           rule.$el.find('.rule-value-container input').each(function() {
             value.push($(this).slider('getValue'));
           });
@@ -184,11 +217,8 @@
         }
       }],
       isInline:false,
-      //rules: rules_plugins
-    }).on("afterUpdateRuleFilter.queryBuilder", function() {
-      $('.query-builder select').selectpicker();
+      rules: rules_data
     });
-
   });
 
   $('table').on('click', "button[name='del']" , function () {
@@ -236,20 +266,14 @@
   var initTable = function(data){
     Table.clear();
     data.forEach(function(elem){
-      _rowType = "<table class=\"table\">"
-      elem["type"].forEach(function(elem2){
-        _rowType += "<tr><td>" + elem2["tname"] + "</td><td>" + (elem2["enabled"] == 1 ? "Enable" : "Disable") + "</td><td>" + (elem2["state"] == 1 ? "ON" : "OFF")  + "</td></tr>"
-      })
-      _rowType += "</table>"
       Table.row.add( [
             elem["ruid"],
             elem["rname"],
-            _rowType,
-            elem["st_time"] + " - " + elem["end_time"],
             "<button type=\"button\" class=\"btn btn-warning\" id=\"edit\" name=\"edit\" data=\""+encodeURIComponent(JSON.stringify(elem))+"\">Edit</button>\n" +
             "<button type=\"button\" class=\"btn btn-danger\" id=\"del\" name=\"del\" data-id=\""+elem["ruid"]+"\">Delete</button>"
-        ] ).draw( false );
+        ] );
     })
+    Table.draw( false );
   };
 
 $( document ).ready(function() {
@@ -258,10 +282,14 @@ $( document ).ready(function() {
     method: "GET"
   }).then(function(res){
     res.forEach((elem)=>{
-      if(roomlist.indexOf(elem["rname"]) == -1){
-        let newOpt = $('<option></option>').attr('value', elem["rid"]).text(elem["rname"])
-        roomlist += newOpt[0].outerHTML
+      if(!BuildingData.hasOwnProperty(elem["bname"])){
+        BuildingData[elem["bname"]] = {}
+        Buildinglist.push(elem["bname"])
       }
+      if(!BuildingData[elem["bname"]].hasOwnProperty(elem["fname"]))
+        BuildingData[elem["bname"]][elem["fname"]] = {fid:elem["fid"],data:[]}
+      if(BuildingData[elem["bname"]][elem["fname"]]["data"].indexOf(elem["rname"]) == -1)
+        BuildingData[elem["bname"]][elem["fname"]]["data"].push(elem["rname"])
     })
   })
   .catch(function (err) {
@@ -274,26 +302,90 @@ let vaildLen = function(value,rule){
   return value.length > 0
 }
 
-let roomCheckBox = function(){
-  return '<div class="form-row ml-2 mt-1">\
-            <div class="custom-control custom-checkbox custom-control-inline mt-2">\
-              <input type="checkbox" name="" id="test" value="0" class="custom-control-input">\
-              <label for="test" class="custom-control-label">Electric</label>\
-            </div>\
-            <div class="col">\
-              <select class="form-control"><option>ON</option><option>OFF</option></select>\
-            </div>\
-          </div>\
-          <div class="form-row ml-2 mt-1">\
-            <div class="custom-control custom-checkbox custom-control-inline mt-2">\
-              <input type="checkbox" name="" id="test2" value="0" class="custom-control-input">\
-              <label for="test2" class="custom-control-label">Motion</label>\
-            </div>\
-            <div class="col">\
-              <select class="form-control"><option>ON</option><option>OFF</option></select>\
-            </div>\
-          </div>'
+let getName = function(dom){
+  if($(dom).attr("data")){
+    let data = JSON.parse(decodeURIComponent($(dom).attr("data")))
+    return data["rname"]
+  }else{
+    return ""
+  }
+  
+}
+
+let typeCheckBox = function(rule){
+  let id = rule["id"]
+  return `{% for i in _type %}
+          <div class="form-row ml-2 mt-1">
+            <div class="custom-control custom-checkbox custom-control-inline mt-2">
+              <input type="checkbox" name="" id="${id}_type{{i['tid']}}" value="0" class="custom-control-input">
+              <label for="${id}_type{{i['tid']}}" class="custom-control-label">{{i['tname']}}</label>
+            </div>
+            <div class="col">
+              <select class="custom-select"><option value="1">ON</option><option value="0">OFF</option></select>
+            </div>
+          </div>
+          {% endfor %}`
 };
+
+let roomBox = function(){
+  let res =  '<select class="custom-select">'
+  Object.keys(BuildingData).forEach(key => {
+    res += `<optgroup label="${key}">`
+    Object.keys(BuildingData[key]).forEach(key2 => {
+      BuildingData[key][key2]["data"].forEach((i)=>{
+        res += `<option>${i}</option>`
+      })
+    })
+    res += '</optgroup>'
+  });
+  res += '</select>'
+  return res
+}
+
+let floorBox = function(){
+  let res =  '<select class="custom-select">'
+  Object.keys(BuildingData).forEach(key => {
+    res += `<optgroup label="${key}">`
+    Object.keys(BuildingData[key]).forEach(key2 => {
+      res += `<option value="${BuildingData[key][key2]["fid"]}">${key2}</option>`
+    })
+    res += '</optgroup>'
+  });
+  res += '</select>'
+  return res
+}
+
+let getTypeVal = function(rule) {
+  let value = [];
+  rule.$el.find('.rule-value-container div[class*="form-row"]').each(function() {
+    let inp = $(this).find("input").prop('checked') ? "1" : "0";
+    let select = $(this).find("select").val();
+    value.push([inp,select]);
+  });
+  return value;
+}
+
+let setTypeVal = function(rule, value) {
+  rule.$el.find('.rule-value-container div[class*="form-row"]').each(function(i) {
+    $(this).find("input").prop('checked', value[i][0] == "1" ? true : false);
+    $(this).find("select").val(value[i][1]);
+  });
+}
+
+let getSelectVal = function(rule) {
+  let value = [];
+  rule.$el.find('.rule-value-container select').each(function() {
+    value.push($(this).val());
+  });
+  return rule.operator.nb_inputs == 1 ? value[0] : value;
+}
+
+let setSelectVal = function(rule, value) {
+  if (rule.operator.nb_inputs == 1) value = [value];
+  rule.$el.find('.rule-value-container select').each(function(i) {
+    $(this).val(value[i]).change();
+  });
+}
 
 </script>
 {% endblock %}
