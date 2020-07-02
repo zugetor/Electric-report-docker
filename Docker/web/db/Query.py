@@ -234,30 +234,20 @@ class Query:
 
 	def get_logs(self):
 		_cur = self._newCursor()
-		_cur.execute("SELECT l.ruid,l.lid,l.message,l.create_time,r.rname,f.fname,b.bname FROM logs as l INNER JOIN rule as ru ON l.ruid=ru.ruid INNER JOIN room as r ON ru.rid=r.rid INNER JOIN floor as f ON r.fid=f.fid INNER JOIN building as b ON f.bid=b.bid")
+		_cur.execute("SELECT * from logs")
 		res = _cur.fetchall()
-		for r in res:
-			_cur.execute("SELECT tname FROM rule_has_type as rht INNER JOIN type as t ON rht.tid=t.tid WHERE rht.ruid = %s and rht.enabled = 1",(r['ruid']))
-			logType = _cur.fetchall()
-			r.update({"type":logType})
 		self._CloseCursor(_cur)
 		return res
 	
 	def summary_logs(self):
 		_cur = self._newCursor()
-		_cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air ,COUNT(CASE WHEN tid = 4 THEN 1 END) AS motion FROM rule_has_type")
-		temp1 = _cur.fetchall()
 		_cur.execute("SELECT COUNT(lid) as sum_logs FROM logs")
-		temp2 = _cur.fetchall()
-		_cur.execute('''SELECT CONCAT(b.bname," floor ",f.fname," ",r.rname) as most_report,COUNT(ru.rid) AS count_room FROM logs as l INNER JOIN rule as ru ON ru.ruid=l.ruid INNER JOIN room as r ON ru.rid=r.rid INNER JOIN floor as f ON r.fid=f.fid INNER JOIN building as b ON f.bid=b.bid GROUP BY ru.rid ORDER BY count_room DESC LIMIT 1''')
-		temp3 = _cur.fetchall()
+		temp1 = _cur.fetchall()
 		_cur.execute("SELECT create_time as lastest FROM logs ORDER BY lid DESC LIMIT 1")
-		temp4 = _cur.fetchall()
+		temp2 = _cur.fetchall()
 		res={}
 		res.update(temp1[0])
 		res.update(temp2[0])
-		res.update(temp3[0])
-		res.update(temp4[0])
 		self._CloseCursor(_cur)
 		return res
 

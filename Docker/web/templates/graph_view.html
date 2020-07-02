@@ -84,13 +84,13 @@
 	<div class="col">
 		<div class="card shadow mb-4">
 			<div class="card-body">
+				<button class="btn btn-outline-danger mb-2 float-right" id="clearRows">clear</button>
 				<div class="table-responsive">
 					<table class="display compact" id="dashboard" width="100%" cellspacing="0">
 						<thead>
 							<tr>
 								<th>type</th>
 								<th>name</th>
-								<th>action</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -325,28 +325,51 @@
 	}
 	updateDashboard();
 
+	$('#clearRows').click(function () {
+		dashboardArray = [];
+		dashboard.rows().remove().draw(false);
+	});
+
+	function hasDup(value) {
+		for (i = 0; i < dashboardArray.length; i++) {
+			if (JSON.stringify(dashboardArray[i]) === JSON.stringify(value)) {
+				return true
+			}
+		}
+		return false
+	}
+
 	$("#addToDash").click(function () {
 		if ($('#building').val() != "") {
 			if ($('#floor').val() != "") {
 				if ($('#room').val() != "") {
-					dashboardArray.push({
+					roomToAdd = {
 						'type': 'room',
 						'id': $('#room').val(),
 						'name': $("#room option:selected").html()
-					});
+					};
+					if (hasDup(roomToAdd) === false) {
+						dashboardArray.push(roomToAdd);
+					}
 				} else {
-					dashboardArray.push({
+					floorToAdd = {
 						'type': 'floor',
 						'id': $('#floor').val(),
 						'name': $("#floor option:selected").html()
-					});
+					};
+					if (hasDup(floorToAdd) === false) {
+						dashboardArray.push(floorToAdd);
+					}
 				}
 			} else {
-				dashboardArray.push({
+				buildingToAdd = {
 					'type': 'building',
 					'id': $('#building').val(),
 					'name': $("#building option:selected").html()
-				});
+				};
+				if (hasDup(buildingToAdd) === false) {
+					dashboardArray.push(buildingToAdd);
+				}
 			}
 		} else {
 			Swal.fire(
@@ -451,14 +474,14 @@
 			preConfirm: () => {
 				data = sensors.rows('.selected').data();
 				$.each(data, function (index, value) {
-					dashboardArray.push({
+					sensorToAdd={
 						'type': 'sensor',
 						'id': value.sid,
 						'name': value.sname
-					});
-				});
-				$.each(dashboardArray, function (index, value) {
-					console.log(value);
+					}
+					if(hasDup(sensorToAdd)===false){
+						dashboardArray.push(sensorToAdd);
+					}
 				});
 				updateDashboard();
 			}

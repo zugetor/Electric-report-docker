@@ -41,148 +41,14 @@
         </div>
     </div>
 
-
-    <div class="col-xl-4 col-md-8 mb-4">
-        <div class="card border-left-secondary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Most Reported Room</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800 most_room"></div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-building fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Earnings (Monthly) Card Example -->
-    <div class="col-xl-2 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Electricity Logs</div>
-                        <div class="row no-gutters align-items-center">
-                            <div class="col-auto">
-                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800 elec_logs"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-plug fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Pending Requests Card Example -->
-    <div class="col-xl-2 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Light Logs</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800 light_logs"></div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="far fa-lightbulb fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="col-xl-2 col-md-6 mb-4">
-        <div class="card border-left-danger shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Air Conditioner Logs</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800 air_logs"></div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-wind fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-2 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Motion Logs</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800 motion_logs"></div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-running fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div class="col-xl-12 col-md-8 mb-4">
         <div class="card">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
-                        <div class="form-row">
-                            <div class="col-md-6 mb-3">
-                                <label for="building">Building</label>
-                                <select class="custom-select" id="building">
-                            <option selected value="">All</option>
-                    
-                          </select>
-
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="floor">Floor</label>
-                                <select class="custom-select" id="floor">
-                            <option selected value="">All</option>
-                    
-                          </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="room">Room</label>
-                                <select class="custom-select" id="room">
-                            <option selected value="">All</option>
-                    
-                          </select>
-                            </div>
-                        </div>
                         <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
                             <i class="fa fa-calendar"></i>&nbsp;
                             <span></span> <i class="fa fa-caret-down"></i>
-                        </div>
-                        <div class="form-row mt-4 ml-1">
-                            <div class="form-check-inline">
-                                <label class="form-check-label">
-                          <input type="checkbox" class="form-check-input" name="typeFilter" value="light">light
-                        </label>
-                            </div>
-                            <div class="form-check-inline">
-                                <label class="form-check-label">
-                          <input type="checkbox" class="form-check-input" name="typeFilter" value="electricity">electricity
-                        </label>
-                            </div>
-                            <div class="form-check-inline">
-                                <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input" name="typeFilter" value="air conditioner">air conditioner
-                      </label>
-                            </div>
-                            <div class="form-check-inline">
-                                <label class="form-check-label">
-                      <input type="checkbox" class="form-check-input" name="typeFilter" value="motion">motion
-                    </label>
-                            </div>
                         </div>
                     </div>
                     <div class="col-auto">
@@ -204,10 +70,6 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Room</th>
-                        <th>Floor</th>
-                        <th>Building</th>
-                        <th>Type</th>
                         <th>Time</th>
                         <th>Message</th>
                     </tr>
@@ -262,30 +124,7 @@
                 },
                 columns: [{
                     data: 'lid'
-                }, {
-                    data: 'rname'
-                }, {
-                    data: 'fname'
-                }, {
-                    data: 'bname'
-                }, {
-                    data: 'type',
-                    render: function(data) {
-                        tmpBadge = "";
-                        $.each(data, function(index, value) {
-                            if (value.tname == "Light") {
-                                tmpBadge += "<span class=\"badge badge-warning\">light</span>&nbsp;"
-                            } else if (value.tname == "Electricity") {
-                                tmpBadge += "<span class=\"badge badge-info\">electricity</span>&nbsp;"
-                            } else if (value.tname == "Air Conditioner") {
-                                tmpBadge += "<span class=\"badge badge-danger\">air conditioner</span>&nbsp;"
-                            } else if (value.tname == "Motion") {
-                                tmpBadge += "<span class=\"badge badge-success\">motion</span>&nbsp;"
-                            }
-                        })
-                        return tmpBadge
-                    }
-                }, {
+                },{
                     data: 'create_time'
                 }, {
                     data: 'message'
@@ -294,13 +133,10 @@
                     "width": "5%",
                     "targets": 0
                 }, {
-                    "width": "8%",
-                    "targets": 4
+                    "width": "15%",
+                    "targets": 1
                 }, {
-                    "width": "10%",
-                    "targets": 5
-                }, {
-                    targets: 5,
+                    targets: 1,
                     render: function(data) {
                         return moment(data).format('YYYY-MM-DD hh:mm:ss');
                     }
@@ -309,12 +145,12 @@
         };
 
         updateLogs();
-        getRoomData();
+        
         $.fn.dataTable.ext.search.push(
             function(settings, data, dataIndex) {
                 var min = $('#reportrange').data('daterangepicker').startDate.format('YYYY-MM-DD hh:mm:ss');
                 var max = $('#reportrange').data('daterangepicker').endDate.format('YYYY-MM-DD hh:mm:ss');
-                var startDate = data[5];
+                var startDate = data[1];
                 if (min == null && max == null) {
                     return true;
                 }
@@ -335,107 +171,7 @@
         $('#reportrange').on('apply.daterangepicker', function(ev, picker) {
             logs.draw()
         });
-
-        $('input:checkbox').on('change', function() {
-            var typeFilter = $('input:checkbox[name="typeFilter"]:checked').map(function() {
-                return this.value;
-            }).get().join('|');
-            console.log(typeFilter);
-            logs.column(4).search(typeFilter, true, false, false).draw(false);
-        });
-
-        $('#building').on('change', function() {
-            if (this.options[this.selectedIndex].innerHTML != "All") {
-                var buildingFilter = $('#building').map(function() {
-                    return '^' + this.options[this.selectedIndex].innerHTML + '$';
-                }).get().join('|');
-                logs.column(3).search(buildingFilter, true, false, false).draw(false);
-                logs.column(2).search("", true, false, false).draw(false);
-                logs.column(1).search("", true, false, false).draw(false);
-            } else {
-                logs.column(3).search("", true, false, false).draw(false);
-                logs.column(2).search("", true, false, false).draw(false);
-                logs.column(1).search("", true, false, false).draw(false);
-            }
-        });
-        $('#floor').on('change', function() {
-            if (this.options[this.selectedIndex].innerHTML != "All") {
-                var floorFilter = $('#floor').map(function() {
-                    return '^' + this.options[this.selectedIndex].innerHTML + '$';
-                }).get().join('|');
-                logs.column(2).search(floorFilter, true, false, false).draw(false);
-                logs.column(1).search("", true, false, false).draw(false);
-            } else {
-                logs.column(2).search("", true, false, false).draw(false);
-                logs.column(1).search("", true, false, false).draw(false);
-            }
-        });
-        $('#room').on('change', function() {
-            if (this.options[this.selectedIndex].innerHTML != "All") {
-                var roomFilter = $('#room').map(function() {
-                    return '^' + this.options[this.selectedIndex].innerHTML + '$';
-                }).get().join('|');
-                logs.column(1).search(roomFilter, true, false, false).draw(false);
-            } else {
-                logs.column(1).search("", true, false, false).draw(false);
-            }
-        });
-
-
-
     });
-
-
-    var getRoomData = function() {
-        $.ajax({
-            type: 'GET',
-            url: '{{ url_for("Private.all_room_list") }}',
-            dataType: 'json',
-            success: function(roomData) {
-                let building = $('#building');
-                let floor = $('#floor');
-                let room = $('#room');
-                $.each(roomData, function(key, entry) {
-                    building.append($('<option></option>').attr('value', entry.bid).text(entry.bname));
-                })
-
-                $(building).change(function() {
-                    floor.empty();
-                    floor.append('<option selected value="">All</option>');
-                    floor.prop('selectedIndex', 0);
-                    room.empty();
-                    room.append('<option selected value="">All</option>');
-                    room.prop('selectedIndex', 0);
-                    $.each(roomData, function(key, entry) {
-                        if (entry.bid == building.val()) {
-                            $.each(entry.floor, function(key, entry2) {
-                                floor.append($('<option></option>').attr('value', entry2.fid).text(entry2.fname));
-                            })
-                        }
-                    })
-                });
-
-                $(floor).change(function() {
-                    room.empty();
-                    room.append('<option selected value="">All</option>');
-                    room.prop('selectedIndex', 0);
-                    $.each(roomData, function(key, entry) {
-                        if (entry.bid == building.val()) {
-                            $.each(entry.floor, function(key, entry2) {
-                                if (entry2.fid == floor.val()) {
-                                    $.each(entry2.room, function(key, entry3) {
-                                        room.append($('<option></option>').attr('value', entry3.rid).text(entry3
-                                            .rname));
-                                    })
-                                }
-                            })
-                        }
-                    })
-                });
-
-            }
-        });
-    }
 
     var sumLogs = function() {
         $.ajax({
@@ -445,11 +181,6 @@
             success: function(sumData) {
                 $('.lastest_log').html(sumData.lastest);
                 $('.sum_logs').html(sumData.sum_logs + " Message");
-                $('.most_room').html(sumData.most_report);
-                $('.elec_logs').html(sumData.elec + " Message");
-                $('.air_logs').html(sumData.air + " Message");
-                $('.light_logs').html(sumData.light + " Message");
-                $('.motion_logs').html(sumData.motion + " Message");
             }
         });
     }
