@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import session, redirect, url_for, flash
+from flask import session, redirect, url_for, flash, current_app
 from time import time
 from extensions import query
 
@@ -14,6 +14,15 @@ def login_required(f):
 			logout_user()
 			return redirect(url_for('Page.login'))
 		session['login_time'] = int(time())
+		return f(*args, **kwargs)
+	return decorated_function
+
+def allow_register(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if not current_app.config["ALLOW_REGISTER"]:
+			flash('Register is not allow.')
+			return redirect(url_for('Page.login'))
 		return f(*args, **kwargs)
 	return decorated_function
 

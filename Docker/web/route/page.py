@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
-from login import login_required, login_user, logout_user
+from login import login_required, login_user, logout_user, allow_register
 from extensions import query, html_escape
 from flask_wtf import RecaptchaField
 from passlib.hash import pbkdf2_sha256
@@ -43,9 +43,10 @@ def login():
 			return redirect(url_for('Page.login'))
 		login_user(user)
 		return redirect(url_for('Page.graph_view'))
-	return render_template("login.html",form=form)
+	return render_template("login.html",form=form,is_register=current_app.config["ALLOW_REGISTER"])
 
 @app.route("/register",methods=['GET','POST'])
+@allow_register
 def register():
 	form = RegistrationForm(request.form)
 	if request.method == 'POST' and form.validate() and not query.get_userLogin(form.username.data) and not query.get_userLogin(form.email.data):

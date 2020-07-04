@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, escape
 from extensions import query, html_escape, toHourandMin
+from login import login_required
 import json, time
 
 app = Blueprint('Private', __name__)

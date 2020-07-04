@@ -12,6 +12,7 @@ class Config(object):
     SECRET_KEY = "mysecretkey" #your secret key
     SESSION_COOKIE_HTTPONLY = True
     REMEMBER_COOKIE_HTTPONLY = True
+    ALLOW_REGISTER = False #Allow user to register
 
 class ProductionConfig(Config):
     DEBUG = False

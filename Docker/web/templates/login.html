@@ -81,7 +81,9 @@
                       {% endif %}
                     </div>      
                     <input type="submit" class="btn btn-primary btn-user btn-block" value="Login"/>
-					          <a href="{{ url_for('Page.register') }}" class="btn btn-success btn-user btn-block">Register</a>
+                    {% if is_register %}
+					           <a href="{{ url_for('Page.register') }}" class="btn btn-success btn-user btn-block">Register</a>
+                    {% endif %}
                   </form>
                     <div style="height: 10em;">
                 </div>
