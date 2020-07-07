@@ -36,7 +36,7 @@
       showCancelButton: true,
       progressSteps: ['1', '2'],
       cancelButtonColor: '#d33',
-      width: '60rem',
+      width: '75rem',
       customClass: {
         content: 'text-unset text-white'
       }
@@ -112,8 +112,8 @@
         'bt-checkbox'
       ],
       operators: [
-        { type: 'equal', optgroup: 'basic' },
-        { type: 'not_equal', optgroup: 'basic' },
+        { type: 'equal', optgroup: 'basic', multiple: true },
+        { type: 'not_equal', optgroup: 'basic', multiple: true },
         { type: 'greater', optgroup: 'basic' },
         { type: 'greater_or_equal', optgroup: 'basic' },
         { type: 'less', optgroup: 'basic' },
@@ -344,7 +344,7 @@ let typeCheckBox = function(rule){
 };
 
 let roomBox = function(){
-  let res =  '<select class="custom-select">'
+  let res =  '<select class="custom-select mb-2">'
   Object.keys(BuildingData).forEach(key => {
     res += `<optgroup label="${key}">`
     Object.keys(BuildingData[key]).forEach(key2 => {
@@ -354,7 +354,7 @@ let roomBox = function(){
     })
     res += '</optgroup>'
   });
-  res += '</select>'
+  res += '</select><select class="custom-select"><option>Any</option><option>Free</option><option>Reserved</option></select>'
   return res
 }
 
@@ -393,11 +393,11 @@ let getSelectVal = function(rule) {
   rule.$el.find('.rule-value-container select').each(function() {
     value.push($(this).val());
   });
-  return rule.operator.nb_inputs == 1 ? value[0] : value;
+  return rule.operator.nb_inputs == 1 ? value.length == 1 ? value[0] : value : value;
 }
 
 let setSelectVal = function(rule, value) {
-  if (rule.operator.nb_inputs == 1) value = [value];
+  if (rule.operator.nb_inputs == 1 && value.length == 1) value = [value];
   rule.$el.find('.rule-value-container select').each(function(i) {
     $(this).val(value[i]).change();
   });
