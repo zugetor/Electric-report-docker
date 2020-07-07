@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
-from login import login_required, login_user, logout_user, allow_register
+from login import login_required, login_user, logout_user, allow_register, getSessionUsername
 from extensions import query, html_escape
 from flask_wtf import RecaptchaField
 from passlib.hash import pbkdf2_sha256
@@ -27,6 +27,19 @@ class LoginForm(Form):
 		validators.Length(min=6)
 	])
 	recaptcha = RecaptchaField()
+
+class PassResetForm(Form):
+	password = PasswordField('password', [
+		validators.DataRequired(),
+		validators.Length(min=6)
+	])
+	new_password = PasswordField('new_password', [
+		validators.DataRequired(),
+		validators.EqualTo('conf_new_password', message='Passwords must match'),
+		validators.Length(min=6)
+	])
+	conf_new_password = PasswordField('conf_new_password')
+
 
 
 @app.route("/login",methods=['GET','POST'])
@@ -63,6 +76,24 @@ def logout():
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('Page.login'))
+
+@app.route("/reset",methods=['GET','POST'])
+@login_required
+def reset():
+	form = PassResetForm(request.form)
+	if request.method == 'POST' and form.validate():
+		username = getSessionUsername()
+		user = query.get_userLogin(username)
+		try:
+			if user and pbkdf2_sha256.verify(form.password.data, user["password"]) and user["is_active"] == 1:
+				new_password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(html_escape(form.new_password.data))
+				query.Updatepassword(username,new_password)
+				flash('Your password has been change.')
+			else:
+				flash('Please check your password and try again.')
+		except:
+			flash('Please check your password and try again.')
+	return render_template("password_reset.html",form=form)  
 
 @app.route("/graph_view")
 def graph_view():

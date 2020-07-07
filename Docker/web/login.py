@@ -35,3 +35,6 @@ def logout_user():
 	session.pop('id', None)
 	session.pop('username', None)
 	session.pop('login_time', None)
+
+def getSessionUsername():
+	return session['username']

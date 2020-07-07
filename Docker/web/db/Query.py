@@ -276,3 +276,7 @@ class Query:
 					WHERE NOT EXISTS ( SELECT rname, fid  FROM room WHERE rname = %s AND fid = %s)""",(i[0],floor_id[i[1]],i[0],floor_id[i[1]]))
 		self._CloseCursor(_cur)
 
+	def Updatepassword(self,username,password):
+		_cur = self._newCursor()
+		_cur.execute("UPDATE `user` SET password = %s WHERE username = %s",(password,username))
+		self._CloseCursor(_cur)
