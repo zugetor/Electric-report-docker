@@ -165,3 +165,14 @@ def auto_add():
     query.auto_add_room(prefix,data)
     return jsonify({'Code':'200 OK'})
 
+@app.route("/active",methods=["GET"])
+def user_active():
+    _id = request.args.get('id')
+    _allow = request.args.get('allow')
+    try:
+        if int(_allow) != 0 and int(_allow) != 1:
+            _allow = 0
+    except:
+        _allow = 0
+    query.UpdateUserActive(_id,_allow)
+    return jsonify({'Code':'200 OK'})

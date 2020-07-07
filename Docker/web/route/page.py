@@ -48,8 +48,11 @@ def login():
 	if request.method == 'POST' and form.validate():
 		user = query.get_userLogin(form.username.data)
 		try:
-			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]) or user["is_active"] == 0:
+			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]):
 				flash('Please check your login credentials and try again.')
+				return redirect(url_for('Page.login'))
+			if int(user["is_active"]) == 0:
+				flash('Please active your user first.')
 				return redirect(url_for('Page.login'))
 		except:
 			flash('Please check your login credentials and try again.')
@@ -125,3 +128,8 @@ def sensor_view():
 def room_add():
 	reg_building = reg.getAllBuilding()
 	return render_template("room_add.html",building=reg_building)
+
+@app.route("/user")
+def user_manage():
+	user = query.getAllUser()
+	return render_template("user_manage.html",user=user)
