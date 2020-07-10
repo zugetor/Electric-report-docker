@@ -21,6 +21,8 @@ INSERT INTO `user` (`id`, `username`, `email`, `password`, `create_time`, `is_ac
 
 INSERT INTO `sensor` (`sid`, `sname`, `tid`, `boid`) VALUES (NULL, 'Light 1', '1', '1'), (NULL, 'Light 2', '1', '1'), (NULL, 'Elec 1', '2', '1'), (NULL, 'Air 1', '3', '1'), (NULL, 'Light x', '1', '3'), (NULL, 'Light y', '1', '3'), (NULL, 'Light z', '1', '3'), (NULL, 'Light a', '1', '4'), (NULL, 'Elec b', '2', '4'), (NULL, 'Air c', '3', '4');
 
+INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES ('1', 'first log', '2020-01-01 00:00:00')
+
 
 
 

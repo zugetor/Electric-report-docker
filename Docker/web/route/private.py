@@ -4,163 +4,169 @@ import json, time
 
 app = Blueprint('Private', __name__)
 
+@app.route('/dashboard_list/',methods=['POST'])
+def dashboard_list():
+	datax = json.loads(request.form.get('datax'))
+	response = jsonify(query.dashboard_list(datax))
+	return response
+
 @app.route('/sensor/',methods=['GET'])
 def sensor_list():
-    response = jsonify(query.sensor_list())
-    return response
-    
+	response = jsonify(query.sensor_list())
+	return response
+	
 @app.route('/allroom/',methods=['GET'])
 def all_room_list():
-    response = jsonify(query.all_room_list())
-    return response
-    
+	response = jsonify(query.all_room_list())
+	return response
+	
 @app.route('/register',methods=['GET'])
 def register_list():
-    return jsonify(query.register_list())
-    
+	return jsonify(query.register_list())
+	
 @app.route('/sensor/',methods=['POST'])
 def sensor_edit():
-    sid = request.form.get('id')
-    sname = html_escape(request.form.get('name'))
-    print(request.form)
-    query.sensor_edit(sid,sname)
-    response = jsonify({'Code':'200 ok'})
-    return response
-    
+	sid = request.form.get('id')
+	sname = html_escape(request.form.get('name'))
+	print(request.form)
+	query.sensor_edit(sid,sname)
+	response = jsonify({'Code':'200 ok'})
+	return response
+	
 @app.route('/sensor/del',methods=['GET'])
 def sensor_del():
-    sid = request.args.get('id')
-    query.sensor_del(sid)
-    response = jsonify({'Code':'200 ok'})
-    return response
-    
+	sid = request.args.get('id')
+	query.sensor_del(sid)
+	response = jsonify({'Code':'200 ok'})
+	return response
+	
 @app.route('/register/del',methods=['GET'])
 def register_del():
-    boid = request.args.get('id')
-    query.register_del(boid)
-    
+	boid = request.args.get('id')
+	query.register_del(boid)
+	
 
 @app.route('/register',methods=['POST'])
 def register_register():
-    boid = request.form['id']
-    room = request.form['room']
-    sensor = json.loads(request.form.get('sensor'))
-    query.register_register(boid,sensor,room)
-    return jsonify({'Code':'200 ok'})
-    
+	boid = request.form['id']
+	room = request.form['room']
+	sensor = json.loads(request.form.get('sensor'))
+	query.register_register(boid,sensor,room)
+	return jsonify({'Code':'200 ok'})
+	
 @app.route('/room/',methods=['GET'])
 def room_list():
-    fid = request.args.get('fid')
-    return jsonify(query.room_list(fid))
-    
+	fid = request.args.get('fid')
+	return jsonify(query.room_list(fid))
+	
 @app.route('/room',methods=['POST'])
 def room_add():
-    rname = html_escape(request.form['rname'])
-    fid = request.form['fid']
-    query.room_add(rname,fid)
-    return '200 OK ADD ROOM'
-    
+	rname = html_escape(request.form['rname'])
+	fid = request.form['fid']
+	query.room_add(rname,fid)
+	return '200 OK ADD ROOM'
+	
 @app.route('/room/edit',methods=['POST'])
 def room_edit():
-    rid = request.form['rid']
-    rname = html_escape(request.form['rname'])
-    fid = request.form['fid']
-    query.room_edit(rid,rname,fid)
-    return '200 OK EDIT ROOM'
-    
+	rid = request.form['rid']
+	rname = html_escape(request.form['rname'])
+	fid = request.form['fid']
+	query.room_edit(rid,rname,fid)
+	return '200 OK EDIT ROOM'
+	
 @app.route('/room/del',methods=['GET'])
 def room_del():
-    rid = request.args.get('rid')
-    query.room_del(rid)
-    return '200 OK DEL ROOM'
-    
+	rid = request.args.get('rid')
+	query.room_del(rid)
+	return '200 OK DEL ROOM'
+	
 @app.route('/floor/',methods=['GET'])
 def floor_list():
-    bid = request.args.get('bid')
-    return jsonify(query.floor_list(bid))
-    
+	bid = request.args.get('bid')
+	return jsonify(query.floor_list(bid))
+	
 @app.route('/floor/',methods=['POST'])
 def floor_add():
-    fname = html_escape(request.form['fname'])
-    bid = request.form['bid']
-    query.floor_add(fname,bid)
-    return '200 OK ADD FLOOR'
-    
+	fname = html_escape(request.form['fname'])
+	bid = request.form['bid']
+	query.floor_add(fname,bid)
+	return '200 OK ADD FLOOR'
+	
 @app.route('/floor/edit',methods=['POST'])
 def floor_edit():
-    fid = request.form['fid']
-    fname = html_escape(request.form['fname'])
-    bid = request.form['bid']
-    query.floor_edit(fid,fname,bid)
-    return '200 OK EDIT FLOOR'
-    
+	fid = request.form['fid']
+	fname = html_escape(request.form['fname'])
+	bid = request.form['bid']
+	query.floor_edit(fid,fname,bid)
+	return '200 OK EDIT FLOOR'
+	
 @app.route('/floor/del',methods=['GET'])
 def floor_del():
-    fid = request.args.get('fid')
-    query.floor_del(fid)
-    return '200 OK DEL FLOOR'
-    
+	fid = request.args.get('fid')
+	query.floor_del(fid)
+	return '200 OK DEL FLOOR'
+	
 @app.route('/building/',methods=['GET'])
 def building_list():
-    return jsonify(query.building_list())
-    
+	return jsonify(query.building_list())
+	
 @app.route('/building/',methods=['POST'])
 def building_add():
-    bname = html_escape(request.form['bname'])
-    query.building_add(bname)
-    return '200 OK ADD BUILDING'
-    
+	bname = html_escape(request.form['bname'])
+	query.building_add(bname)
+	return '200 OK ADD BUILDING'
+	
 @app.route('/building/edit',methods=['POST'])
 def building_edit():
-    bid = request.form['bid']
-    bname = html_escape(request.form['bname'])
-    query.building_edit(bid,bname)
-    return '200 OK EDIT BUILDING'
-    
+	bid = request.form['bid']
+	bname = html_escape(request.form['bname'])
+	query.building_edit(bid,bname)
+	return '200 OK EDIT BUILDING'
+	
 @app.route('/building/del',methods=['GET'])
 def building_del():
-    bid = request.args.get('bid')
-    query.building_del(bid)
-    return '200 OK DEL BUILDING'
+	bid = request.args.get('bid')
+	query.building_del(bid)
+	return '200 OK DEL BUILDING'
 
 @app.route('/rule/',methods=['POST'])
 def rule_add():
-    name = request.form.get('name')
-    data = request.form.get('data')
-    query.AddRule(name,data)
-    return jsonify({'Code':'200 OK'})
+	name = request.form.get('name')
+	data = request.form.get('data')
+	query.AddRule(name,data)
+	return jsonify({'Code':'200 OK'})
 
 @app.route('/rule/edit',methods=['POST'])
 def rule_edit():
-    _id = request.form.get('id')
-    name = request.form.get('name')
-    data = request.form.get('data')
-    query.UpdateRule(_id,name,data)
-    return jsonify({'Code':'200 OK'})
+	_id = request.form.get('id')
+	name = request.form.get('name')
+	data = request.form.get('data')
+	query.UpdateRule(_id,name,data)
+	return jsonify({'Code':'200 OK'})
 
 @app.route('/rule/',methods=['GET'])
 def rule_view():
-    rule = query.getRule()
-    return jsonify(rule)
+	rule = query.getRule()
+	return jsonify(rule)
 
 @app.route("/rule/del",methods=["GET"])
 def rule_del():
-    _id = request.args.get('id')
-    query.DeleteRule(_id)
-    return jsonify({'Code':'200 OK'})
+	_id = request.args.get('id')
+	query.DeleteRule(_id)
+	return jsonify({'Code':'200 OK'})
   
 @app.route('/logs/',methods=['GET'])
 def logs_list():
-    return jsonify(query.get_logs())
-    
+	return jsonify(query.get_logs())
+	
 @app.route('/sumLogs/',methods=['GET'])
 def summary_logs():
-    return jsonify(query.summary_logs())
+	return jsonify(query.summary_logs())
 
 @app.route("/autoadd",methods=["POST"])
 def auto_add():
-    prefix = request.form.get('prefix')
-    data = json.loads(request.form.get('data'))
-    query.auto_add_room(prefix,data)
-    return jsonify({'Code':'200 OK'})
+	prefix = request.form.get('prefix')
+	data = json.loads(request.form.get('data'))
+	query.auto_add_room(prefix,data)
+	return jsonify({'Code':'200 OK'})
 

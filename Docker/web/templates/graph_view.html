@@ -62,7 +62,7 @@
 								<label class="custom-control-label" for="Electricity">Electricity</label>
 							</div>
 						</div>
-						<div class="col-md-2 mb-3">
+						<div class="col-md mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Air Conditioner" data-type=""
 									checked value="Air Conditioner" name="typeFilter">
@@ -113,11 +113,7 @@
 		<input type="text" name="daterange" />
 	</div>
 	<div class="col-2">
-		<label>Chart type:</label>
-		<select id="type">
-			<option value="line">Line</option>
-			<option value="bar">Bar</option>
-		</select>
+		<label>Unit:</label>
 		<select id="unit">
 			<option value="second">Second</option>
 			<option value="minute">Minute</option>
@@ -129,8 +125,7 @@
 		<button id="update" class="btn btn-outline-primary">update</button>
 	</div>
 	<div class="col-2">
-		<button class="btn btn-outline-success" id="refresh">refresh</button>
-		<button class="btn btn-outline-danger" id="clear">clear</button>
+		<button class="btn btn-outline-success" id="refresh">auto refresh</button>
 	</div>
 </div>
 <br>
@@ -138,105 +133,11 @@
 <br>
 <br>
 <center>
-	<div id="compare">
-		<div style="width:1000px">
-			<canvas id="chart1"></canvas>
-		</div>
-	</div>
-	<div id="combine">
-		<div class="row">
-			<!-- Earnings (Monthly) Card Example -->
-			<div class="col-xl-4 col-md-6 mb-4">
-				<div class="card border-left-info shadow h-100 py-2">
-					<div class="card-body">
-						<div class="row no-gutters align-items-center">
-							<div class="col mr-2">
-								<div class="text-xs font-weight-bold text-info text-uppercase mb-1">Watt</div>
-								<div class="row no-gutters align-items-center">
-									<div class="col-auto">
-										<div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">1.4 kWh</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-auto">
-								<i class="fas fa-plug fa-2x text-gray-300"></i>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<!-- Pending Requests Card Example -->
-			<div class="col-xl-4 col-md-6 mb-4">
-				<div class="card border-left-warning shadow h-100 py-2">
-					<div class="card-body">
-						<div class="row no-gutters align-items-center">
-							<div class="col mr-2">
-								<div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Ampere</div>
-								<div class="h5 mb-0 font-weight-bold text-gray-800">5 A</div>
-							</div>
-							<div class="col-auto">
-								<i class="far fa-lightbulb fa-2x text-gray-300"></i>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="col-xl-4 col-md-6 mb-4">
-				<div class="card border-left-danger shadow h-100 py-2">
-					<div class="card-body">
-						<div class="row no-gutters align-items-center">
-							<div class="col mr-2">
-								<div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Voltage</div>
-								<div class="h5 mb-0 font-weight-bold text-gray-800">220 V</div>
-							</div>
-							<div class="col-auto">
-								<i class="fas fa-wind fa-2x text-gray-300"></i>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<br>
-		<br>
-		<div style="width:1000px">
-			<canvas id="chart2"></canvas>
-		</div>
-	</div>
-	<div id="separate">
-		<div style="width:1000px">
-			<canvas id="chart3"></canvas>
-		</div>
-		<div style="width:1000px">
-			<canvas id="chart4"></canvas>
-		</div>
-		<div style="width:1000px">
-			<canvas id="chart5"></canvas>
-		</div>
-	</div>
+	<div id="compare"></div>
+	<div id="combine"></div>
+	<div id="separate"></div>
 </center>
 <!-- /.container-fluid -->
-<div id="compare">
-	<div style="width:1000px">
-		<canvas id="chart1"></canvas>
-	</div>
-</div>
-<div id="combine">
-	<div style="width:1000px">
-		<canvas id="chart2"></canvas>
-	</div>
-</div>
-<div id="separate">
-	<div style="width:1000px">
-		<canvas id="chart3"></canvas>
-	</div>
-	<div style="width:1000px">
-		<canvas id="chart4"></canvas>
-	</div>
-	<div style="width:1000px">
-		<canvas id="chart5"></canvas>
-	</div>
-</div>
 {% endblock %}
 {% block js %}
 <script>
@@ -469,17 +370,16 @@
 				$('#sensor_list tbody').on('click', 'tr', function () {
 					$(this).toggleClass('selected');
 				});
-
 			},
 			preConfirm: () => {
 				data = sensors.rows('.selected').data();
 				$.each(data, function (index, value) {
-					sensorToAdd={
+					sensorToAdd = {
 						'type': 'sensor',
 						'id': value.sid,
 						'name': value.sname
 					}
-					if(hasDup(sensorToAdd)===false){
+					if (hasDup(sensorToAdd) === false) {
 						dashboardArray.push(sensorToAdd);
 					}
 				});
@@ -488,94 +388,170 @@
 		});
 	});
 
-	function generateData() {
-		var unit = document.getElementById('unit').value;
+	// function generateData() {
+	// 	var unit = document.getElementById('unit').value;
 
-		function unitLessThanDay() {
-			return unit === 'second' || unit === 'minute' || unit === 'hour';
-		}
+	// 	function unitLessThanDay() {
+	// 		return unit === 'second' || unit === 'minute' || unit === 'hour';
+	// 	}
 
-		function beforeNineThirty(date) {
-			return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
-		}
+	// 	function beforeNineThirty(date) {
+	// 		return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
+	// 	}
 
-		// Returns true if outside 9:30am-4pm on a weekday
-		function outsideMarketHours(date) {
-			if (date.isoWeekday() > 5) {
-				return true;
-			}
-			if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
-				return true;
-			}
-			return false;
-		}
+	// 	// Returns true if outside 9:30am-4pm on a weekday
+	// 	function outsideMarketHours(date) {
+	// 		if (date.isoWeekday() > 5) {
+	// 			return true;
+	// 		}
+	// 		if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
+	// 			return true;
+	// 		}
+	// 		return false;
+	// 	}
 
-		function randomNumber(min, max) {
-			return Math.random() * (max - min) + min;
-		}
+	// 	function randomNumber(min, max) {
+	// 		return Math.random() * (max - min) + min;
+	// 	}
 
-		function randomBar(date, lastClose) {
-			var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
-			var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
-			return {
-				t: date.valueOf(),
-				y: close
-			};
-		}
+	// 	function randomBar(date, lastClose) {
+	// 		var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
+	// 		var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
+	// 		return {
+	// 			t: date.valueOf(),
+	// 			y: close
+	// 		};
+	// 	}
 
-		var date = moment('Jan 01 1990', 'MMM DD YYYY');
-		var now = moment();
-		var data = [];
-		var lessThanDay = unitLessThanDay();
-		for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
-			if (outsideMarketHours(date)) {
-				if (!lessThanDay || !beforeNineThirty(date)) {
-					date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
-				}
-				if (lessThanDay) {
-					date = date.hour(9).minute(30).second(0);
-				}
-			}
-			data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
-		}
+	// 	var date = moment('Jan 01 1990', 'MMM DD YYYY');
+	// 	var now = moment();
+	// 	var data = [];
+	// 	var lessThanDay = unitLessThanDay();
+	// 	for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
+	// 		if (outsideMarketHours(date)) {
+	// 			if (!lessThanDay || !beforeNineThirty(date)) {
+	// 				date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
+	// 			}
+	// 			if (lessThanDay) {
+	// 				date = date.hour(9).minute(30).second(0);
+	// 			}
+	// 		}
+	// 		data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
+	// 	}
 
-		return data;
-	}
+	// 	return data;
+	// }
+	// console.log(generateData());
 
-	var ctx1 = document.getElementById('chart1').getContext('2d');
-	ctx1.canvas.width = 1000;
-	ctx1.canvas.height = 300;
+dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
+"volt":[
+{t: 631126800000, y: "600"},
+{t: 631213200000, y: "612"},
+{t: 631299600000, y: "625"},
+{t: 631386000000, y: "610"},
+{t: 631472400000, y: "630"},
+{t: 631731600000, y: "635"},
+{t: 631818000000, y: "640"},
+{t: 631904400000, y: "650"},
+{t: 631990800000, y: "641"},
+{t: 632077200000, y: "645"},
+{t: 632336400000, y: "640"},
+{t: 632422800000, y: "650"},
+{t: 632509200000, y: "660"},
+{t: 632595600000, y: "655"},
+{t: 632682000000, y: "654"},
+{t: 632941200000, y: "650"},
+{t: 633027600000, y: "643"},
+{t: 633114000000, y: "640"},
+{t: 633200400000, y: "644"},
+{t: 633286800000, y: "638"},
+{t: 633546000000, y: "632"},
+{t: 633632400000, y: "631"},
+{t: 633718800000, y: "625"},
+{t: 633805200000, y: "630"},
+{t: 633891600000, y: "624"},
+{t: 634150800000, y: "619"},
+{t: 634237200000, y: "618"},
+{t: 634323600000, y: "610"},
+{t: 634410000000, y: "601"},
+{t: 634496400000, y: "602"},
+{t: 634755600000, y: "610"}],
+"amp":[
+{t: 631126800000, y: "6"},
+{t: 631213200000, y: "12"},
+{t: 631299600000, y: "15"},
+{t: 631386000000, y: "11"},
+{t: 631472400000, y: "10"},
+{t: 631731600000, y: "9"},
+{t: 631818000000, y: "1"},
+{t: 631904400000, y: "2"},
+{t: 631990800000, y: "10"},
+{t: 632077200000, y: "3"},
+{t: 632336400000, y: "4"},
+{t: 632422800000, y: "7"},
+{t: 632509200000, y: "3"},
+{t: 632595600000, y: "5"},
+{t: 632682000000, y: "8"},
+{t: 632941200000, y: "9"},
+{t: 633027600000, y: "0"},
+{t: 633114000000, y: "8"},
+{t: 633200400000, y: "1"},
+{t: 633286800000, y: "8"},
+{t: 633546000000, y: "7"},
+{t: 633632400000, y: "1"},
+{t: 633718800000, y: "3"},
+{t: 633805200000, y: "2"},
+{t: 633891600000, y: "8"},
+{t: 634150800000, y: "9"},
+{t: 634237200000, y: "3"},
+{t: 634323600000, y: "14"},
+{t: 634410000000, y: "7"},
+{t: 634496400000, y: "2"},
+{t: 634755600000, y: "7"}],
+"watt":[
+{t: 631126800000, y: "0"},
+{t: 631213200000, y: "6"},
+{t: 631299600000, y: "8"},
+{t: 631386000000, y: "9"},
+{t: 631472400000, y: "4"},
+{t: 631731600000, y: "9"},
+{t: 631818000000, y: "1"},
+{t: 631904400000, y: "2"},
+{t: 631990800000, y: "0"},
+{t: 632077200000, y: "3"},
+{t: 632336400000, y: "4"},
+{t: 632422800000, y: "7"},
+{t: 632509200000, y: "3"},
+{t: 632595600000, y: "5"},
+{t: 632682000000, y: "8"},
+{t: 632941200000, y: "9"},
+{t: 633027600000, y: "0"},
+{t: 633114000000, y: "8"},
+{t: 633200400000, y: "1"},
+{t: 633286800000, y: "8"},
+{t: 633546000000, y: "7"},
+{t: 633632400000, y: "1"},
+{t: 633718800000, y: "3"},
+{t: 633805200000, y: "2"},
+{t: 633891600000, y: "8"},
+{t: 634150800000, y: "9"},
+{t: 634237200000, y: "3"},
+{t: 634323600000, y: "4"},
+{t: 634410000000, y: "7"},
+{t: 634496400000, y: "2"},
+{t: 634755600000, y: "7"}]};
+
+	
 
 	var color = Chart.helpers.color;
-	var cfg1 = {
+	var cfg = {
 		data: {
-			datasets: [{
-					label: 'IF - 4C01',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
+			datasets: [
 				{
-					label: 'IF - 4C02',
+					label: 'tmp',
 					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
 					borderColor: window.chartColors.blue,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
-				{
-					label: 'IF - 4C03',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					data: generateData(),
+					data: [{t: 000000000000, y: "0"}],
 					type: 'line',
 					pointRadius: 0,
 					fill: false,
@@ -676,520 +652,133 @@
 			}
 		}
 	};
+	
+	var colorNames = Object.keys(window.chartColors);
+	function loadCompare(data){
+		var charts = [];
+		$.each(["volt","amp","watt"], function( index, value ) {
+		var divChart = "<div style=\"width:1000px\"><canvas id=\"compare"+value+"\"></canvas></div>";
+		$("#compare").append(divChart);
+		var ctxTmp = document.getElementById('compare'+value).getContext('2d');
+		ctxTmp.canvas.width = 1000;
+		ctxTmp.canvas.height = 300;
+		var cfgTmp = JSON.parse(JSON.stringify(cfg));
+		var chart = new Chart(ctxTmp, cfgTmp);
+		charts.push(chart);
+		});
+		$.each(data, function( index, value ) {
+			var VAW = [value.volt,value.amp,value.watt];
+			$.each(VAW, function( i, v) {
+			var colorName = colorNames[charts[i].config.data.datasets.length % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var newDataset = {
+					label: value.name,
+					backgroundColor: newColor,
+					borderColor: newColor,
+					data: v,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				};
+				charts[i].config.data.datasets.push(newDataset);
+			});	
+		});
+		$.each(charts, function( index, value) {
+		value.config.data.datasets.splice(0, 1);
+		value.update();
+		});
+	}
 
-	var ctx2 = document.getElementById('chart2').getContext('2d');
-	ctx2.canvas.width = 1000;
-	ctx2.canvas.height = 300;
+	function loadSeparate(data){
+		$.each(data, function( index, value ) {
+			var VAW = [value.volt,value.amp,value.watt];
+			$("#separate").append("<div class=\"row\" id=\"row"+index+"\">");
+			$.each(VAW, function( i, v ) {
+				var x;
+				if(i==0)x="volt";if(i==1)x="amp";if(i==2)x="watt";
+				var divChart = "<div class=\"col-4\"><canvas id=\"separate-"+value.name+"-"+x+"\"></canvas></div>"
+				$("#row"+index).append(divChart);
+				var ctxTmp = document.getElementById("separate"+"-"+value.name+"-"+x).getContext('2d');
+				var cfgTmp = JSON.parse(JSON.stringify(cfg));
+				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length+index];
+				var newColor = window.chartColors[colorName];
+				var chart = new Chart(ctxTmp, cfgTmp);
+				var newDataset = {
+					label: value.name,
+					backgroundColor: newColor,
+					borderColor: newColor,
+					data: v,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				};
+				chart.config.data.datasets.push(newDataset);
+				chart.config.data.datasets.splice(0, 1);
+				chart.update();
+		});	
+	});	
+	}
 
-	var color = Chart.helpers.color;
-	var cfg2 = {
-		data: {
-			datasets: [{
-				label: 'IF - 4C01 & IF - 4C02 & IF - 4C03',
-				backgroundColor: color(window.chartColors.yellow).alpha(0.5).rgbString(),
-				borderColor: window.chartColors.yellow,
-				data: generateData(),
+	function loadCombine(data){
+		var charts = [];
+		var VAW = [data.volt,data.amp,data.watt];
+		$.each(["volt","amp","watt"], function( i, v ) {
+			var divChart = "<div style=\"width:1000px\"><canvas id=\"combine"+v+"\"></canvas></div>";
+			$("#combine").append(divChart);
+			var ctxTmp = document.getElementById('combine'+v).getContext('2d');
+			ctxTmp.canvas.width = 1000;
+			ctxTmp.canvas.height = 300;
+			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			var chart = new Chart(ctxTmp, cfgTmp);
+			charts.push(chart);
+		});
+		$.each(VAW, function( i, v) {
+			var colorName = colorNames[i % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var newDataset = {
+				label: data.name,
+				backgroundColor: newColor,
+				borderColor: newColor,
+				data: v,
 				type: 'line',
 				pointRadius: 0,
 				fill: false,
 				lineTension: 0,
 				borderWidth: 2
-			}]
-		},
-		options: {
-			animation: {
-				duration: 0
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					distribution: 'series',
-					offset: true,
-					ticks: {
-						major: {
-							enabled: true,
-							fontStyle: 'bold'
-						},
-						source: 'data',
-						autoSkip: true,
-						autoSkipPadding: 75,
-						maxRotation: 0,
-						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
-					}
-				}],
-				yAxes: [{
-					gridLines: {
-						drawBorder: false
-					},
-					scaleLabel: {
-						display: true,
-						labelString: 'Closing price ($)'
-					}
-				}]
-			},
-			pan: {
-				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "x",
-			},
-			tooltips: {
-				intersect: false,
-				mode: 'index',
-				callbacks: {
-					label: function (tooltipItem, myData) {
-						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-						if (label) {
-							label += ': ';
-						}
-						label += parseFloat(tooltipItem.value).toFixed(2);
-						return label;
-					}
-				}
-			}
-		}
-	};
-
-	var ctx3 = document.getElementById('chart3').getContext('2d');
-	ctx3.canvas.width = 1000;
-	ctx3.canvas.height = 300;
-
-	var color = Chart.helpers.color;
-	var cfg3 = {
-		data: {
-			datasets: [{
-					label: 'IF - 4C01 | Light',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
-				{
-					label: 'IF - 4C01 | Electricity',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
-				{
-					label: 'IF - 4C01 | Air Conditioner',
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.blue,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				}
-			]
-		},
-		options: {
-			animation: {
-				duration: 0
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					distribution: 'series',
-					offset: true,
-					ticks: {
-						major: {
-							enabled: true,
-							fontStyle: 'bold'
-						},
-						source: 'data',
-						autoSkip: true,
-						autoSkipPadding: 75,
-						maxRotation: 0,
-						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
-					}
-				}],
-				yAxes: [{
-					gridLines: {
-						drawBorder: false
-					},
-					scaleLabel: {
-						display: true,
-						labelString: 'Closing price ($)'
-					}
-				}]
-			},
-			pan: {
-				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "x",
-			},
-			tooltips: {
-				intersect: false,
-				mode: 'index',
-				callbacks: {
-					label: function (tooltipItem, myData) {
-						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-						if (label) {
-							label += ': ';
-						}
-						label += parseFloat(tooltipItem.value).toFixed(2);
-						return label;
-					}
-				}
-			}
-		}
-	};
-
-	var ctx4 = document.getElementById('chart4').getContext('2d');
-	ctx4.canvas.width = 1000;
-	ctx4.canvas.height = 300;
-
-	var color = Chart.helpers.color;
-	var cfg4 = {
-		data: {
-			datasets: [{
-					label: 'IF - 4C02 - Light1',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
-				{
-					label: 'IF - 4C02 | Light2',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				}
-			]
-		},
-		options: {
-			animation: {
-				duration: 0
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					distribution: 'series',
-					offset: true,
-					ticks: {
-						major: {
-							enabled: true,
-							fontStyle: 'bold'
-						},
-						source: 'data',
-						autoSkip: true,
-						autoSkipPadding: 75,
-						maxRotation: 0,
-						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
-					}
-				}],
-				yAxes: [{
-					gridLines: {
-						drawBorder: false
-					},
-					scaleLabel: {
-						display: true,
-						labelString: 'Closing price ($)'
-					}
-				}]
-			},
-			pan: {
-				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "x",
-			},
-			tooltips: {
-				intersect: false,
-				mode: 'index',
-				callbacks: {
-					label: function (tooltipItem, myData) {
-						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-						if (label) {
-							label += ': ';
-						}
-						label += parseFloat(tooltipItem.value).toFixed(2);
-						return label;
-					}
-				}
-			}
-		}
-	};
-
-	var ctx5 = document.getElementById('chart5').getContext('2d');
-	ctx5.canvas.width = 1000;
-	ctx5.canvas.height = 300;
-
-	var color = Chart.helpers.color;
-	var cfg5 = {
-		data: {
-			datasets: [{
-					label: 'IF - 4C03 | Light',
-					backgroundColor: color(window.chartColors.red).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.red,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				},
-				{
-					label: 'IF - 4C03 | Electricity',
-					backgroundColor: color(window.chartColors.green).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.green,
-					data: generateData(),
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				}
-			]
-		},
-		options: {
-			animation: {
-				duration: 0
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					distribution: 'series',
-					offset: true,
-					ticks: {
-						major: {
-							enabled: true,
-							fontStyle: 'bold'
-						},
-						source: 'data',
-						autoSkip: true,
-						autoSkipPadding: 75,
-						maxRotation: 0,
-						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
-					}
-				}],
-				yAxes: [{
-					gridLines: {
-						drawBorder: false
-					},
-					scaleLabel: {
-						display: true,
-						labelString: 'Closing price ($)'
-					}
-				}]
-			},
-			pan: {
-				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "x",
-			},
-			tooltips: {
-				intersect: false,
-				mode: 'index',
-				callbacks: {
-					label: function (tooltipItem, myData) {
-						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-						if (label) {
-							label += ': ';
-						}
-						label += parseFloat(tooltipItem.value).toFixed(2);
-						return label;
-					}
-				}
-			}
-		}
-	};
-	var chart1 = new Chart(ctx1, cfg1);
-	var chart2 = new Chart(ctx2, cfg2);
-	var chart3 = new Chart(ctx3, cfg3);
-	var chart4 = new Chart(ctx4, cfg4);
-	var chart5 = new Chart(ctx5, cfg5);
+				};
+				charts[i].config.data.datasets.push(newDataset);
+		});
+		$.each(charts, function( i, v) {
+		v.config.data.datasets.splice(0, 1);
+		v.update();
+		});
+	}
 
 	document.getElementById('update').addEventListener('click', function () {
-		var type = document.getElementById('type').value;
-		var dataset1 = chart1.config.data.datasets[0];
-		dataset1.type = type;
-		dataset1.data = generateData();
-		var dataset2 = chart1.config.data.datasets[1];
-		dataset2.type = type;
-		dataset2.data = generateData();
-		var dataset3 = chart1.config.data.datasets[2];
-		dataset3.type = type;
-		dataset3.data = generateData();
-		chart1.update();
-
-		var dataset4 = chart2.config.data.datasets[0];
-		dataset4.type = type;
-		dataset4.data = generateData();
-		chart2.update();
-
-		var dataset5 = chart3.config.data.datasets[0];
-		dataset5.type = type;
-		dataset5.data = generateData();
-		var dataset6 = chart3.config.data.datasets[1];
-		dataset6.type = type;
-		dataset6.data = generateData();
-		var dataset7 = chart3.config.data.datasets[2];
-		dataset7.type = type;
-		dataset7.data = generateData();
-		chart3.update();
-
-		var dataset8 = chart4.config.data.datasets[0];
-		dataset8.type = type;
-		dataset8.data = generateData();
-		var dataset9 = chart4.config.data.datasets[1];
-		dataset9.type = type;
-		dataset9.data = generateData();
-		chart4.update();
-
-		var dataset10 = chart5.config.data.datasets[0];
-		dataset10.type = type;
-		dataset10.data = generateData();
-		var dataset11 = chart5.config.data.datasets[1];
-		dataset11.type = type;
-		dataset11.data = generateData();
-
-		chart5.update();
+		//var dataset = chart.config.data.datasets[0];
+		//dataset1.data = generateData();
+		//chart.update();
+		console.log(dashboardArray);
+		$.ajax({
+            url: "{{ url_for('Private.dashboard_list') }}",
+            method: "POST",
+            data: {
+                datax: JSON.stringify(dashboardArray)
+                	}
+            }).then(function(res) {
+				loadSeparate(res);
+				loadCompare(res);
+				console.log(res);
+                        })
+            .catch(function(err) {
+                console.log(err);
+                });
 	});
+
+	loadCombine(dummyCombine);
 </script>
 {% endblock %}

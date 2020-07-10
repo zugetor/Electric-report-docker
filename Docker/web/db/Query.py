@@ -16,10 +16,71 @@ class Query:
 
 	def _CloseCursor(self,cursor):
 		return cursor.close()
-
-	def demo2(self):
-		result = self._client.query("SELECT * FROM mqtt_consumer;")
-		return result.raw
+		
+	def dashboard_list(self,data):
+		_cur = self._newCursor()
+		tmp=[]
+		for i in range(len(data)):
+			if(data[i]['type'] == "sensor"): 
+				result = self._client.query(query='select sum(volt) as volt ,sum(amp) as amp ,sum(watt) as watt from mqtt_consumer where sid=$sid group by time(10m);',params={"params":json.dumps({'sid':data[i]['id']})})
+				tmp.append({'name':data[i]['name'],'volt':[],'amp':[],'watt':[]})
+				for d in result.raw['series'][0]['values']:
+					tmp[i]['volt'].append({'t':d[0],'y':d[1]})
+					tmp[i]['amp'].append({'t':d[0],'y':d[2]})
+					tmp[i]['watt'].append({'t':d[0],'y':d[3]})
+			if(data[i]['type'] == "room"): 
+				tmp.append({'name':data[i]['name'],'volt':[],'amp':[],'watt':[]})
+				_cur.execute("select s.sid from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
+				sensor = _cur.fetchall()
+				qry = "select sum(volt) as volt ,sum(amp) as amp ,sum(watt) as watt from mqtt_consumer where "
+				for index in range(len(sensor)):
+					if(index == len(sensor)-1):
+						qry+='sid = '+str(sensor[index]['sid'])
+					else:
+						qry+='sid = '+str(sensor[index]['sid'])+' or '
+				if(len(sensor) != 0):
+					qry+=' group by time(10m);'
+					result = self._client.query(query=qry)
+					for d in result.raw['series'][0]['values']:
+						tmp[i]['volt'].append({'t':d[0],'y':d[1]})
+						tmp[i]['amp'].append({'t':d[0],'y':d[2]})
+						tmp[i]['watt'].append({'t':d[0],'y':d[3]})
+			if(data[i]['type'] == "floor"): 
+				tmp.append({'name':data[i]['name'],'volt':[],'amp':[],'watt':[]})
+				_cur.execute("select s.sid from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
+				sensor = _cur.fetchall()
+				qry = "select sum(volt) as volt ,sum(amp) as amp ,sum(watt) as watt from mqtt_consumer where "
+				for index in range(len(sensor)):
+					if(index == len(sensor)-1):
+						qry+='sid = '+str(sensor[index]['sid'])
+					else:
+						qry+='sid = '+str(sensor[index]['sid'])+' or '
+				if(len(sensor) != 0):
+					qry+=' group by time(10m);'
+					result = self._client.query(query=qry)
+					for d in result.raw['series'][0]['values']:
+						tmp[i]['volt'].append({'t':d[0],'y':d[1]})
+						tmp[i]['amp'].append({'t':d[0],'y':d[2]})
+						tmp[i]['watt'].append({'t':d[0],'y':d[3]})
+			if(data[i]['type'] == "building"): 
+				tmp.append({'name':data[i]['name'],'volt':[],'amp':[],'watt':[]})
+				_cur.execute("select s.sid from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
+				sensor = _cur.fetchall()
+				qry = "select sum(volt) as volt ,sum(amp) as amp ,sum(watt) as watt from mqtt_consumer where "
+				for index in range(len(sensor)):
+					if(index == len(sensor)-1):
+						qry+='sid = '+str(sensor[index]['sid'])
+					else:
+						qry+='sid = '+str(sensor[index]['sid'])+' or '
+				if(len(sensor) != 0):
+					qry+=' group by time(10m);'
+					result = self._client.query(query=qry)
+					for d in result.raw['series'][0]['values']:
+						tmp[i]['volt'].append({'t':d[0],'y':d[1]})
+						tmp[i]['amp'].append({'t':d[0],'y':d[2]})
+						tmp[i]['watt'].append({'t':d[0],'y':d[3]})
+		self._CloseCursor(_cur)
+		return tmp
 
 	def sensor_list(self):
 		_cur = self._newCursor()
@@ -228,7 +289,7 @@ class Query:
 
 	def new_log(self,message):
 		_cur = self._newCursor()
-		_cur.execute("DELETE FROM logs WHERE create_time <  (CURRENT_TIMESTAMP - INTERVAL 3 MONTH)")
+		_cur.execute("DELETE FROM logs WHERE create_time <	(CURRENT_TIMESTAMP - INTERVAL 3 MONTH)")
 		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
 		self._CloseCursor(_cur)
 
