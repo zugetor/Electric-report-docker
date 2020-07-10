@@ -235,8 +235,6 @@ class Query:
 		self._CloseCursor(_cur)
 		return res
 
-	#board.rid can be null
-
 	def building_list(self):
 		_cur = self._newCursor()
 		_cur.execute("SELECT * FROM building")
@@ -337,3 +335,19 @@ class Query:
 					WHERE NOT EXISTS ( SELECT rname, fid  FROM room WHERE rname = %s AND fid = %s)""",(i[0],floor_id[i[1]],i[0],floor_id[i[1]]))
 		self._CloseCursor(_cur)
 
+	def Updatepassword(self,username,password):
+		_cur = self._newCursor()
+		_cur.execute("UPDATE `user` SET password = %s WHERE username = %s",(password,username))
+		self._CloseCursor(_cur)
+
+	def getAllUser(self):
+		_cur = self._newCursor()
+		_cur.execute("SELECT * FROM user")
+		res = _cur.fetchall()
+		self._CloseCursor(_cur)
+		return res
+
+	def UpdateUserActive(self,_id,activate):
+		_cur = self._newCursor()
+		_cur.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
+		self._CloseCursor(_cur)

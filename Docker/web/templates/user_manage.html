@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}Energy Saving - User Management{% endblock %} {% block content %}
+<!-- Page Heading -->
+<div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 text-gray-800">User Management</h1>
+</div>
+
+<!-- DataTales Example -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-bordered" id="logs" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Activate(Allow user to login)</th>
+                    </tr>
+                </thead>
+                {% for i in user %}
+                <tbody>
+                    <tr>
+                        <td>{{i["id"]}}</td>
+                        <td>{{i["username"]}}</td>
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                {% if i['is_active'] == 1 %}
+                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" checked="" onchange="allowChange('{{i['id']}}',this)">
+                                {% else %}
+                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" onchange="allowChange('{{i['id']}}',this)">
+                                {% endif %}
+                                <label class="custom-control-label" for="Check_{{loop.index}}">Allow</label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+let allowChange = function(id,elem) {
+    let isactivate = $(elem).prop('checked') ? "1" : "0"
+    $.get( "{{ url_for('Private.user_active') }}", { id: id, allow: isactivate } )
+};
+</script>
+{% endblock %}1

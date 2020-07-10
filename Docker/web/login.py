@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import session, redirect, url_for, flash
+from flask import session, redirect, url_for, flash, current_app
 from time import time
 from extensions import query
 
@@ -17,6 +17,15 @@ def login_required(f):
 		return f(*args, **kwargs)
 	return decorated_function
 
+def allow_register(f):
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if not current_app.config["ALLOW_REGISTER"]:
+			flash('Register is not allow.')
+			return redirect(url_for('Page.login'))
+		return f(*args, **kwargs)
+	return decorated_function
+
 def login_user(user):
 	session['username'] = user["username"]
 	session['id'] = user["id"]
@@ -26,3 +35,6 @@ def logout_user():
 	session.pop('id', None)
 	session.pop('username', None)
 	session.pop('login_time', None)
+
+def getSessionUsername():
+	return session['username']
