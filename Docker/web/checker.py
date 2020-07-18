@@ -5,3 +5,6 @@ def checkRule():
 
 def checkSchedule():
 	return None
+
+def updateSensor():
+	return None
