@@ -99,6 +99,7 @@ def reset():
 	return render_template("password_reset.html",form=form)  
 
 @app.route("/graph_view")
+@login_required
 def graph_view():
 	return render_template("graph_view.html")
     
@@ -107,33 +108,40 @@ def graph_view_tradingview():
 	return render_template("graph_view_tradingview.html")
 
 @app.route("/logs")
+@login_required
 def logs():
 	return render_template("logs.html")
 
 @app.route("/settings")
+@login_required
 def settings():
 	return render_template("notification - setting.html")
 
 @app.route("/sensor_add")
+@login_required
 def sensor_add():
 	return render_template("sensor_add_v1.html")
 
 @app.route("/conditions")
+@login_required
 def conditions():
 	_type = query.getAllType()
 	return render_template("sensor_condition.html",_type=_type)
 
 @app.route("/sensor_view")
+@login_required
 def sensor_view():
 	_type = query.getAllType()
 	return render_template("sensor_view.html",_type=_type)    
     
 @app.route("/room_add")
+@login_required
 def room_add():
 	reg_building = reg.getAllBuilding()
 	return render_template("room_add.html",building=reg_building)
 
 @app.route("/user")
+@login_required
 def user_manage():
 	user = query.getAllUser()
 	return render_template("user_manage.html",user=user)

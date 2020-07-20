@@ -351,3 +351,15 @@ class Query:
 		_cur = self._newCursor()
 		_cur.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
 		self._CloseCursor(_cur)
+
+	def roomWithBPrefix(self):
+		_cur = self._newCursor()
+		_cur.execute("SELECT r.rid,r.rname,r.rstatus,b.burl FROM room r INNER JOIN floor f ON r.fid = f.fid INNER JOIN building b ON f.bid = b.bid WHERE b.burl != ''")
+		res = _cur.fetchall()
+		self._CloseCursor(_cur)
+		return res
+
+	def UpdateRoomStatue(self,status,name):
+		_cur = self._newCursor()
+		_cur.execute("UPDATE `room` SET rstatus = %s WHERE rname = %s",(status,name))
+		self._CloseCursor(_cur)
