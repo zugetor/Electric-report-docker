@@ -14,6 +14,7 @@ class Config(object):
     REMEMBER_COOKIE_HTTPONLY = True
     ALLOW_REGISTER = True #Allow user to register
     ENABLE_DEV = True #Enable Development Config
+    LOGIN_ONLY = True #Enable Login to all page and API
 
 class ProductionConfig(Config):
     DEBUG = False

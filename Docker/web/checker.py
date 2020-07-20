@@ -14,6 +14,9 @@ def checkSchedule():
 	now1 = datetime.datetime.now(tz)
 	today = datetime.date.today()
 	for room in allroom:
+		if room["burl"] != burl:
+			burl = room["burl"]
+			allSchedule = reg.getAllSchedule(burl)
 		roomSchedule = allSchedule.loc[(allSchedule['ROOM'] == room["rname"]) &
 						(allSchedule['Day/Time'] == today),"{}:00-{}:00".format(now1.hour,now1.hour+1)]
 		if len(roomSchedule) > 0 and roomSchedule[roomSchedule.index[0]]:
