@@ -101,6 +101,10 @@ def reset():
 @app.route("/graph_view")
 def graph_view():
 	return render_template("graph_view.html")
+    
+@app.route("/graph_view_tradingview")
+def graph_view_tradingview():
+	return render_template("graph_view_tradingview.html")
 
 @app.route("/logs")
 def logs():

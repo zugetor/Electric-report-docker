@@ -140,6 +140,7 @@
 <!-- /.container-fluid -->
 {% endblock %}
 {% block js %}
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <script>
 	var getRoomData = function () {
 		$.ajax({
@@ -540,165 +541,42 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 {t: 634410000000, y: "7"},
 {t: 634496400000, y: "2"},
 {t: 634755600000, y: "7"}]};
-
-	
-
-	var color = Chart.helpers.color;
-	var cfg = {
-		data: {
-			datasets: [
-				{
-					label: 'tmp',
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.blue,
-					data: [{t: 000000000000, y: "0"}],
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				}
-			]
-		},
-		options: {
-			animation: {
-				duration: 0
-			},
-			scales: {
-				xAxes: [{
-					type: 'time',
-					distribution: 'series',
-					offset: true,
-					gridLines: {
-						display: false,
-						drawBorder: false
-					},
-					ticks: {
-						major: {
-							enabled: true,
-							fontStyle: 'bold'
-						},
-						source: 'data',
-						autoSkip: true,
-						autoSkipPadding: 75,
-						maxRotation: 0,
-						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
-					}
-				}],
-				yAxes: [{
-					gridLines: {
-						color: "rgb(234, 236, 244)",
-						zeroLineColor: "rgb(234, 236, 244)",
-						drawBorder: false,
-						borderDash: [2],
-						zeroLineBorderDash: [2]
-					},
-					scaleLabel: {
-						display: true,
-						labelString: 'Watt'
-					}
-				}]
-			},
-			pan: {
-				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			pan: {
-				enabled: true,
-				mode: "y",
-				speed: 100,
-				threshold: 100
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "x",
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "y",
-			},
-			tooltips: {
-				intersect: false,
-				mode: 'index',
-				callbacks: {
-					label: function (tooltipItem, myData) {
-						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-						if (label) {
-							label += ': ';
-						}
-						label += parseFloat(tooltipItem.value).toFixed(2);
-						return label;
-					}
-				}
-			}
-		}
-	};
 	
 	var colorNames = Object.keys(window.chartColors);
 	function loadCompare(data){
 		var charts = [];
 		$.each(["volt","amp","watt"], function( index, value ) {
-		var divChart = "<div style=\"width:1000px\"><canvas id=\"compare"+value+"\"></canvas></div>";
+		var divChart = "<div style=\"width:1000px\"><div id=\"compare"+value+"\"></div></div><br>";
 		$("#compare").append(divChart);
-		var ctxTmp = document.getElementById('compare'+value).getContext('2d');
-		ctxTmp.canvas.width = 1000;
-		ctxTmp.canvas.height = 300;
-		var cfgTmp = JSON.parse(JSON.stringify(cfg));
-		var chart = new Chart(ctxTmp, cfgTmp);
+		var chart = LightweightCharts.createChart(document.getElementById("compare"+value), {
+	width: 600,
+  height: 300,
+	layout: {
+		fontFamily: 'Comic Sans MS',
+	},
+	priceScale: {
+		borderColor: 'rgba(197, 203, 206, 1)',
+	},
+	timeScale: {
+		borderColor: 'rgba(197, 203, 206, 1)',
+	},
+});
 		charts.push(chart);
 		});
 		$.each(data, function( index, value ) {
 			var VAW = [value.volt,value.amp,value.watt];
 			$.each(VAW, function( i, v) {
-			var colorName = colorNames[charts[i].config.data.datasets.length % colorNames.length];
+			var colorName = colorNames[index % colorNames.length];
 			var newColor = window.chartColors[colorName];
-			var newDataset = {
-					label: value.name,
-					backgroundColor: newColor,
-					borderColor: newColor,
-					data: v,
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				};
-				charts[i].config.data.datasets.push(newDataset);
+			var areaSeries = charts[i].addAreaSeries({
+  				topColor: newColor,
+  				bottomColor: newColor,
+  				lineColor: newColor,
+  				lineWidth: 2,
+			});
+			areaSeries.setData(v);
+			
 			});	
-		});
-		$.each(charts, function( index, value) {
-		value.config.data.datasets.splice(0, 1);
-		value.update();
 		});
 	}
 
@@ -711,25 +589,26 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 				if(i==0)x="volt";if(i==1)x="amp";if(i==2)x="watt";
 				var divChart = "<div class=\"col-4\"><canvas id=\"separate-"+value.name+"-"+x+"\"></canvas></div>"
 				$("#row"+index).append(divChart);
-				var ctxTmp = document.getElementById("separate"+"-"+value.name+"-"+x).getContext('2d');
-				var cfgTmp = JSON.parse(JSON.stringify(cfg));
-				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length+index];
-				var newColor = window.chartColors[colorName];
-				var chart = new Chart(ctxTmp, cfgTmp);
-				var newDataset = {
-					label: value.name,
-					backgroundColor: newColor,
-					borderColor: newColor,
-					data: v,
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				};
-				chart.config.data.datasets.push(newDataset);
-				chart.config.data.datasets.splice(0, 1);
-				chart.update();
+				var chart = LightweightCharts.createChart(document.getElementById("separate-"+value.name+"-"+x), {
+					width: 600,
+  					height: 300,
+					priceScale: {
+					borderColor: 'rgba(197, 203, 206, 1)',
+					},
+					timeScale: {
+						timeVisible: true,
+   						secondsVisible: false,
+					},
+			});
+			var colorName = colorNames[i % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var areaSeries = chart.addAreaSeries({
+  				topColor: newColor,
+  				bottomColor: newColor,
+  				lineColor: newColor,
+  				lineWidth: 2,
+			});
+			areaSeries.setData(v);
 		});	
 	});	
 	}
@@ -770,9 +649,6 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 	}
 
 	document.getElementById('update').addEventListener('click', function () {
-		//var dataset = chart.config.data.datasets[0];
-		//dataset1.data = generateData();
-		//chart.update();
 		console.log(dashboardArray);
 		$.ajax({
             url: "{{ url_for('Private.dashboard_list') }}",
@@ -790,6 +666,6 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
                 });
 	});
 
-	loadCombine(dummyCombine);
+	//loadCombine(dummyCombine);
 </script>
 {% endblock %}
