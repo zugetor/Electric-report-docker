@@ -1,13 +1,17 @@
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from route import private, page, public
-from config import ProductionConfig, DevelopmentConfig, TestingConfig
+from config import Config, ProductionConfig, DevelopmentConfig, TestingConfig
 from extensions import mysql, influx, query, html_escape
-from checker import checkRule, checkSchedule, updateSensor
+from checker import checkRule, checkSchedule
 import atexit
 
+cfg = ProductionConfig
+if Config.ENABLE_DEV:
+	cfg = DevelopmentConfig
+
 app = Flask(__name__)
-app.config.from_object(DevelopmentConfig)
+app.config.from_object(cfg)
 
 mysql.init_app(app.config)
 influx.init_app(app.config)
@@ -18,9 +22,8 @@ app.register_blueprint(private.app, url_prefix="/api/private")
 app.register_blueprint(public.app, url_prefix="/api/public")
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(func=checkRule, trigger="interval", minutes=5)
-scheduler.add_job(func=checkSchedule, trigger="interval", hours=1)
-scheduler.add_job(func=updateSensor, trigger="interval", minutes=5)
+scheduler.add_job(func=checkRule, trigger="interval", minutes=cfg.RULE_UPDATE)
+scheduler.add_job(func=checkSchedule, trigger="interval", minutes=cfg.SCHEDULE_UPDATE)
 
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())

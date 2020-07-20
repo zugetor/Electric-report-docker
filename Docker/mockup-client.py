@@ -17,15 +17,18 @@ def mockupdata1():
 def mockupdata2():
 	return { "MAC": "GG-HH-II-JJ-KK-LL", "status": random.randint(0, 1)}
 
+def mockupdata3():
+	return { "MAC": "AA-BB-CC-DD-EE-FF", "sensor": [1,2,3,4,5] }
+
 host = "broker.mqttdashboard.com"
 port = 1883
 client = mqtt.Client()
 client.connect(host,port)
-for _ in range(10):
-	message = mockupdata()
-	client.publish("/infbuu/IF/1/IF-102/dm/air",json.dumps(message))
-	message = mockupdata1()
+for _ in range(3):
+	#message = mockupdata()
+	#client.publish("/infbuu/IF/1/IF-102/dm/air",json.dumps(message))
+	message = mockupdata3()
 	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
-	message = mockupdata2()
-	client.publish("/infbuu/IF/11/IF-204/pir",json.dumps(message))
+	#message = mockupdata2()
+	#client.publish("/infbuu/IF/11/IF-204/pir",json.dumps(message))
 	print("Publish: {}".format(message))

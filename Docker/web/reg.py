@@ -80,10 +80,27 @@ if __name__ == '__main__':
 	LOG2_url = "https://reg.buu.ac.th/registrar/room_timeall.asp?f_cmd=1&campusid=1&campusname=%BA%D2%A7%E1%CA%B9&bc=LOG2&bn=%CD%D2%A4%D2%C3%E2%C5%A8%D4%CA%B5%D4%A1%CA%EC+2"
 	IF_Room = getAllRoomList(IF_url)
 	Floor_regex = "IF-([0-9]{,2})[a-zA-Z]"
-	print(getAllBuilding())
+	'''print(getAllBuilding())
 	print("-"*50)
 	print(IF_Room)
 	print("-"*50)
 	print(getAllSchedule(LOG2_url))
 	print("-"*50)
-	print(getFloor(IF_Room,Floor_regex))
+	print(getFloor(IF_Room,Floor_regex))'''
+	df = getAllSchedule(LOG2_url)
+	import datetime, pytz
+	tz = pytz.timezone('Asia/Bangkok')
+	now1 = datetime.datetime.now(tz)
+	today = datetime.date.today()
+	df2 = df.loc[(df['ROOM'] == "LOG2-502") & (df['Day/Time'] == today),"{}:00-{}:00".format(now1.hour,now1.hour+1)]
+	print(df2[df2.index[0]])
+	if len(df2) > 0 and df2[df2.index[0]]:
+		print("Reserved")
+	else:
+		print("Free")
+	df2 = df.loc[(df['ROOM'] == "LOG2-501") & (df['Day/Time'] == today),"{}:00-{}:00".format(now1.hour,now1.hour+1)]
+	print(df2[df2.index[0]])
+	if len(df2) > 0 and df2[df2.index[0]]:
+		print("Reserved")
+	else:
+		print("Free")
