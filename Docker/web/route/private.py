@@ -8,8 +8,11 @@ app = Blueprint('Private', __name__)
 @app.route('/dashboard_list/',methods=['POST'])
 @login_required
 def dashboard_list():
-	datax = json.loads(request.form.get('datax'))
-	response = jsonify(query.dashboard_list(datax))
+	data = json.loads(request.form.get('data'))
+	unit = request.form.get('unit')
+	startTime = request.form.get('startTime')
+	endTime = request.form.get('endTime')
+	response = jsonify(query.dashboard_list(data,unit,startTime,endTime))
 	return response
 
 @app.route('/sensor/',methods=['GET'])
@@ -201,12 +204,12 @@ def auto_add():
 @app.route("/active",methods=["GET"])
 @login_required
 def user_active():
-    _id = request.args.get('id')
-    _allow = request.args.get('allow')
-    try:
-        if int(_allow) != 0 and int(_allow) != 1:
-            _allow = 0
-    except:
-        _allow = 0
-    query.UpdateUserActive(_id,_allow)
-    return jsonify({'Code':'200 OK'})
+	_id = request.args.get('id')
+	_allow = request.args.get('allow')
+	try:
+		if int(_allow) != 0 and int(_allow) != 1:
+			_allow = 0
+	except:
+		_allow = 0
+	query.UpdateUserActive(_id,_allow)
+	return jsonify({'Code':'200 OK'})
