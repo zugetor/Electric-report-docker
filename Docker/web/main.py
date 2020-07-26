@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 from route import private, page, public
-from config import Config, ProductionConfig, DevelopmentConfig, TestingConfig
+from config import Config, ProductionConfig, DevelopmentConfig
 from extensions import mysql, influx, query, html_escape
-from checker import checkRule, checkSchedule
+from checker import checkRule, checkSchedule, updateNewsensor
 import atexit
 
 cfg = ProductionConfig
@@ -23,7 +23,8 @@ app.register_blueprint(public.app, url_prefix="/api/public")
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=checkRule, trigger="interval", minutes=cfg.RULE_UPDATE)
-scheduler.add_job(func=checkSchedule, trigger="interval", minutes=cfg.SCHEDULE_UPDATE)
+scheduler.add_job(func=checkSchedule, args=[cfg.TIME_ZONE], trigger="interval", minutes=cfg.SCHEDULE_UPDATE)
+scheduler.add_job(func=updateNewsensor, trigger="interval", minutes=cfg.SENSOR_UPDATE)
 
 scheduler.start()
 atexit.register(lambda: scheduler.shutdown())

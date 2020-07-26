@@ -2,15 +2,14 @@ from notify import linenotify
 from extensions import query
 import datetime, pytz, reg
 
-tz = pytz.timezone('Asia/Bangkok')
-
 def checkRule():
 	return None
 
-def checkSchedule():
+def checkSchedule(TIME_ZONE="Asia/Bangkok"):
 	allroom = query.roomWithBPrefix()
 	burl = allroom[0]["burl"]
 	allSchedule = reg.getAllSchedule(burl)
+	tz = pytz.timezone(TIME_ZONE)
 	now1 = datetime.datetime.now(tz)
 	today = datetime.date.today()
 	for room in allroom:
@@ -23,3 +22,6 @@ def checkSchedule():
 			query.UpdateRoomStatue(1,room["rname"])
 		else:
 			query.UpdateRoomStatue(0,room["rname"])
+
+def updateNewsensor():
+	return None

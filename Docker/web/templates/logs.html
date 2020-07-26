@@ -80,69 +80,30 @@
 </div>
 {% endblock %} {% block js %}
 <script>
+    var logs = $('#logs').DataTable();
     $(document).ready(function() {
         sumLogs();
-        $(function() {
 
-            var start = moment().subtract(29, 'days');
-            var end = moment();
+        var start = moment().subtract(29, 'days');
+        var end = moment();
 
-            function cb(start, end) {
-                $('#reportrange span').html(start.format('YYYY-MM-DD hh:mm:ss') + ' - ' + end.format('YYYY-MM-DD hh:mm:ss'));
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            timePicker: true,
+            ranges: {
+                'Today': [moment().subtract(1, 'days'), moment()],
+                'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment()],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month')
+                    .endOf('month')
+                ]
             }
+        }, cb);
 
-            $('#reportrange').daterangepicker({
-                startDate: start,
-                endDate: end,
-                timePicker: true,
-                ranges: {
-                    'Today': [moment().subtract(1, 'days'), moment()],
-                    'Yesterday': [moment().subtract(1, 'days').startOf('day'), moment()],
-                    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                    'This Month': [moment().startOf('month'), moment().endOf('month')],
-                    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month')
-                        .endOf('month')
-                    ]
-                }
-            }, cb);
-
-            cb(start, end);
-
-        });
-
-        var logs = $('#logs').DataTable();
-
-        function updateLogs() {
-            logs.destroy();
-
-            logs = $('#logs').DataTable({
-                ajax: {
-                    "url": "{{ url_for('Private.logs_list') }}",
-                    "type": "GET",
-                    "dataSrc": "",
-                },
-                columns: [{
-                    data: 'lid'
-                },{
-                    data: 'create_time'
-                }, {
-                    data: 'message'
-                }],
-                columnDefs: [{
-                    "width": "5%",
-                    "targets": 0
-                }, {
-                    "width": "15%",
-                    "targets": 1
-                }, {
-                    targets: 1,
-                    render: function(data) {
-                        return moment(data).format('YYYY-MM-DD hh:mm:ss');
-                    }
-                }]
-            });
-        };
+        cb(start, end);
 
         updateLogs();
         
@@ -172,6 +133,41 @@
             logs.draw()
         });
     });
+
+    function cb(start, end) {
+        $('#reportrange span').html(start.format('YYYY-MM-DD hh:mm:ss') + ' - ' + end.format('YYYY-MM-DD hh:mm:ss'));
+    }
+
+    function updateLogs() {
+        logs.destroy();
+
+        logs = $('#logs').DataTable({
+            ajax: {
+                "url": "{{ url_for('Private.logs_list') }}",
+                "type": "GET",
+                "dataSrc": "",
+            },
+            columns: [{
+                data: 'lid'
+            },{
+                data: 'create_time'
+            }, {
+                data: 'message'
+            }],
+            columnDefs: [{
+                "width": "5%",
+                "targets": 0
+            }, {
+                "width": "15%",
+                "targets": 1
+            }, {
+                targets: 1,
+                render: function(data) {
+                    return moment(data).format('YYYY-MM-DD hh:mm:ss');
+                }
+            }]
+        });
+    };
 
     var sumLogs = function() {
         $.ajax({
