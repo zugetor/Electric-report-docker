@@ -23,5 +23,8 @@ class InfluxDB:
 		
 	def get_client(self):
 		if not self._client:
-			return self.connect()
+			try:
+				return self.connect()
+			except:
+				return self.connect_cfg()
 		return self._client

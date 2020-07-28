@@ -23,7 +23,10 @@ class MySQL:
 		
 	def get_connection(self):
 		if not self._conn:
-			self.connect()
+			try:
+				self.connect()
+			except:
+				self.connect_cfg()
 		return self._conn
 
 	def close(self):
