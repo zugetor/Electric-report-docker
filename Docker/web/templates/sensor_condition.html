@@ -119,6 +119,8 @@
         { type: 'less', optgroup: 'basic' },
         { type: 'less_or_equal', optgroup: 'basic' },
         { type: 'between', optgroup: 'basic' },
+        { type: 'in', optgroup: 'basic' },
+        { type: 'not_in', optgroup: 'basic' },
         { type: 'all_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] },
         { type: 'any_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] }],
       filters: [{
@@ -136,7 +138,7 @@
       },{
         id: 'dow',
         label: 'Day of Week',
-        type: 'integer',
+        type: 'string',
         input: 'checkbox',
         values: [
           'Sunday',
@@ -151,7 +153,7 @@
           min: 1
         },
         description: 'Please select day you want to check the sensor.',
-        operators: ['any_true'],
+        operators: ['in','not_in'],
       },{
         id: 'room',
         label: 'Room',
@@ -167,7 +169,7 @@
       },{
         id: 'floor',
         label: 'Floor',
-        type: 'integer',
+        type: 'string',
         input: floorBox,
         validation: {
           min: 1
@@ -188,7 +190,7 @@
         description: 'Please select building you want to check the sensor.',
         operators: ['equal']
       },{
-        id: 'rate',
+        id: 'time',
         label: '24-hour clock',
         type: 'integer',
         validation: {
@@ -354,7 +356,7 @@ let roomBox = function(){
     })
     res += '</optgroup>'
   });
-  res += '</select><select class="custom-select"><option>Any</option><option>Free</option><option>Reserved</option></select>'
+  res += '</select><select class="custom-select"><option value="-1">Any</option><option value="0">Free</option><option value="1">Reserved</option></select>'
   return res
 }
 

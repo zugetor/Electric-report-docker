@@ -16,6 +16,15 @@ class Config(object):
     LOGIN_ONLY = True #Enable Login to all page and API
     TIME_ZONE = "Asia/Bangkok" #Time zone for check room schedule
     INF_TABLE = ["ct","dm","pir"] #Name of table in InfluxDB
+    Nofify_Template = "Rule: {rname}\nDate: {date}\nDay: {dow}\nTime: {time}\nBuilding: {building}\nfloor: {floor}\nRoom: {room}\nStatus: {status}\n"
+    #{rname} = Rule Name
+    #{date} = Current Date at notify time
+    #{dow} = Current Day name at notify time
+    #{time} = Current Hour in 24H. at notify time
+    #{building} = Building name
+    #{floor} = Floor name
+    #{room} = Room name
+    #{status} = Room status
 
 class ProductionConfig(Config):
     DEBUG = False #Disable Debug
@@ -30,6 +39,6 @@ class DevelopmentConfig(Config):
     DEBUG = True #Enable Debug
     RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" #Recaptcha public key for test only
     RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe" #Recaptcha public key for test only
-    RULE_UPDATE = 0.5 #Rule update every N minutes
-    SCHEDULE_UPDATE = 0.5 #Schedule update every N minutes
-    SENSOR_UPDATE = 0.5 #Check for new sensor every N minutes
+    RULE_UPDATE = 0.1 #Rule update every N minutes
+    SCHEDULE_UPDATE = 0.1 #Schedule update every N minutes
+    SENSOR_UPDATE = 0.1 #Check for new sensor every N minutes

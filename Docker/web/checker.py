@@ -1,7 +1,9 @@
 from notify import linenotify
 from extensions import getConfig
 from db import MySQL, InfluxDB, Query
-import datetime, pytz, reg
+from jqqb_evaluator.evaluator import Evaluator
+from time import time
+import datetime, pytz, reg, json
 
 class dbHandler():
 	def __init__(self):
@@ -44,6 +46,10 @@ def getTable():
 	cfg = getConfig()
 	return cfg.INF_TABLE
 
+def getTemplate():
+	cfg = getConfig()
+	return cfg.Nofify_Template
+
 def escape(txt):
 	blocklst = ["'","\"",";",":","-","#","\\","/","%","&"]
 	for i in blocklst:
@@ -58,7 +64,49 @@ def _topic2type(topic):
 		return topic[-1],topic[-1]
 
 def checkRule():
-	return None
+	db = dbHandler()
+	query = db.getQuery()
+	
+	daylst = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+
+	allrule = query.getRule()
+	for rule in allrule:
+		rule_name = rule["rname"]
+		rjson = rule["rjson"]
+
+		rule_json = json.loads(rjson)
+		evaluator = Evaluator(rule_json)
+
+		weekday = datetime.datetime.today().weekday()
+		tz = pytz.timezone(getTimeZone())
+		now1 = datetime.datetime.now(tz)
+		now_date = now1.strftime("%d/%m/%Y")
+
+		objects = []
+
+		all_room_list = query.all_room_list()
+		for building in all_room_list:
+			bname = building["bname"]
+			for floor in building["floor"]:
+				fname = floor["fname"]
+				for room in floor["room"]:
+					rname = room["rname"]
+					rstatus = room["rstatus"]
+					tmp = {'dow': daylst[weekday+1], "time":now1.hour,"date":now_date,
+							"room":[rname,rstatus],"floor":fname,"building":bname}
+					objects.append(tmp)
+
+		matched = evaluator.get_matching_objects(objects)
+
+		tokens = query.getToken()
+		for match in matched:
+			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
+			match["room"] = match["room"][0]
+			match["rname"] = rule_name
+			message = getTemplate().format(**match)
+			for token in tokens:
+				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
+					linenotify(message,token["ntoken"])
 
 def checkSchedule():
 	db = dbHandler()
@@ -67,7 +115,7 @@ def checkSchedule():
 	if len(allroom) > 0:
 		burl = allroom[0]["burl"]
 		allSchedule = reg.getAllSchedule(burl)
-		tz = pytz.timezone(TIME_ZONE)
+		tz = pytz.timezone(getTimeZone())
 		now1 = datetime.datetime.now(tz)
 		today = datetime.date.today()
 		for room in allroom:

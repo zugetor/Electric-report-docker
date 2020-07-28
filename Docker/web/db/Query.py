@@ -128,7 +128,7 @@ class Query:
 			floor = _cur.fetchall()
 			for f in floor:
 				f.update({'room':[]})
-				_cur.execute("SELECT rid,rname FROM room WHERE fid = %s",(f['fid'],))
+				_cur.execute("SELECT rid,rname,rstatus FROM room WHERE fid = %s",(f['fid'],))
 				room = _cur.fetchall()
 				for r in room:
 					f['room'].append(r)
@@ -269,10 +269,11 @@ class Query:
 	def DeleteRule(self,ruid):
 		self.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
 
-	def new_log(self,message):
+	def new_log(self,message,token):
 		_cur = self._newCursor()
 		_cur.execute("DELETE FROM logs WHERE create_time <	(CURRENT_TIMESTAMP - INTERVAL 3 MONTH)")
 		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
+		_cur.execute("UPDATE `notify` SET `nlast_time` = CURRENT_TIMESTAMP WHERE `notify`.`ntoken` = %s",(token,))
 		self._CloseCursor(_cur)
 
 	def get_logs(self):
@@ -347,3 +348,7 @@ class Query:
 							WHERE NOT EXISTS ( SELECT inf_id,inf_type,tid,boid FROM sensor WHERE inf_id = %s AND inf_type = %s AND tid = %s AND boid = %s)""",
 							(s[0],s[1],s[2],s[3],lastid,s[1],s[2],s[3],lastid))
 		self._CloseCursor(_cur)
+
+	def getToken(self):
+		res = self.fetchAll("SELECT * FROM notify")
+		return res

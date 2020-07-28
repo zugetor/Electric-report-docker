@@ -12,7 +12,7 @@ def linenotify(message,token,log=True):
 	res = json.loads(a.text)
 	if(res["message"] == "ok"):
 		if(log):
-			query.new_log(message) #ruid
+			query.new_log(message,token)
 		return True
 	return False
 
