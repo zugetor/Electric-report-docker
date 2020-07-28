@@ -45,6 +45,9 @@ class Query:
 			res = _cur.execute(sql)
 		self._CloseCursor(_cur)
 		return res
+
+	def getInfQuery(self):
+		return self._client.query
 		
 	def dashboard_list(self,data):
 		_cur = self._newCursor()
@@ -329,3 +332,18 @@ class Query:
 
 	def UpdateRoomStatue(self,status,name):
 		self.execute("UPDATE `room` SET rstatus = %s WHERE rname = %s",(status,name))
+
+	def addnewSensor(self,data):
+		_cur = self._newCursor()
+		mac = data["MAC"]
+		_cur.execute("""INSERT INTO board(`bomac`, `register`, `time`, `rid`) 
+						SELECT * FROM (SELECT %s AS bomac, 0 AS register, CURRENT_TIMESTAMP AS time, '1' AS rid) AS tmp 
+						WHERE NOT EXISTS ( SELECT bomac FROM board WHERE bomac = %s)""",(mac,mac))
+		_cur.execute("SELECT boid FROM board WHERE bomac = %s",(mac,))
+		lastid = _cur.fetchone()["boid"]
+		for s in data["data"]:
+			_cur.execute("""INSERT INTO `sensor` (`sname`, `inf_id`, `inf_type`, `tid`, `boid`)
+							SELECT * FROM (SELECT %s AS sname, %s AS inf_id, %s AS inf_type, %s AS tid, %s AS boid) AS tmp 
+							WHERE NOT EXISTS ( SELECT inf_id,inf_type,tid,boid FROM sensor WHERE inf_id = %s AND inf_type = %s AND tid = %s AND boid = %s)""",
+							(s[0],s[1],s[2],s[3],lastid,s[1],s[2],s[3],lastid))
+		self._CloseCursor(_cur)
