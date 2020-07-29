@@ -16,6 +16,38 @@ class Query:
 
 	def _CloseCursor(self,cursor):
 		return cursor.close()
+
+	def fetchAll(self,sql,param=None):
+		_cur = self._newCursor()
+		if param:
+			_cur.execute(sql,param)
+		else:
+			_cur.execute(sql)
+		res = _cur.fetchall()
+		self._CloseCursor(_cur)
+		return res
+
+	def fetchOne(self,sql,param=None):
+		_cur = self._newCursor()
+		if param:
+			_cur.execute(sql,param)
+		else:
+			_cur.execute(sql)
+		res = _cur.fetchone()
+		self._CloseCursor(_cur)
+		return res
+
+	def execute(self,sql,param=None):
+		_cur = self._newCursor()
+		if param:
+			res = _cur.execute(sql,param)
+		else:
+			res = _cur.execute(sql)
+		self._CloseCursor(_cur)
+		return res
+
+	def getInfQuery(self):
+		return self._client.query
 		
 	def dashboard_list(self,data,unit,startTime,endTime,graphType):
 		_cur = self._newCursor()
@@ -263,10 +295,7 @@ class Query:
 			return tmp2
 
 	def sensor_list(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT s.sid,s.sname,t.tname,r.rname,f.fname,b.bname,bo.bomac,r.rid,f.fid,b.bid FROM sensor AS s INNER JOIN board AS bo ON (s.boid=bo.boid) INNER JOIN room AS r ON (bo.rid=r.rid) INNER JOIN floor AS f ON (r.fid=f.fid) INNER JOIN building AS b ON (f.bid=b.bid) INNER JOIN type as t ON (s.tid=t.tid)")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT s.sid,s.sname,t.tname,r.rname,f.fname,b.bname,bo.bomac,r.rid,f.fid,b.bid FROM sensor AS s INNER JOIN board AS bo ON (s.boid=bo.boid) INNER JOIN room AS r ON (bo.rid=r.rid) INNER JOIN floor AS f ON (r.fid=f.fid) INNER JOIN building AS b ON (f.bid=b.bid) INNER JOIN type as t ON (s.tid=t.tid)")
 		return res
 
 	def all_room_list(self):
@@ -279,7 +308,7 @@ class Query:
 			floor = _cur.fetchall()
 			for f in floor:
 				f.update({'room':[]})
-				_cur.execute("SELECT rid,rname FROM room WHERE fid = %s",(f['fid'],))
+				_cur.execute("SELECT rid,rname,rstatus FROM room WHERE fid = %s",(f['fid'],))
 				room = _cur.fetchall()
 				for r in room:
 					f['room'].append(r)
@@ -288,14 +317,10 @@ class Query:
 		return building
 
 	def sensor_edit(self,sid,sname):
-		_cur = self._newCursor()
-		_cur.execute("UPDATE sensor SET sname = %s WHERE sid = %s",(sname,sid))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE sensor SET sname = %s WHERE sid = %s",(sname,sid))
 
 	def sensor_del(self,sid):
-		_cur = self._newCursor()
-		_cur.execute("DELETE FROM sensor WHERE sid = %s",(sid,))
-		self._CloseCursor(_cur)
+		self.execute("DELETE FROM sensor WHERE sid = %s",(sid,))
 
 	def register_list(self):
 		_cur = self._newCursor()
@@ -337,14 +362,10 @@ class Query:
 		self._CloseCursor(_cur)
 
 	def room_add(self,rname,fid):
-		_cur = self._newCursor()
-		_cur.execute("INSERT INTO room (rname,fid) VALUES (%s,%s)",(rname,fid))
-		self._CloseCursor(_cur)
+		self.execute("INSERT INTO room (rname,fid) VALUES (%s,%s)",(rname,fid))
 
 	def room_edit(self,rid,rname,fid):
-		_cur = self._newCursor()
-		_cur.execute("UPDATE room SET rname = %s , fid = %s WHERE rid = %s",(rname,fid,rid))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE room SET rname = %s , fid = %s WHERE rid = %s",(rname,fid,rid))
 
 	def room_del(self,rid):
 		_cur = self._newCursor()
@@ -353,16 +374,12 @@ class Query:
 		self._CloseCursor(_cur)
 
 	def floor_add(self,fname,bid):
-		_cur = self._newCursor()
-		_cur.execute("INSERT INTO floor (fname,bid) VALUES (%s,%s)",(fname,bid))
-		self._CloseCursor(_cur)
+		self.execute("INSERT INTO floor (fname,bid) VALUES (%s,%s)",(fname,bid))
 
 	def floor_edit(self,fid,fname,bid):
-		_cur = self._newCursor()
 		if(fid == 1):
 			return
-		_cur.execute("UPDATE floor SET fname = %s , bid = %s WHERE fid = %s",(fname,bid,fid))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE floor SET fname = %s , bid = %s WHERE fid = %s",(fname,bid,fid))
 
 	def floor_del(self,fid):
 		if(fid == 1):
@@ -374,16 +391,12 @@ class Query:
 		self._CloseCursor(_cur)
 
 	def building_add(self,bname):
-		_cur = self._newCursor()
-		_cur.execute("INSERT INTO building (bname) VALUES (%s)",(bname,))
-		self._CloseCursor(_cur)
+		self.execute("INSERT INTO building (bname) VALUES (%s)",(bname,))
 
 	def building_edit(self,bid,bname):
 		if(bid == 1):
 			return
-		_cur = self._newCursor()
-		_cur.execute("UPDATE building SET bname = %s WHERE bid = %s",(bname,bid))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE building SET bname = %s WHERE bid = %s",(bname,bid))
 
 	def building_del(self,bid):
 		if(bid == 1):
@@ -396,86 +409,55 @@ class Query:
 		self._CloseCursor(_cur)
 
 	def register_user(self,user,email,password):
-		_cur = self._newCursor()
-		_cur.execute("INSERT INTO `user` (`username`, `email`, `password`, `is_active`, `flogout`, `create_time`) VALUES (%s, %s, %s, '0', '0', CURRENT_TIMESTAMP)",
+		self.execute("INSERT INTO `user` (`username`, `email`, `password`, `is_active`, `flogout`, `create_time`) VALUES (%s, %s, %s, '0', '0', CURRENT_TIMESTAMP)",
 			(user,email,password))
-		self._CloseCursor(_cur)
 
 	def get_userByid(self,id):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM `user` WHERE `id` = %s",(id,))
-		res = _cur.fetchone()
-		self._CloseCursor(_cur)
+		res = self.fetchOne("SELECT * FROM `user` WHERE `id` = %s",(id,))
 		return res
 
 	def get_userLogin(self,user):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM `user` WHERE (`username` = %s OR `email` = %s)",(user,user))
-		res = _cur.fetchone()
-		self._CloseCursor(_cur)
+		res = self.fetchOne("SELECT * FROM `user` WHERE (`username` = %s OR `email` = %s)",(user,user))
 		return res
 
 	def building_list(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM building")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM building")
 		return res
 
 	def floor_list(self,bid):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM floor where bid = %s",(bid,))
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM floor where bid = %s",(bid,))
 		return res
 
 	def room_list(self,fid):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM room where fid = %s",(fid,))
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM room where fid = %s",(fid,))
 		return res
 
 	def getAllType(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM type")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM type")
 		return res
 
 	def AddRule(self,rname,rjson):
-		_cur = self._newCursor()
-		_cur.execute('INSERT INTO `rule` (`ruid`, `rname`, `rjson`) VALUES (NULL, %s, %s)',(rname,rjson))
-		self._CloseCursor(_cur)
+		self.execute('INSERT INTO `rule` (`ruid`, `rname`, `rjson`) VALUES (NULL, %s, %s)',(rname,rjson))
 
 	def UpdateRule(self,ruid,rname,rjson):
-		_cur = self._newCursor()
-		_cur.execute("UPDATE `rule` SET rname = %s,rjson = %s WHERE ruid = %s",(rname,rjson,ruid))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE `rule` SET rname = %s,rjson = %s WHERE ruid = %s",(rname,rjson,ruid))
 
 	def getRule(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM rule")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM rule")
 		return res
 
 	def DeleteRule(self,ruid):
-		_cur = self._newCursor()
-		_cur.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
-		self._CloseCursor(_cur)
+		self.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
 
-	def new_log(self,message):
+	def new_log(self,message,token):
 		_cur = self._newCursor()
 		_cur.execute("DELETE FROM logs WHERE create_time <	(CURRENT_TIMESTAMP - INTERVAL 3 MONTH)")
 		_cur.execute("INSERT INTO `logs` (`lid`, `message`, `create_time`) VALUES (NULL, %s, CURRENT_TIMESTAMP)",(message,))
+		_cur.execute("UPDATE `notify` SET `nlast_time` = CURRENT_TIMESTAMP WHERE `notify`.`ntoken` = %s",(token,))
 		self._CloseCursor(_cur)
 
 	def get_logs(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * from logs")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * from logs")
 		return res
 	
 	def summary_logs(self):
@@ -516,30 +498,37 @@ class Query:
 		self._CloseCursor(_cur)
 
 	def Updatepassword(self,username,password):
-		_cur = self._newCursor()
-		_cur.execute("UPDATE `user` SET password = %s WHERE username = %s",(password,username))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE `user` SET password = %s WHERE username = %s",(password,username))
 
 	def getAllUser(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT * FROM user")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT * FROM user")
 		return res
 
 	def UpdateUserActive(self,_id,activate):
-		_cur = self._newCursor()
-		_cur.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
-		self._CloseCursor(_cur)
+		self.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
 
 	def roomWithBPrefix(self):
-		_cur = self._newCursor()
-		_cur.execute("SELECT r.rid,r.rname,r.rstatus,b.burl FROM room r INNER JOIN floor f ON r.fid = f.fid INNER JOIN building b ON f.bid = b.bid WHERE b.burl != ''")
-		res = _cur.fetchall()
-		self._CloseCursor(_cur)
+		res = self.fetchAll("SELECT r.rid,r.rname,r.rstatus,b.burl FROM room r INNER JOIN floor f ON r.fid = f.fid INNER JOIN building b ON f.bid = b.bid WHERE b.burl != ''")
 		return res
 
 	def UpdateRoomStatue(self,status,name):
+		self.execute("UPDATE `room` SET rstatus = %s WHERE rname = %s",(status,name))
+
+	def addnewSensor(self,data):
 		_cur = self._newCursor()
-		_cur.execute("UPDATE `room` SET rstatus = %s WHERE rname = %s",(status,name))
+		mac = data["MAC"]
+		_cur.execute("""INSERT INTO board(`bomac`, `register`, `time`, `rid`) 
+						SELECT * FROM (SELECT %s AS bomac, 0 AS register, CURRENT_TIMESTAMP AS time, '1' AS rid) AS tmp 
+						WHERE NOT EXISTS ( SELECT bomac FROM board WHERE bomac = %s)""",(mac,mac))
+		_cur.execute("SELECT boid FROM board WHERE bomac = %s",(mac,))
+		lastid = _cur.fetchone()["boid"]
+		for s in data["data"]:
+			_cur.execute("""INSERT INTO `sensor` (`sname`, `inf_id`, `inf_type`, `tid`, `boid`)
+							SELECT * FROM (SELECT %s AS sname, %s AS inf_id, %s AS inf_type, %s AS tid, %s AS boid) AS tmp 
+							WHERE NOT EXISTS ( SELECT inf_id,inf_type,tid,boid FROM sensor WHERE inf_id = %s AND inf_type = %s AND tid = %s AND boid = %s)""",
+							(s[0],s[1],s[2],s[3],lastid,s[1],s[2],s[3],lastid))
 		self._CloseCursor(_cur)
+
+	def getToken(self):
+		res = self.fetchAll("SELECT * FROM notify")
+		return res

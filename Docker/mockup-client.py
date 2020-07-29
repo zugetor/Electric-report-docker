@@ -15,8 +15,6 @@ def mockupdata1(sensor):
 def mockupdata2():
 	return { "MAC": "GG-HH-II-JJ-KK-LL", "status": random.randint(0, 1)}
 
-def mockupdata3():
-	return { "MAC": "AA-BB-CC-DD-EE-FF", "sensor": [1,2,3,4,5] }
 
 host = "broker.mqttdashboard.com"
 port = 1883

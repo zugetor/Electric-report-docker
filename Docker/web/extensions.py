@@ -1,4 +1,5 @@
 from flask import escape
+from config import Config, ProductionConfig, DevelopmentConfig
 from db import MySQL, InfluxDB, Query
 
 mysql = MySQL()
@@ -13,3 +14,9 @@ def toHourandMin(timeDel):
 	hours = int(secs / 3600)
 	minutes = int(secs / 60) % 60
 	return "%02d:%02d" % (hours, minutes)
+
+def getConfig():
+	cfg = ProductionConfig
+	if Config.ENABLE_DEV:
+		cfg = DevelopmentConfig
+	return cfg
