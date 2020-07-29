@@ -12,7 +12,8 @@ def dashboard_list():
 	unit = request.form.get('unit')
 	startTime = request.form.get('startTime')
 	endTime = request.form.get('endTime')
-	response = jsonify(query.dashboard_list(data,unit,startTime,endTime))
+	graphType = request.form.get('graphType')
+	response = jsonify(query.dashboard_list(data,unit,startTime,endTime,graphType))
 	return response
 
 @app.route('/sensor/',methods=['GET'])

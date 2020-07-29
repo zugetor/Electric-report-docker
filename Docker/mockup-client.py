@@ -9,10 +9,8 @@ def mockupdata():
 			 "AL3": random.randint(5, 10),"P1": random.randint(10, 100), "P2": random.randint(10, 100),
 			  "P3": random.randint(10, 100), "AE": random.randint(10, 100)}
 
-def mockupdata1():
-	return { "MAC": "AA-BB-CC-DD-EE-FF", "s1": random.randint(5, 10), "s2": random.randint(5, 10),
-			 "s3": random.randint(5, 10), "s4": random.randint(5, 10), "s5": random.randint(5, 10),
-			 "s6": random.randint(5, 10) }
+def mockupdata1(sensor):
+	return { "MAC": "AA-BB-CC-DD-EE-FF", "s": sensor,"a":random.randint(5, 10) }
 
 def mockupdata2():
 	return { "MAC": "GG-HH-II-JJ-KK-LL", "status": random.randint(0, 1)}
@@ -24,11 +22,26 @@ host = "broker.mqttdashboard.com"
 port = 1883
 client = mqtt.Client()
 client.connect(host,port)
-for _ in range(3):
-	#message = mockupdata()
-	#client.publish("/infbuu/IF/1/IF-102/dm/air",json.dumps(message))
-	message = mockupdata3()
+for _ in range(999):
+	message = mockupdata1(1)
 	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
-	#message = mockupdata2()
-	#client.publish("/infbuu/IF/11/IF-204/pir",json.dumps(message))
 	print("Publish: {}".format(message))
+	message = mockupdata1(2)
+	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
+	print("Publish: {}".format(message))
+	message = mockupdata1(3)
+	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
+	print("Publish: {}".format(message))
+	message = mockupdata1(4)
+	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
+	print("Publish: {}".format(message))
+	message = mockupdata1(5)
+	client.publish("/infbuu/IF/11/IF-204/ct/plug",json.dumps(message))
+	print("Publish: {}".format(message))
+	message = mockupdata()
+	client.publish("/infbuu/IF/1/IF-102/dm/air",json.dumps(message))
+	print("Publish: {}".format(message))
+	message = mockupdata2()
+	client.publish("/infbuu/IF/11/IF-204/pir",json.dumps(message))
+	print("Publish: {}".format(message))
+	time.sleep(60)
