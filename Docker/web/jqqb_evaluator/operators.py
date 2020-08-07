@@ -23,7 +23,7 @@ class Operators:
 
     @staticmethod
     def eval_equal(left, right):
-        if len(right) == 2 and right[1] == "-1":
+        if type(right) == list and len(right) == 2 and right[1] == "-1":
             left = left[0]
             right = right[0]
         #if isinstance(left, list): #Tested with list and it not work

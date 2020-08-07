@@ -123,19 +123,31 @@
         { type: 'not_in', optgroup: 'basic' },
         { type: 'all_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] },
         { type: 'any_true', optgroup: 'custom', nb_inputs: 1, multiple: true, apply_to: ['checkbox'] }],
-      filters: [{
-        id: 'type',
-        label: 'Type',
-        type: 'string',
-        input: typeCheckBox,
-        description: 'Please choose the type you want to check and status.',
-        operators: ['all_true', 'any_true'],
+      filters: [
+      {% for i in _type %}
+      {
+        id: '{{ i["inf_name"] }}',
+        label: 'Type - {{ i["tname"] }}',
+        type: 'double',
         validation: {
-          min: 1
+          min: 0,
+          max: 10
         },
-        valueSetter: setTypeVal,
-        valueGetter: getTypeVal
-      },{
+        plugin: 'slider',
+        plugin_config: {
+          min: 0,
+          max: 10,
+          value: 0.5,
+          step: 0.1,
+          tooltip: "always"
+        },
+        description: 'Please choose value you want.',
+        operators: ['equal','not_equal','greater', 'greater_or_equal','less', 'less_or_equal'],
+        valueSetter: setSlider,
+        valueGetter: getSlider
+      },
+      {% endfor %}
+      {
         id: 'dow',
         label: 'Day of Week',
         type: 'string',
@@ -201,23 +213,13 @@
         plugin_config: {
           min: 1,
           max: 24,
-          value: 1
+          value: 1,
+          tooltip: "always"
         },
         description: 'Please choose when you want to check the sensor.',
         operators: ['equal','not_equal','greater', 'greater_or_equal','less', 'less_or_equal'],
-        valueSetter: function(rule, value) {
-          if (rule.operator.nb_inputs == 1) value = [value];
-          rule.$el.find('.rule-value-container input').each(function(i) {
-            $(this).slider('setValue', value[i] || 0);
-          });
-        },
-        valueGetter: function(rule) {
-          let value = [];
-          rule.$el.find('.rule-value-container input').each(function() {
-            value.push($(this).slider('getValue'));
-          });
-          return rule.operator.nb_inputs == 1 ? value[0] : value;
-        }
+        valueSetter: setSlider,
+        valueGetter: getSlider
       },{
         id: 'date',
         label: 'Date Range',
@@ -268,6 +270,21 @@
       }
     })
   });
+
+  var getSlider = function(rule) {
+    let value = [];
+    rule.$el.find('.rule-value-container input').each(function() {
+      value.push($(this).slider('getValue'));
+    });
+    return rule.operator.nb_inputs == 1 ? value[0] : value;
+  }
+
+  var setSlider = function(rule, value) {
+    if (rule.operator.nb_inputs == 1) value = [value];
+    rule.$el.find('.rule-value-container input').each(function(i) {
+      $(this).slider('setValue', value[i] || 0);
+    });
+  }
 
   var getRule = function(){
     $.ajax({
