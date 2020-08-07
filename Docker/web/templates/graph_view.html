@@ -4,26 +4,32 @@
 .selected{
 background-color: rgba(192,192,192,0.5);
 }
+.cardFix{
+height: 330px;
+}
 tr[role="row"]:hover {
 cursor:pointer;
 }
 {% endblock %}
 {% block content %}
 
-<h1 class="h3 mb-2 text-gray-800">Dashboard</h1>
+
 <div class="row">
 	<div class="col">
-		<div class="card shadow mb-4">
+		<div class="card shadow cardFix">
+			<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+				<h5 class="m-0 font-weight-bold text-primary">Search menu</h6>
+			</div>
 			<div class="card-body">
 				<form id="searchForm">
 					<div class="form-row">
-						<div class="col-md mb-3">
+						<div class="col-md mb-4">
 							<label for="sName">Sensor Name</label>
 							<input type="text" class="form-control " id="sName" placeholder="Search...">
 						</div>
 					</div>
 					<div class="form-row">
-						<div class="col-md-6 mb-3">
+						<div class="col-md-6 mb-4">
 							<label for="building">Building</label>
 							<select class="custom-select" id="building">
 								<option selected value="">All</option>
@@ -31,38 +37,38 @@ cursor:pointer;
 							</select>
 
 						</div>
-						<div class="col-md-3 mb-3">
+						<div class="col-md-3 mb-4">
 							<label for="floor">Floor</label>
 							<select class="custom-select" id="floor">
 								<option selected value="">All</option>
 
 							</select>
 						</div>
-						<div class="col-md-3 mb-3">
+						<div class="col-md-3 mb-4">
 							<label for="room">Room</label>
 							<select class="custom-select" id="room">
 								<option selected value="">All</option>
 
 							</select>
 						</div>
-						Sensor Type :
+						<label for="sName">Sensor Type :</label>
 					</div>
 					<div class="form-row">
-						<div class="col-md-2 mb-3">
+						<div class="col-md-2 mb-4">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
 									value="Light" name="typeFilter">
 								<label class="custom-control-label" for="Light">Light</label>
 							</div>
 						</div>
-						<div class="col-md-2 mb-3">
+						<div class="col-md-2 mb-4">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Electricity" data-type=""
 									checked value="Electricity" name="typeFilter">
 								<label class="custom-control-label" for="Electricity">Electricity</label>
 							</div>
 						</div>
-						<div class="col-md mb-3">
+						<div class="col-md-3 mb-4">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Air Conditioner" data-type=""
 									checked value="Air Conditioner" name="typeFilter">
@@ -72,9 +78,10 @@ cursor:pointer;
 					</div>
 
 					<div class="form-row">
-						<div class="col-md-8 mt-2">
-							<button class="btn btn-primary mr-3" type="button" id="search">Search</button>
-							<button class="btn btn-primary mr-3" type="button" id="addToDash">Add to Dashboard</button>
+						<div class="col-md-8">
+							<button class="btn btn-primary mr-3 mt-2" type="button" id="search">Search</button>
+							<button class="btn btn-primary mr-3 mt-2" type="button" id="addToDash">Add to
+								Dashboard</button>
 						</div>
 					</div>
 				</form>
@@ -82,11 +89,13 @@ cursor:pointer;
 		</div>
 	</div>
 	<div class="col">
-		<div class="card shadow mb-4">
+		<div class="card shadow cardFix">
+			<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+				<h5 class="m-0 font-weight-bold text-danger">Dashboard</h6>
+			</div>
 			<div class="card-body">
-				<button class="btn btn-outline-danger mb-2 float-right" id="clearRows">clear</button>
 				<div class="table-responsive">
-					<table class="table display compact" id="dashboard" width="100%" cellspacing="0">
+					<table class="table" id="dashboard" width="100%" cellspacing="0">
 						<thead>
 							<tr>
 								<th>type</th>
@@ -97,54 +106,152 @@ cursor:pointer;
 						</tbody>
 					</table>
 				</div>
+				<center><button class="btn btn-outline-danger mb-2 float-center" id="clearRows">clear</button></center>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="card shadow cardFix">
+			<div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+				<h5 class="m-0 font-weight-bold text-info">Link Parameters</h6>
+			</div>
+			<div class="card-body">
+				<div class="card shadow mb-4">
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table table-bordered" width="100%" cellspacing="0">
+								<thead>
+								</thead>
+								<tbody>
+									<tr>
+										<th>From</th>
+										<td id="sTimeTable"></td>
+									</tr>
+									<tr>
+										<th>To</th>
+										<td id="eTimeTable"></td>
+									</tr>
+									<tr>
+										<th>Unit</th>
+										<td id="unitTable"></td>
+									</tr>
+									<tr>
+										<th>Mode</th>
+										<td id="modeTable"></td>
+									</tr>
+									<tr>
+										<th>Auto Update</th>
+										<td id="autoUpdateTable"></td>
+									</tr>
+								</tbody>
+							</table>
+							<center><button class="btn btn-outline-info" id="genParam">Get Link</button></center>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
 <br>
 <div class="row">
-	<div class="col-2">
-		<button class="btn btn-success" type="button" id="Bcompare">Compare</button>
-		<button class="btn btn-danger" type="button" id="Bcombine">Combine</button>
-		<button class="btn btn-warning" type="button" id="Bseparate">Separate</button>
+	<div class="col-xl-3 col-md-6 mb-2">
+		<div class="card border-left-secondary shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Graph Mode</div>
+						<div class="row">
+							<div class="col">
+								<button class="btn btn-success btn-block" type="button" id="Bcompare">Compare</button>
+							</div>
+							<div class="col">
+								<button class="btn btn-danger btn-block" type="button" id="Bcombine">Combine</button>
+							</div>
+							<div class="col">
+								<button class="btn btn-warning btn-block" type="button" id="Bseparate">Separate</button>
+							</div>
+						</div>
+					</div>
+					<div class="col-auto">
+
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="col-2">
-		<label>Time range:</label>
-		<input type="text" name="datetimes" />
+	<div class="col-xl-3 col-md-6 mb-2">
+		<div class="card border-left-secondary shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Time Range:</div>
+						<input type="text" name="datetimes" class="form-control input-lg" />
+					</div>
+					<div class="col-auto">
+
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="col-2">
-		<label>Unit:</label>
-		<select id="unit">
-			<option value="15m">15minutes</option>
-			<option value="30m">30mimutes</option>
-			<option value="1h">1hour</option>
-			<option value="12h" selected>12hours</option>
-			<option value="1d">1day</option>
-			<option value="7d">1week</option>
-		</select>
-		<button id="update" class="btn btn-outline-primary">update</button>
+	<div class="col-xl-3 col-md-6 mb-2">
+		<div class="card border-left-secondary shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Unit</div>
+						<select id="unit" class="form-control input-lg">
+							<option value="15m" selected>15minutes</option>
+							<option value="30m">30mimutes</option>
+							<option value="1h">1hour</option>
+							<option value="12h">12hours</option>
+							<option value="1d">1day</option>
+							<option value="7d">1week</option>
+						</select>
+
+					</div>
+					<div class="col-auto">
+
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div class="col-2">
-		<button class="btn btn-outline-success" id="autoRefresh">auto update</button>
-	</div>
-	<div class="col-2">
-		<button class="btn btn-outline-info" id="genParam">generate parameter</button>
+	<div class="col-xl-3 col-md-6 mb-4">
+		<div class="card border-left-secondary shadow h-100 py-2">
+			<div class="card-body">
+				<div class="row no-gutters align-items-center">
+					<div class="col mr-2">
+						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Create graph</div>
+						<button id="update" class="btn btn-outline-primary">update</button>
+						<button class="btn btn-outline-success" id="autoRefresh">auto update</button>
+					</div>
+					<div class="col-auto">
+
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
+
+
+
 <br>
 <!-- Content Row -->
 <br>
 <br>
-<center>
-	<div id="dashGraph" class="bg-white">
-		<button class="btn btn-outline-info float-right" id="fullscreen"><i class="fa fa-expand"
-				aria-hidden="true"></i></button>
-		<div id="compare"></div>
-		<div id="combine"></div>
-		<div id="separate"></div>
 
-	</div>
-</center>
+<div id="dashGraph" class="bg-white">
+	<button class="btn btn-outline-info float-right" id="fullscreen"><i class="fa fa-expand"
+			aria-hidden="true"></i></button>
+	<div id="compare" class="row justify-content-center"></div>
+	<div id="combine" class="row justify-content-center"></div>
+	<div id="separate" class="row justify-content-center"></div>
+
+</div>
+
 <!-- /.container-fluid -->
 {% endblock %}
 {% block js %}
@@ -152,6 +259,15 @@ cursor:pointer;
 	let range;
 	let startTime;
 	let endTime;
+	let checkRefresh = false;
+	let mode = "none";
+
+	$("#sTimeTable").text(moment().subtract(1, 'days').format('YYYY-MM-DD hh:mm:ss'));
+	$("#eTimeTable").text(moment().format('YYYY-MM-DD hh:mm:ss'));
+	$("#unitTable").text($("#unit").val());
+	$("#autoUpdateTable").text(checkRefresh);
+	$("#modeTable").html('<span class="badge badge-secondary">' + mode + '</span>');
+
 	range = $('input[name="datetimes"]').daterangepicker({
 		timePicker: true,
 		startDate: moment().subtract(1, 'days'),
@@ -164,6 +280,8 @@ cursor:pointer;
 	$('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
 		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
 		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
+		$("#sTimeTable").text(picker.startDate.format('YYYY-MM-DD hh:mm:ss'));
+		$("#eTimeTable").text(picker.endDate.format('YYYY-MM-DD hh:mm:ss'));
 	});
 
 
@@ -238,17 +356,17 @@ cursor:pointer;
 	var updateDashboard = function () {
 		dashboard.destroy();
 		dashboard = $('#dashboard').DataTable({
+			"ordering": false,
+			"info": false,
+			"searching": false,
+			"bLengthChange": false,
 			data: dashboardArray,
 			columns: [{
 				data: 'type'
 			}, {
 				data: 'name'
 			}],
-			pageLength: 5,
-			lengthMenu: [
-				[5, 10, 20],
-				[5, 10, 20]
-			]
+			pageLength: 4
 		});
 	}
 	updateDashboard();
@@ -309,10 +427,11 @@ cursor:pointer;
 		updateDashboard();
 	});
 
-	mode = "none";
-	var unit
+
+	var unit = $("#unit").val();
 	$("#unit").change(function () {
 		unit = $("#unit").val();
+		$("#unitTable").text($("#unit").val());
 	});
 
 	$("#compare").hide();
@@ -334,6 +453,7 @@ cursor:pointer;
 		$("#compare").show();
 		$("#combine").hide();
 		$("#separate").hide();
+		$("#modeTable").html('<span class="badge badge-success">' + mode + '</span>');
 	};
 
 	function showCombine() {
@@ -341,6 +461,7 @@ cursor:pointer;
 		$("#combine").show();
 		$("#compare").hide();
 		$("#separate").hide();
+		$("#modeTable").html('<span class="badge badge-danger">' + mode + '</span>');
 	};
 
 	function showSeparate() {
@@ -348,6 +469,7 @@ cursor:pointer;
 		$("#separate").show();
 		$("#combine").hide();
 		$("#compare").hide();
+		$("#modeTable").html('<span class="badge badge-warning">' + mode + '</span>');
 	};
 
 	$("#search").click(function () {
@@ -365,7 +487,8 @@ cursor:pointer;
                         <th>Room</th>\
                         <th>Floor</th>\
                         <th>Building</th>\
-                        <th>Type</th>\
+						<th>Type</th>\
+						<th>Sensor type</th>\
                     </tr>\
                 </thead>\
                 <tbody>\
@@ -398,6 +521,8 @@ cursor:pointer;
 						data: 'bname'
 					}, {
 						data: 'tname'
+					}, {
+						data: 'inf_type'
 					}]
 				});
 
@@ -423,7 +548,7 @@ cursor:pointer;
 				data = sensors.rows('.selected').data();
 				$.each(data, function (index, value) {
 					sensorToAdd = {
-						'type': 'sensor',
+						'type': value.inf_type,
 						'id': value.sid,
 						'name': value.sname
 					}
@@ -455,6 +580,7 @@ cursor:pointer;
 			}]
 		},
 		options: {
+			maintainAspectRatio: false,
 			animation: {
 				duration: 0
 			},
@@ -557,14 +683,17 @@ cursor:pointer;
 	}
 
 	function loadCompare(data) {
+		console.log(data)
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
-			var divChart = "<div style=\"width:1000px\" name=\"compare" + value + "\"><canvas id=\"compare" +
-				value + "\"></canvas></div>";
+			var divChart = "<div class=\"col mb-5\" name=\"compare" + value +
+				"\"><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
 			$("#compare").append(divChart);
 			var ctxTmp = document.getElementById('compare' + value).getContext('2d');
 			var cfgTmp = JSON.parse(JSON.stringify(cfg));
 			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
 			var chart = new Chart(ctxTmp, cfgTmp);
+			chart.canvas.parentNode.style.height = '500px';
+			chart.canvas.parentNode.style.width = '600px';
 			compareChart.push(chart);
 			$.each(data, function (i, v) {
 				$.each(v, function (i2, v2) {
@@ -594,28 +723,22 @@ cursor:pointer;
 			chart.update();
 			if (chart.config.data.datasets.length == 0) {
 				chart.destroy()
+				compareChart.pop()
 				$('[name="compare' + value + '"]').remove();
 			}
 		});
-
+		if (compareChart.length == 1) {
+			compareChart[0].canvas.parentNode.style.height = '1000px';
+		}
 	}
 
 	function loadSeparate(data) {
 		$.each(data, function (index, value) {
-			$("#separate").append("<div class=\"row justify-content-center\" id=\"row" + index + "_1\">");
-			$("#separate").append("<div class=\"row justify-content-center\" id=\"row" + index + "_2\">");
 			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
-				if (v == "volt" || v == "amp" || v == "watt") {
-					var divChart = "<div class=\"col-4\" name=\"separate-" + value.name + "-" + v +
-						"\"><canvas id=\"separate-" + value.name + "-" + v +
-						"\"></canvas></div>"
-					$("#row" + index + "_1").append(divChart);
-				} else if (v == "ae" || v == "ct") {
-					var divChart = "<div class=\"col-4\" name=\"separate-" + value.name + "-" + v +
-						"\"><canvas id=\"separate-" + value.name + "-" + v +
-						"\"></canvas></div>"
-					$("#row" + index + "_2").append(divChart);
-				}
+				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name + "-" + v +
+					"\"><canvas class=\"card shadow\" id=\"separate-" + value.name + "-" + v +
+					"\"></canvas></div>"
+				$("#separate").append(divChart);
 				var ctxTmp = document.getElementById("separate" + "-" + value.name + "-" + v).getContext(
 					'2d');
 				var cfgTmp = JSON.parse(JSON.stringify(cfg));
@@ -623,10 +746,13 @@ cursor:pointer;
 				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length + index];
 				var newColor = window.chartColors[colorName];
 				var chart = new Chart(ctxTmp, cfgTmp);
+				chart.canvas.parentNode.style.height = '300px';
+				chart.canvas.parentNode.style.width = '400px';
 				separateChart.push(chart);
 				$.each(value, function (i2, v2) {
 					if (i2 == v) {
 						$.each(v2, function (i3, v3) {
+							if (v3.name !== undefined) {
 							var newDataset = {
 								label: v3.name,
 								backgroundColor: newColor,
@@ -639,6 +765,7 @@ cursor:pointer;
 								borderWidth: 2
 							};
 							chart.config.data.datasets.push(newDataset);
+						}
 						});
 					}
 				});
@@ -646,6 +773,7 @@ cursor:pointer;
 				chart.update();
 				if (chart.config.data.datasets.length == 0) {
 					chart.destroy()
+					separateChart.pop()
 					$('[name="separate-' + value.name + '-' + v + '"]').remove();
 				}
 			});
@@ -654,14 +782,17 @@ cursor:pointer;
 
 	function loadCombine(data) {
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
-			var divChart = "<div style=\"width:1000px\" name=\"combine" + value + "\"><canvas id=\"combine" +
+			var divChart = "<div class=\"col mb-5\" name=\"combine" + value +
+				"\"><canvas class=\"card shadow\" id=\"combine" +
 				value + "\"></canvas></div>";
 			$("#combine").append(divChart);
 			var ctxTmp = document.getElementById('combine' + value).getContext('2d');
 			var cfgTmp = JSON.parse(JSON.stringify(cfg));
 			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
 			var chart = new Chart(ctxTmp, cfgTmp);
-			compareChart.push(chart);
+			chart.canvas.parentNode.style.height = '500px';
+			chart.canvas.parentNode.style.width = '600px';
+			combineChart.push(chart);
 			$.each(data, function (i, v) {
 				if (value == i) {
 					$.each(v, function (i2, v2) {
@@ -687,10 +818,14 @@ cursor:pointer;
 			chart.config.data.datasets.splice(0, 1);
 			chart.update();
 			if (chart.config.data.datasets.length == 0) {
+				combineChart.pop()
 				chart.destroy()
 				$('[name="combine' + value + '"]').remove();
 			}
 		});
+		if (combineChart.length == 1) {
+			combineChart[0].canvas.parentNode.style.height = '1000px';
+		}
 	}
 
 	function getAndLoad() {
@@ -725,7 +860,7 @@ cursor:pointer;
 
 	function getAndCombine() {
 		clearChart();
-		if (startTime == undefined) {
+		if (startTime == undefined && endTime == undefined) {
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
 		}
@@ -754,7 +889,6 @@ cursor:pointer;
 	});
 
 	let checkFullScreen = false;
-	let checkRefresh = false;
 	let timerId;
 
 	function fullscreen() {
@@ -813,16 +947,87 @@ cursor:pointer;
 		}
 	}
 
+	function copyToClipboard() {
+		var copyText = document.getElementById("getLink");
+		copyText.select();
+		copyText.setSelectionRange(0, 99999)
+		document.execCommand("copy");
+	}
+
 	$('#genParam').click(function () {
-		param = "?";
-		$.each(dashboardArray, function (i, v) {
-			param += "id=" + encodeURIComponent(v.id) + "&"
-			param += "type=" + encodeURIComponent(v.type) + "&"
-			param += "name=" + encodeURIComponent(v.name) + "&"
-		});
-		param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" + mode +
-			"&autoUpdate=" + checkRefresh
-		console.log(param)
+		if (mode == "none") {
+			Swal.fire(
+				'Cannot Get Link!',
+				'Please select graph mode.',
+				'error'
+			)
+		} else if (dashboardArray == "") {
+			Swal.fire(
+				'Cannot Get Link!',
+				'No data in dashboard.',
+				'error'
+			)
+		} else {
+			if (startTime == undefined && endTime == undefined) {
+				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() *
+					1000000;
+				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() *
+					1000000;
+			}
+			param = "?";
+			$.each(dashboardArray, function (i, v) {
+				param += "id=" + encodeURIComponent(v.id) + "&"
+				param += "type=" + encodeURIComponent(v.type) + "&"
+				param += "name=" + encodeURIComponent(v.name) + "&"
+			});
+			param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" +
+				mode +
+				"&autoUpdate=" + checkRefresh
+			var swal_html = '<div class="card shadow mb-4">\
+    			<div class="card-body">\
+        		<div class="table-responsive">\
+            	<table class="table table-bordered" id="sensor_list" width="100%" cellspacing="0">\
+                <thead>\
+                </thead>\
+                <tbody>\
+				<tr>\
+					<th>From</th>\
+					<td>' + $('input[name="datetimes"]').data('daterangepicker').startDate.format('YYYY-MM-DD hh:mm:ss') + '</td>\
+				</tr>\
+				<tr>\
+					<th>To</th>\
+					<td>' + $('input[name="datetimes"]').data('daterangepicker').endDate.format('YYYY-MM-DD hh:mm:ss') + '</td>\
+				</tr>\
+				<tr>\
+					<th>Unit</th>\
+					<td>' + unit + '</td>\
+				</tr>\
+				<tr>\
+					<th>Mode</th>\
+					<td>' + mode + '</td>\
+				</tr>\
+				<tr>\
+					<th>Auto Update</th>\
+					<td>' + checkRefresh + '</td>\
+				</tr>\
+                </tbody>\
+            </table>\
+        </div>\
+		<div class="form-group">\
+    <label for="getLink">Link</label>\
+    <input type="text" class="form-control" id="getLink" value="' + window.location.href + param + '">\
+  </div>\
+  <button onclick="copyToClipboard()" class="btn btn-success">Get link</button>\
+    </div>\
+</div>';
+			swal.fire({
+				title: "Get link!",
+				html: swal_html,
+				focusConfirm: false,
+				confirmButtonColor: '#d33',
+				confirmButtonText: 'Close',
+			});
+		}
 	});
 
 	function shuffle(arra1) {
@@ -860,6 +1065,7 @@ cursor:pointer;
 			checkRefresh = false;
 			console.log("cancel interval")
 		}
+		$("#autoUpdateTable").text(checkRefresh);
 	};
 
 	$('#fullscreen').click(function () {
