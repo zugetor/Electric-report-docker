@@ -1,0 +1,671 @@
+{% extends 'base.html' %}
+{% block title %}Energy Saving - Charts{% endblock %}
+{% block content %}
+<h1 class="h3 mb-2 text-gray-800">Dashboard</h1>
+<div class="row">
+	<div class="col">
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<form id="searchForm">
+					<div class="form-row">
+						<div class="col-md mb-3">
+							<label for="sName">Sensor Name</label>
+							<input type="text" class="form-control " id="sName" placeholder="Search...">
+						</div>
+					</div>
+					<div class="form-row">
+						<div class="col-md-6 mb-3">
+							<label for="building">Building</label>
+							<select class="custom-select" id="building">
+								<option selected value="">All</option>
+
+							</select>
+
+						</div>
+						<div class="col-md-3 mb-3">
+							<label for="floor">Floor</label>
+							<select class="custom-select" id="floor">
+								<option selected value="">All</option>
+
+							</select>
+						</div>
+						<div class="col-md-3 mb-3">
+							<label for="room">Room</label>
+							<select class="custom-select" id="room">
+								<option selected value="">All</option>
+
+							</select>
+						</div>
+						Sensor Type :
+					</div>
+					<div class="form-row">
+						<!-- {% for i in _type %}
+		<div class="col-md-1 mb-3">
+			<div class="custom-control custom-checkbox">
+				<input type="checkbox" class="custom-control-input" id="type{{i['tid']}}" data-type="" checked
+					value="{{i['tname']}}">
+				<label class="custom-control-label" for="type{{i['tid']}}">{{i["tname"]}}</label>
+			</div>
+		</div>
+		{% endfor %} -->
+						<div class="col-md-2 mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
+									value="Light" name="typeFilter">
+								<label class="custom-control-label" for="Light">Light</label>
+							</div>
+						</div>
+						<div class="col-md-2 mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Electricity" data-type=""
+									checked value="Electricity" name="typeFilter">
+								<label class="custom-control-label" for="Electricity">Electricity</label>
+							</div>
+						</div>
+						<div class="col-md mb-3">
+							<div class="custom-control custom-checkbox">
+								<input type="checkbox" class="custom-control-input" id="Air Conditioner" data-type=""
+									checked value="Air Conditioner" name="typeFilter">
+								<label class="custom-control-label" for="Air Conditioner">Air Conditioner</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="col-md-8 mt-2">
+							<button class="btn btn-primary mr-3" type="button" id="search">Search</button>
+							<button class="btn btn-primary mr-3" type="button" id="addToDash">Add to Dashboard</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="col">
+		<div class="card shadow mb-4">
+			<div class="card-body">
+				<button class="btn btn-outline-danger mb-2 float-right" id="clearRows">clear</button>
+				<div class="table-responsive">
+					<table class="display compact" id="dashboard" width="100%" cellspacing="0">
+						<thead>
+							<tr>
+								<th>type</th>
+								<th>name</th>
+							</tr>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<br>
+<div class="row">
+	<div class="col-2">
+		<button class="btn btn-success" type="button" id="Bcompare">Compare</button>
+		<button class="btn btn-danger" type="button" id="Bcombine">Combine</button>
+		<button class="btn btn-warning" type="button" id="Bseparate">Separate</button>
+	</div>
+	<div class="col-2">
+		<label>Time range:</label>
+		<input type="text" name="daterange" />
+	</div>
+	<div class="col-2">
+		<label>Unit:</label>
+		<select id="unit">
+			<option value="second">Second</option>
+			<option value="minute">Minute</option>
+			<option value="hour">Hour</option>
+			<option value="day" selected>Day</option>
+			<option value="month">Month</option>
+			<option value="year">Year</option>
+		</select>
+		<button id="update" class="btn btn-outline-primary">update</button>
+	</div>
+	<div class="col-2">
+		<button class="btn btn-outline-success" id="refresh">auto refresh</button>
+	</div>
+</div>
+<br>
+<!-- Content Row -->
+<br>
+<br>
+<center>
+	<div id="compare"></div>
+	<div id="combine"></div>
+	<div id="separate"></div>
+</center>
+<!-- /.container-fluid -->
+{% endblock %}
+{% block js %}
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script>
+	var getRoomData = function () {
+		$.ajax({
+			type: 'GET',
+			url: '{{ url_for("Private.all_room_list") }}',
+			dataType: 'json',
+			success: function (roomData) {
+				let building = $('#building');
+				let floor = $('#floor');
+				let room = $('#room');
+				$.each(roomData, function (key, entry) {
+					building.append($('<option></option>').attr('value', entry.bid).text(entry
+						.bname));
+				})
+
+				$(building).change(function () {
+					floor.empty();
+					floor.append('<option selected value="">All</option>');
+					floor.prop('selectedIndex', 0);
+					room.empty();
+					room.append('<option selected value="">All</option>');
+					room.prop('selectedIndex', 0);
+					$.each(roomData, function (key, entry) {
+						if (entry.bid == building.val()) {
+							$.each(entry.floor, function (key, entry2) {
+								floor.append($('<option></option>').attr('value',
+									entry2.fid).text(entry2.fname));
+							})
+						}
+					})
+				});
+
+				$(floor).change(function () {
+					room.empty();
+					room.append('<option selected value="">All</option>');
+					room.prop('selectedIndex', 0);
+					$.each(roomData, function (key, entry) {
+						if (entry.bid == building.val()) {
+							$.each(entry.floor, function (key, entry2) {
+								if (entry2.fid == floor.val()) {
+									$.each(entry2.room, function (key, entry3) {
+										room.append($('<option></option>')
+											.attr('value', entry3.rid)
+											.text(entry3
+												.rname));
+									})
+								}
+							})
+						}
+					})
+				});
+
+			}
+		});
+	}
+
+	getRoomData();
+
+	var dashboardArray = [];
+	var typeFilter = "Light|Electricity|Air Conditioner";
+	$('input:checkbox').on('change', function () {
+		typeFilter = $('input:checkbox[name="typeFilter"]:checked').map(
+			function () {
+				return this.value;
+			}).get().join('|');
+
+	});
+	var dashboard = $('#dashboard').DataTable();
+	var updateDashboard = function () {
+		dashboard.destroy();
+		dashboard = $('#dashboard').DataTable({
+			data: dashboardArray,
+			columns: [{
+				data: 'type'
+			}, {
+				data: 'name'
+			}],
+			pageLength: 5,
+			lengthMenu: [
+				[5, 10, 20],
+				[5, 10, 20]
+			]
+		});
+	}
+	updateDashboard();
+
+	$('#clearRows').click(function () {
+		dashboardArray = [];
+		dashboard.rows().remove().draw(false);
+	});
+
+	function hasDup(value) {
+		for (i = 0; i < dashboardArray.length; i++) {
+			if (JSON.stringify(dashboardArray[i]) === JSON.stringify(value)) {
+				return true
+			}
+		}
+		return false
+	}
+
+	$("#addToDash").click(function () {
+		if ($('#building').val() != "") {
+			if ($('#floor').val() != "") {
+				if ($('#room').val() != "") {
+					roomToAdd = {
+						'type': 'room',
+						'id': $('#room').val(),
+						'name': $("#room option:selected").html()
+					};
+					if (hasDup(roomToAdd) === false) {
+						dashboardArray.push(roomToAdd);
+					}
+				} else {
+					floorToAdd = {
+						'type': 'floor',
+						'id': $('#floor').val(),
+						'name': $("#floor option:selected").html()
+					};
+					if (hasDup(floorToAdd) === false) {
+						dashboardArray.push(floorToAdd);
+					}
+				}
+			} else {
+				buildingToAdd = {
+					'type': 'building',
+					'id': $('#building').val(),
+					'name': $("#building option:selected").html()
+				};
+				if (hasDup(buildingToAdd) === false) {
+					dashboardArray.push(buildingToAdd);
+				}
+			}
+		} else {
+			Swal.fire(
+				'Cannot add to Dashboard',
+				'Please select at least 1 item to add',
+				'warning'
+			)
+		}
+		updateDashboard();
+	});
+
+	$("#compare").hide();
+	$("#combine").hide();
+	$("#separate").hide();
+
+	$("#Bcompare").click(function () {
+		$("#compare").show();
+		$("#combine").hide();
+		$("#separate").hide();
+	});
+	$("#Bcombine").click(function () {
+		$("#combine").show();
+		$("#compare").hide();
+		$("#separate").hide();
+	});
+	$("#Bseparate").click(function () {
+		$("#separate").show();
+		$("#combine").hide();
+		$("#compare").hide();
+	});
+
+	$("#search").click(function () {
+		Swal.fire({
+			width: '60rem',
+			title: 'Please select sensor to add to dashboard',
+			html: '<div class="card shadow mb-4">\
+    <div class="card-body">\
+        <div class="table-responsive">\
+            <table class="table table-bordered" id="sensor_list" width="100%" cellspacing="0">\
+                <thead>\
+                    <tr>\
+                        <th>#</th>\
+                        <th>Sensor Name</th>\
+                        <th>Room</th>\
+                        <th>Floor</th>\
+                        <th>Building</th>\
+                        <th>Type</th>\
+                    </tr>\
+                </thead>\
+                <tbody>\
+                </tbody>\
+            </table>\
+        </div>\
+    </div>\
+</div>',
+			focusConfirm: false,
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Select',
+			onBeforeOpen: function () {
+				sensors = $('#sensor_list').DataTable({
+					ajax: {
+						"url": "{{ url_for('Private.sensor_list') }}",
+						"type": "GET",
+						"dataSrc": "",
+					},
+					columns: [{
+						data: 'sid'
+					}, {
+						data: 'sname'
+					}, {
+						data: 'rname'
+					}, {
+						data: 'fname'
+					}, {
+						data: 'bname'
+					}, {
+						data: 'tname'
+					}]
+				});
+
+				sensors.columns(1).search($('#sName').val()).draw();
+
+				if ($('#building').val() != "") {
+					sensors.columns(4).search($("#building option:selected").html()).draw();
+				}
+				if ($('#floor').val() != "") {
+					sensors.columns(3).search($("#floor option:selected").html()).draw();
+				}
+				if ($('#room').val() != "") {
+					sensors.columns(2).search($("#room option:selected").html()).draw();
+				}
+
+				sensors.column(5).search(typeFilter, true, false, false).draw(false);
+
+				$('#sensor_list tbody').on('click', 'tr', function () {
+					$(this).toggleClass('selected');
+				});
+			},
+			preConfirm: () => {
+				data = sensors.rows('.selected').data();
+				$.each(data, function (index, value) {
+					sensorToAdd = {
+						'type': 'sensor',
+						'id': value.sid,
+						'name': value.sname
+					}
+					if (hasDup(sensorToAdd) === false) {
+						dashboardArray.push(sensorToAdd);
+					}
+				});
+				updateDashboard();
+			}
+		});
+	});
+
+	// function generateData() {
+	// 	var unit = document.getElementById('unit').value;
+
+	// 	function unitLessThanDay() {
+	// 		return unit === 'second' || unit === 'minute' || unit === 'hour';
+	// 	}
+
+	// 	function beforeNineThirty(date) {
+	// 		return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
+	// 	}
+
+	// 	// Returns true if outside 9:30am-4pm on a weekday
+	// 	function outsideMarketHours(date) {
+	// 		if (date.isoWeekday() > 5) {
+	// 			return true;
+	// 		}
+	// 		if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
+	// 			return true;
+	// 		}
+	// 		return false;
+	// 	}
+
+	// 	function randomNumber(min, max) {
+	// 		return Math.random() * (max - min) + min;
+	// 	}
+
+	// 	function randomBar(date, lastClose) {
+	// 		var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
+	// 		var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
+	// 		return {
+	// 			t: date.valueOf(),
+	// 			y: close
+	// 		};
+	// 	}
+
+	// 	var date = moment('Jan 01 1990', 'MMM DD YYYY');
+	// 	var now = moment();
+	// 	var data = [];
+	// 	var lessThanDay = unitLessThanDay();
+	// 	for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
+	// 		if (outsideMarketHours(date)) {
+	// 			if (!lessThanDay || !beforeNineThirty(date)) {
+	// 				date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
+	// 			}
+	// 			if (lessThanDay) {
+	// 				date = date.hour(9).minute(30).second(0);
+	// 			}
+	// 		}
+	// 		data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
+	// 	}
+
+	// 	return data;
+	// }
+	// console.log(generateData());
+
+dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
+"volt":[
+{t: 631126800000, y: "600"},
+{t: 631213200000, y: "612"},
+{t: 631299600000, y: "625"},
+{t: 631386000000, y: "610"},
+{t: 631472400000, y: "630"},
+{t: 631731600000, y: "635"},
+{t: 631818000000, y: "640"},
+{t: 631904400000, y: "650"},
+{t: 631990800000, y: "641"},
+{t: 632077200000, y: "645"},
+{t: 632336400000, y: "640"},
+{t: 632422800000, y: "650"},
+{t: 632509200000, y: "660"},
+{t: 632595600000, y: "655"},
+{t: 632682000000, y: "654"},
+{t: 632941200000, y: "650"},
+{t: 633027600000, y: "643"},
+{t: 633114000000, y: "640"},
+{t: 633200400000, y: "644"},
+{t: 633286800000, y: "638"},
+{t: 633546000000, y: "632"},
+{t: 633632400000, y: "631"},
+{t: 633718800000, y: "625"},
+{t: 633805200000, y: "630"},
+{t: 633891600000, y: "624"},
+{t: 634150800000, y: "619"},
+{t: 634237200000, y: "618"},
+{t: 634323600000, y: "610"},
+{t: 634410000000, y: "601"},
+{t: 634496400000, y: "602"},
+{t: 634755600000, y: "610"}],
+"amp":[
+{t: 631126800000, y: "6"},
+{t: 631213200000, y: "12"},
+{t: 631299600000, y: "15"},
+{t: 631386000000, y: "11"},
+{t: 631472400000, y: "10"},
+{t: 631731600000, y: "9"},
+{t: 631818000000, y: "1"},
+{t: 631904400000, y: "2"},
+{t: 631990800000, y: "10"},
+{t: 632077200000, y: "3"},
+{t: 632336400000, y: "4"},
+{t: 632422800000, y: "7"},
+{t: 632509200000, y: "3"},
+{t: 632595600000, y: "5"},
+{t: 632682000000, y: "8"},
+{t: 632941200000, y: "9"},
+{t: 633027600000, y: "0"},
+{t: 633114000000, y: "8"},
+{t: 633200400000, y: "1"},
+{t: 633286800000, y: "8"},
+{t: 633546000000, y: "7"},
+{t: 633632400000, y: "1"},
+{t: 633718800000, y: "3"},
+{t: 633805200000, y: "2"},
+{t: 633891600000, y: "8"},
+{t: 634150800000, y: "9"},
+{t: 634237200000, y: "3"},
+{t: 634323600000, y: "14"},
+{t: 634410000000, y: "7"},
+{t: 634496400000, y: "2"},
+{t: 634755600000, y: "7"}],
+"watt":[
+{t: 631126800000, y: "0"},
+{t: 631213200000, y: "6"},
+{t: 631299600000, y: "8"},
+{t: 631386000000, y: "9"},
+{t: 631472400000, y: "4"},
+{t: 631731600000, y: "9"},
+{t: 631818000000, y: "1"},
+{t: 631904400000, y: "2"},
+{t: 631990800000, y: "0"},
+{t: 632077200000, y: "3"},
+{t: 632336400000, y: "4"},
+{t: 632422800000, y: "7"},
+{t: 632509200000, y: "3"},
+{t: 632595600000, y: "5"},
+{t: 632682000000, y: "8"},
+{t: 632941200000, y: "9"},
+{t: 633027600000, y: "0"},
+{t: 633114000000, y: "8"},
+{t: 633200400000, y: "1"},
+{t: 633286800000, y: "8"},
+{t: 633546000000, y: "7"},
+{t: 633632400000, y: "1"},
+{t: 633718800000, y: "3"},
+{t: 633805200000, y: "2"},
+{t: 633891600000, y: "8"},
+{t: 634150800000, y: "9"},
+{t: 634237200000, y: "3"},
+{t: 634323600000, y: "4"},
+{t: 634410000000, y: "7"},
+{t: 634496400000, y: "2"},
+{t: 634755600000, y: "7"}]};
+	
+	var colorNames = Object.keys(window.chartColors);
+	function loadCompare(data){
+		var charts = [];
+		$.each(["volt","amp","watt"], function( index, value ) {
+		var divChart = "<div style=\"width:1000px\"><div id=\"compare"+value+"\"></div></div><br>";
+		$("#compare").append(divChart);
+		var chart = LightweightCharts.createChart(document.getElementById("compare"+value), {
+	width: 600,
+  height: 300,
+	layout: {
+		fontFamily: 'Comic Sans MS',
+	},
+	priceScale: {
+		borderColor: 'rgba(197, 203, 206, 1)',
+	},
+	timeScale: {
+		borderColor: 'rgba(197, 203, 206, 1)',
+	},
+});
+		charts.push(chart);
+		});
+		$.each(data, function( index, value ) {
+			var VAW = [value.volt,value.amp,value.watt];
+			$.each(VAW, function( i, v) {
+			var colorName = colorNames[index % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var areaSeries = charts[i].addAreaSeries({
+  				topColor: newColor,
+  				bottomColor: newColor,
+  				lineColor: newColor,
+  				lineWidth: 2,
+			});
+			areaSeries.setData(v);
+			
+			});	
+		});
+	}
+
+	function loadSeparate(data){
+		$.each(data, function( index, value ) {
+			var VAW = [value.volt,value.amp,value.watt];
+			$("#separate").append("<div class=\"row\" id=\"row"+index+"\">");
+			$.each(VAW, function( i, v ) {
+				var x;
+				if(i==0)x="volt";if(i==1)x="amp";if(i==2)x="watt";
+				var divChart = "<div class=\"col-4\"><canvas id=\"separate-"+value.name+"-"+x+"\"></canvas></div>"
+				$("#row"+index).append(divChart);
+				var chart = LightweightCharts.createChart(document.getElementById("separate-"+value.name+"-"+x), {
+					width: 600,
+  					height: 300,
+					priceScale: {
+					borderColor: 'rgba(197, 203, 206, 1)',
+					},
+					timeScale: {
+						timeVisible: true,
+   						secondsVisible: false,
+					},
+			});
+			var colorName = colorNames[i % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var areaSeries = chart.addAreaSeries({
+  				topColor: newColor,
+  				bottomColor: newColor,
+  				lineColor: newColor,
+  				lineWidth: 2,
+			});
+			areaSeries.setData(v);
+		});	
+	});	
+	}
+
+	function loadCombine(data){
+		var charts = [];
+		var VAW = [data.volt,data.amp,data.watt];
+		$.each(["volt","amp","watt"], function( i, v ) {
+			var divChart = "<div style=\"width:1000px\"><canvas id=\"combine"+v+"\"></canvas></div>";
+			$("#combine").append(divChart);
+			var ctxTmp = document.getElementById('combine'+v).getContext('2d');
+			ctxTmp.canvas.width = 1000;
+			ctxTmp.canvas.height = 300;
+			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			var chart = new Chart(ctxTmp, cfgTmp);
+			charts.push(chart);
+		});
+		$.each(VAW, function( i, v) {
+			var colorName = colorNames[i % colorNames.length];
+			var newColor = window.chartColors[colorName];
+			var newDataset = {
+				label: data.name,
+				backgroundColor: newColor,
+				borderColor: newColor,
+				data: v,
+				type: 'line',
+				pointRadius: 0,
+				fill: false,
+				lineTension: 0,
+				borderWidth: 2
+				};
+				charts[i].config.data.datasets.push(newDataset);
+		});
+		$.each(charts, function( i, v) {
+		v.config.data.datasets.splice(0, 1);
+		v.update();
+		});
+	}
+
+	document.getElementById('update').addEventListener('click', function () {
+		console.log(dashboardArray);
+		$.ajax({
+            url: "{{ url_for('Private.dashboard_list') }}",
+            method: "POST",
+            data: {
+                datax: JSON.stringify(dashboardArray)
+                	}
+            }).then(function(res) {
+				loadSeparate(res);
+				loadCompare(res);
+				console.log(res);
+                        })
+            .catch(function(err) {
+                console.log(err);
+                });
+	});
+
+	//loadCombine(dummyCombine);
+</script>
+{% endblock %}

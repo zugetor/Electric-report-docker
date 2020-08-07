@@ -1,14 +1,15 @@
 {% extends 'base.html' %}
 {% block title %}Energy Saving - Charts{% endblock %}
 {% block css %}
-    .selected{
-      background-color: rgba(192,192,192,0.5);
-    }
-    tr[role="row"]:hover {
-        cursor:pointer;
-    }
+.selected{
+background-color: rgba(192,192,192,0.5);
+}
+tr[role="row"]:hover {
+cursor:pointer;
+}
 {% endblock %}
 {% block content %}
+
 <h1 class="h3 mb-2 text-gray-800">Dashboard</h1>
 <div class="row">
 	<div class="col">
@@ -47,15 +48,6 @@
 						Sensor Type :
 					</div>
 					<div class="form-row">
-						<!-- {% for i in _type %}
-		<div class="col-md-1 mb-3">
-			<div class="custom-control custom-checkbox">
-				<input type="checkbox" class="custom-control-input" id="type{{i['tid']}}" data-type="" checked
-					value="{{i['tname']}}">
-				<label class="custom-control-label" for="type{{i['tid']}}">{{i["tname"]}}</label>
-			</div>
-		</div>
-		{% endfor %} -->
 						<div class="col-md-2 mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
@@ -118,22 +110,25 @@
 	</div>
 	<div class="col-2">
 		<label>Time range:</label>
-		<input type="text" name="daterange" />
+		<input type="text" name="datetimes" />
 	</div>
 	<div class="col-2">
 		<label>Unit:</label>
 		<select id="unit">
-			<option value="second">Second</option>
-			<option value="minute">Minute</option>
-			<option value="hour">Hour</option>
-			<option value="day" selected>Day</option>
-			<option value="month">Month</option>
-			<option value="year">Year</option>
+			<option value="15m">15minutes</option>
+			<option value="30m">30mimutes</option>
+			<option value="1h">1hour</option>
+			<option value="12h" selected>12hours</option>
+			<option value="1d">1day</option>
+			<option value="7d">1week</option>
 		</select>
 		<button id="update" class="btn btn-outline-primary">update</button>
 	</div>
 	<div class="col-2">
-		<button class="btn btn-outline-success" id="refresh">auto refresh</button>
+		<button class="btn btn-outline-success" id="autoRefresh">auto update</button>
+	</div>
+	<div class="col-2">
+		<button class="btn btn-outline-info" id="genParam">generate parameter</button>
 	</div>
 </div>
 <br>
@@ -141,14 +136,38 @@
 <br>
 <br>
 <center>
-	<div id="compare"></div>
-	<div id="combine"></div>
-	<div id="separate"></div>
+	<div id="dashGraph" class="bg-white">
+		<button class="btn btn-outline-info float-right" id="fullscreen"><i class="fa fa-expand"
+				aria-hidden="true"></i></button>
+		<div id="compare"></div>
+		<div id="combine"></div>
+		<div id="separate"></div>
+
+	</div>
 </center>
 <!-- /.container-fluid -->
 {% endblock %}
 {% block js %}
 <script>
+	let range;
+	let startTime;
+	let endTime;
+	range = $('input[name="datetimes"]').daterangepicker({
+		timePicker: true,
+		startDate: moment().subtract(1, 'days'),
+		endDate: moment(),
+		locale: {
+			format: 'M/DD hh:mm A'
+		}
+	});
+
+	$('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
+		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
+		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
+	});
+
+
+
 	var getRoomData = function () {
 		$.ajax({
 			type: 'GET',
@@ -290,25 +309,46 @@
 		updateDashboard();
 	});
 
+	mode = "none";
+	var unit
+	$("#unit").change(function () {
+		unit = $("#unit").val();
+	});
+
 	$("#compare").hide();
 	$("#combine").hide();
 	$("#separate").hide();
 
 	$("#Bcompare").click(function () {
+		showCompare()
+	});
+	$("#Bcombine").click(function () {
+		showCombine()
+	});
+	$("#Bseparate").click(function () {
+		showSeparate()
+	});
+
+	function showCompare() {
+		mode = "compare"
 		$("#compare").show();
 		$("#combine").hide();
 		$("#separate").hide();
-	});
-	$("#Bcombine").click(function () {
+	};
+
+	function showCombine() {
+		mode = "combine"
 		$("#combine").show();
 		$("#compare").hide();
 		$("#separate").hide();
-	});
-	$("#Bseparate").click(function () {
+	};
+
+	function showSeparate() {
+		mode = "separate"
 		$("#separate").show();
 		$("#combine").hide();
 		$("#compare").hide();
-	});
+	};
 
 	$("#search").click(function () {
 		Swal.fire({
@@ -396,177 +436,23 @@
 		});
 	});
 
-	// function generateData() {
-	// 	var unit = document.getElementById('unit').value;
-
-	// 	function unitLessThanDay() {
-	// 		return unit === 'second' || unit === 'minute' || unit === 'hour';
-	// 	}
-
-	// 	function beforeNineThirty(date) {
-	// 		return date.hour() < 9 || (date.hour() === 9 && date.minute() < 30);
-	// 	}
-
-	// 	// Returns true if outside 9:30am-4pm on a weekday
-	// 	function outsideMarketHours(date) {
-	// 		if (date.isoWeekday() > 5) {
-	// 			return true;
-	// 		}
-	// 		if (unitLessThanDay() && (beforeNineThirty(date) || date.hour() > 16)) {
-	// 			return true;
-	// 		}
-	// 		return false;
-	// 	}
-
-	// 	function randomNumber(min, max) {
-	// 		return Math.random() * (max - min) + min;
-	// 	}
-
-	// 	function randomBar(date, lastClose) {
-	// 		var open = randomNumber(lastClose * 0.95, lastClose * 1.05).toFixed(2);
-	// 		var close = randomNumber(open * 0.95, open * 1.05).toFixed(2);
-	// 		return {
-	// 			t: date.valueOf(),
-	// 			y: close
-	// 		};
-	// 	}
-
-	// 	var date = moment('Jan 01 1990', 'MMM DD YYYY');
-	// 	var now = moment();
-	// 	var data = [];
-	// 	var lessThanDay = unitLessThanDay();
-	// 	for (; data.length < 600 && date.isBefore(now); date = date.clone().add(1, unit).startOf(unit)) {
-	// 		if (outsideMarketHours(date)) {
-	// 			if (!lessThanDay || !beforeNineThirty(date)) {
-	// 				date = date.clone().add(date.isoWeekday() >= 5 ? 8 - date.isoWeekday() : 1, 'day');
-	// 			}
-	// 			if (lessThanDay) {
-	// 				date = date.hour(9).minute(30).second(0);
-	// 			}
-	// 		}
-	// 		data.push(randomBar(date, data.length > 0 ? data[data.length - 1].y : 30));
-	// 	}
-
-	// 	return data;
-	// }
-	// console.log(generateData());
-
-dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
-"volt":[
-{t: 631126800000, y: "600"},
-{t: 631213200000, y: "612"},
-{t: 631299600000, y: "625"},
-{t: 631386000000, y: "610"},
-{t: 631472400000, y: "630"},
-{t: 631731600000, y: "635"},
-{t: 631818000000, y: "640"},
-{t: 631904400000, y: "650"},
-{t: 631990800000, y: "641"},
-{t: 632077200000, y: "645"},
-{t: 632336400000, y: "640"},
-{t: 632422800000, y: "650"},
-{t: 632509200000, y: "660"},
-{t: 632595600000, y: "655"},
-{t: 632682000000, y: "654"},
-{t: 632941200000, y: "650"},
-{t: 633027600000, y: "643"},
-{t: 633114000000, y: "640"},
-{t: 633200400000, y: "644"},
-{t: 633286800000, y: "638"},
-{t: 633546000000, y: "632"},
-{t: 633632400000, y: "631"},
-{t: 633718800000, y: "625"},
-{t: 633805200000, y: "630"},
-{t: 633891600000, y: "624"},
-{t: 634150800000, y: "619"},
-{t: 634237200000, y: "618"},
-{t: 634323600000, y: "610"},
-{t: 634410000000, y: "601"},
-{t: 634496400000, y: "602"},
-{t: 634755600000, y: "610"}],
-"amp":[
-{t: 631126800000, y: "6"},
-{t: 631213200000, y: "12"},
-{t: 631299600000, y: "15"},
-{t: 631386000000, y: "11"},
-{t: 631472400000, y: "10"},
-{t: 631731600000, y: "9"},
-{t: 631818000000, y: "1"},
-{t: 631904400000, y: "2"},
-{t: 631990800000, y: "10"},
-{t: 632077200000, y: "3"},
-{t: 632336400000, y: "4"},
-{t: 632422800000, y: "7"},
-{t: 632509200000, y: "3"},
-{t: 632595600000, y: "5"},
-{t: 632682000000, y: "8"},
-{t: 632941200000, y: "9"},
-{t: 633027600000, y: "0"},
-{t: 633114000000, y: "8"},
-{t: 633200400000, y: "1"},
-{t: 633286800000, y: "8"},
-{t: 633546000000, y: "7"},
-{t: 633632400000, y: "1"},
-{t: 633718800000, y: "3"},
-{t: 633805200000, y: "2"},
-{t: 633891600000, y: "8"},
-{t: 634150800000, y: "9"},
-{t: 634237200000, y: "3"},
-{t: 634323600000, y: "14"},
-{t: 634410000000, y: "7"},
-{t: 634496400000, y: "2"},
-{t: 634755600000, y: "7"}],
-"watt":[
-{t: 631126800000, y: "0"},
-{t: 631213200000, y: "6"},
-{t: 631299600000, y: "8"},
-{t: 631386000000, y: "9"},
-{t: 631472400000, y: "4"},
-{t: 631731600000, y: "9"},
-{t: 631818000000, y: "1"},
-{t: 631904400000, y: "2"},
-{t: 631990800000, y: "0"},
-{t: 632077200000, y: "3"},
-{t: 632336400000, y: "4"},
-{t: 632422800000, y: "7"},
-{t: 632509200000, y: "3"},
-{t: 632595600000, y: "5"},
-{t: 632682000000, y: "8"},
-{t: 632941200000, y: "9"},
-{t: 633027600000, y: "0"},
-{t: 633114000000, y: "8"},
-{t: 633200400000, y: "1"},
-{t: 633286800000, y: "8"},
-{t: 633546000000, y: "7"},
-{t: 633632400000, y: "1"},
-{t: 633718800000, y: "3"},
-{t: 633805200000, y: "2"},
-{t: 633891600000, y: "8"},
-{t: 634150800000, y: "9"},
-{t: 634237200000, y: "3"},
-{t: 634323600000, y: "4"},
-{t: 634410000000, y: "7"},
-{t: 634496400000, y: "2"},
-{t: 634755600000, y: "7"}]};
-
-	
-
 	var color = Chart.helpers.color;
 	var cfg = {
 		data: {
-			datasets: [
-				{
-					label: 'tmp',
-					backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
-					borderColor: window.chartColors.blue,
-					data: [{t: 000000000000, y: "0"}],
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				}
-			]
+			datasets: [{
+				label: 'tmp',
+				backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+				borderColor: window.chartColors.blue,
+				data: [{
+					t: 000000000000,
+					y: "0"
+				}],
+				type: 'line',
+				pointRadius: 0,
+				fill: false,
+				lineTension: 0,
+				borderWidth: 2
+			}]
 		},
 		options: {
 			animation: {
@@ -591,32 +477,6 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 						autoSkipPadding: 75,
 						maxRotation: 0,
 						sampleSize: 100
-					},
-					afterBuildTicks: function (scale, ticks) {
-						var majorUnit = scale._majorUnit;
-						var firstTick = ticks[0];
-						var i, ilen, val, tick, currMajor, lastMajor;
-
-						val = moment(ticks[0].value);
-						if ((majorUnit === 'minute' && val.second() === 0) ||
-							(majorUnit === 'hour' && val.minute() === 0) ||
-							(majorUnit === 'day' && val.hour() === 9) ||
-							(majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1) ||
-							(majorUnit === 'year' && val.month() === 0)) {
-							firstTick.major = true;
-						} else {
-							firstTick.major = false;
-						}
-						lastMajor = val.get(majorUnit);
-
-						for (i = 1, ilen = ticks.length; i < ilen; i++) {
-							tick = ticks[i];
-							val = moment(tick.value);
-							currMajor = val.get(majorUnit);
-							tick.major = currMajor !== lastMajor;
-							lastMajor = currMajor;
-						}
-						return ticks;
 					}
 				}],
 				yAxes: [{
@@ -639,10 +499,21 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 				speed: 100,
 				threshold: 100
 			},
+			pan: {
+				enabled: true,
+				mode: "y",
+				speed: 100,
+				threshold: 100
+			},
 			zoom: {
 				enabled: true,
 				drag: false,
 				mode: "x",
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "y",
 			},
 			tooltips: {
 				intersect: false,
@@ -660,133 +531,343 @@ dummyCombine = {"name":"IF-4C01 & IF-4C02 & IF-4C03",
 			}
 		}
 	};
-	
-	var colorNames = Object.keys(window.chartColors);
-	function loadCompare(data){
-		var charts = [];
-		$.each(["volt","amp","watt"], function( index, value ) {
-		var divChart = "<div style=\"width:1000px\"><canvas id=\"compare"+value+"\"></canvas></div>";
-		$("#compare").append(divChart);
-		var ctxTmp = document.getElementById('compare'+value).getContext('2d');
-		ctxTmp.canvas.width = 1000;
-		ctxTmp.canvas.height = 300;
-		var cfgTmp = JSON.parse(JSON.stringify(cfg));
-		var chart = new Chart(ctxTmp, cfgTmp);
-		charts.push(chart);
+
+	let colorTmp = Object.keys(window.chartColors);
+	let compareChart = [];
+	let combineChart = [];
+	let separateChart = [];
+	var colorNames = shuffle(colorTmp);
+
+	function clearChart() {
+		$.each(compareChart, function (index, value) {
+			value.destroy()
 		});
-		$.each(data, function( index, value ) {
-			var VAW = [value.volt,value.amp,value.watt];
-			$.each(VAW, function( i, v) {
-			var colorName = colorNames[charts[i].config.data.datasets.length % colorNames.length];
-			var newColor = window.chartColors[colorName];
-			var newDataset = {
-					label: value.name,
-					backgroundColor: newColor,
-					borderColor: newColor,
-					data: v,
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				};
-				charts[i].config.data.datasets.push(newDataset);
-			});	
+		$.each(combineChart, function (index, value) {
+			value.destroy()
 		});
-		$.each(charts, function( index, value) {
-		value.config.data.datasets.splice(0, 1);
-		value.update();
+		$.each(separateChart, function (index, value) {
+			value.destroy()
 		});
+		compareChart = [];
+		combineChart = [];
+		separateChart = [];
+		$('#compare').html('');
+		$('#combine').html('');
+		$('#separate').html('');
 	}
 
-	function loadSeparate(data){
-		$.each(data, function( index, value ) {
-			var VAW = [value.volt,value.amp,value.watt];
-			$("#separate").append("<div class=\"row\" id=\"row"+index+"\">");
-			$.each(VAW, function( i, v ) {
-				var x;
-				if(i==0)x="volt";if(i==1)x="amp";if(i==2)x="watt";
-				var divChart = "<div class=\"col-4\"><canvas id=\"separate-"+value.name+"-"+x+"\"></canvas></div>"
-				$("#row"+index).append(divChart);
-				var ctxTmp = document.getElementById("separate"+"-"+value.name+"-"+x).getContext('2d');
+	function loadCompare(data) {
+		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
+			var divChart = "<div style=\"width:1000px\" name=\"compare" + value + "\"><canvas id=\"compare" +
+				value + "\"></canvas></div>";
+			$("#compare").append(divChart);
+			var ctxTmp = document.getElementById('compare' + value).getContext('2d');
+			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
+			var chart = new Chart(ctxTmp, cfgTmp);
+			compareChart.push(chart);
+			$.each(data, function (i, v) {
+				$.each(v, function (i2, v2) {
+					if (value == i2) {
+						$.each(v2, function (i3, v3) {
+							if (v3.name !== undefined) {
+								var colorName = colorNames[i];
+								var newColor = window.chartColors[colorName];
+								var newDataset = {
+									label: v3.name,
+									backgroundColor: newColor,
+									borderColor: newColor,
+									data: v3.values,
+									type: 'line',
+									pointRadius: 0,
+									fill: false,
+									lineTension: 0,
+									borderWidth: 2
+								};
+								chart.config.data.datasets.push(newDataset);
+							}
+						});
+					}
+				});
+			});
+			chart.config.data.datasets.splice(0, 1);
+			chart.update();
+			if (chart.config.data.datasets.length == 0) {
+				chart.destroy()
+				$('[name="compare' + value + '"]').remove();
+			}
+		});
+
+	}
+
+	function loadSeparate(data) {
+		$.each(data, function (index, value) {
+			$("#separate").append("<div class=\"row justify-content-center\" id=\"row" + index + "_1\">");
+			$("#separate").append("<div class=\"row justify-content-center\" id=\"row" + index + "_2\">");
+			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
+				if (v == "volt" || v == "amp" || v == "watt") {
+					var divChart = "<div class=\"col-4\" name=\"separate-" + value.name + "-" + v +
+						"\"><canvas id=\"separate-" + value.name + "-" + v +
+						"\"></canvas></div>"
+					$("#row" + index + "_1").append(divChart);
+				} else if (v == "ae" || v == "ct") {
+					var divChart = "<div class=\"col-4\" name=\"separate-" + value.name + "-" + v +
+						"\"><canvas id=\"separate-" + value.name + "-" + v +
+						"\"></canvas></div>"
+					$("#row" + index + "_2").append(divChart);
+				}
+				var ctxTmp = document.getElementById("separate" + "-" + value.name + "-" + v).getContext(
+					'2d');
 				var cfgTmp = JSON.parse(JSON.stringify(cfg));
-				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length+index];
+				cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = v
+				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length + index];
 				var newColor = window.chartColors[colorName];
 				var chart = new Chart(ctxTmp, cfgTmp);
-				var newDataset = {
-					label: value.name,
-					backgroundColor: newColor,
-					borderColor: newColor,
-					data: v,
-					type: 'line',
-					pointRadius: 0,
-					fill: false,
-					lineTension: 0,
-					borderWidth: 2
-				};
-				chart.config.data.datasets.push(newDataset);
+				separateChart.push(chart);
+				$.each(value, function (i2, v2) {
+					if (i2 == v) {
+						$.each(v2, function (i3, v3) {
+							var newDataset = {
+								label: v3.name,
+								backgroundColor: newColor,
+								borderColor: newColor,
+								data: v3.values,
+								type: 'line',
+								pointRadius: 0,
+								fill: false,
+								lineTension: 0,
+								borderWidth: 2
+							};
+							chart.config.data.datasets.push(newDataset);
+						});
+					}
+				});
 				chart.config.data.datasets.splice(0, 1);
 				chart.update();
-		});	
-	});	
+				if (chart.config.data.datasets.length == 0) {
+					chart.destroy()
+					$('[name="separate-' + value.name + '-' + v + '"]').remove();
+				}
+			});
+		});
 	}
 
-	function loadCombine(data){
-		var charts = [];
-		var VAW = [data.volt,data.amp,data.watt];
-		$.each(["volt","amp","watt"], function( i, v ) {
-			var divChart = "<div style=\"width:1000px\"><canvas id=\"combine"+v+"\"></canvas></div>";
+	function loadCombine(data) {
+		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
+			var divChart = "<div style=\"width:1000px\" name=\"combine" + value + "\"><canvas id=\"combine" +
+				value + "\"></canvas></div>";
 			$("#combine").append(divChart);
-			var ctxTmp = document.getElementById('combine'+v).getContext('2d');
-			ctxTmp.canvas.width = 1000;
-			ctxTmp.canvas.height = 300;
+			var ctxTmp = document.getElementById('combine' + value).getContext('2d');
 			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
 			var chart = new Chart(ctxTmp, cfgTmp);
-			charts.push(chart);
-		});
-		$.each(VAW, function( i, v) {
-			var colorName = colorNames[i % colorNames.length];
-			var newColor = window.chartColors[colorName];
-			var newDataset = {
-				label: data.name,
-				backgroundColor: newColor,
-				borderColor: newColor,
-				data: v,
-				type: 'line',
-				pointRadius: 0,
-				fill: false,
-				lineTension: 0,
-				borderWidth: 2
-				};
-				charts[i].config.data.datasets.push(newDataset);
-		});
-		$.each(charts, function( i, v) {
-		v.config.data.datasets.splice(0, 1);
-		v.update();
+			compareChart.push(chart);
+			$.each(data, function (i, v) {
+				if (value == i) {
+					$.each(v, function (i2, v2) {
+						if (v2.name !== undefined) {
+							var colorName = colorNames[i];
+							var newColor = window.chartColors[colorName];
+							var newDataset = {
+								label: v2.name,
+								backgroundColor: newColor,
+								borderColor: newColor,
+								data: v2.values,
+								type: 'line',
+								pointRadius: 0,
+								fill: false,
+								lineTension: 0,
+								borderWidth: 2
+							};
+							chart.config.data.datasets.push(newDataset);
+						}
+					});
+				}
+			});
+			chart.config.data.datasets.splice(0, 1);
+			chart.update();
+			if (chart.config.data.datasets.length == 0) {
+				chart.destroy()
+				$('[name="combine' + value + '"]').remove();
+			}
 		});
 	}
 
-	document.getElementById('update').addEventListener('click', function () {
-		//var dataset = chart.config.data.datasets[0];
-		//dataset1.data = generateData();
-		//chart.update();
-		console.log(dashboardArray);
+	function getAndLoad() {
+		clearChart();
+
+		if (startTime == undefined) {
+			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+		}
+		// console.log(startTime);
+		// console.log(endTime);
+		// console.log(dashboardArray);
 		$.ajax({
-            url: "{{ url_for('Private.dashboard_list') }}",
-            method: "POST",
-            data: {
-                datax: JSON.stringify(dashboardArray)
-                	}
-            }).then(function(res) {
+				url: "{{ url_for('Private.dashboard_list') }}",
+				method: "POST",
+				data: {
+					data: JSON.stringify(dashboardArray),
+					unit: unit,
+					startTime: String(startTime),
+					endTime: String(endTime),
+					graphType: "CompareAndSeparate"
+				}
+			}).then(function (res) {
 				loadSeparate(res);
 				loadCompare(res);
 				console.log(res);
-                        })
-            .catch(function(err) {
-                console.log(err);
-                });
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
+
+	function getAndCombine() {
+		clearChart();
+		if (startTime == undefined) {
+			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+		}
+		$.ajax({
+				url: "{{ url_for('Private.dashboard_list') }}",
+				method: "POST",
+				data: {
+					data: JSON.stringify(dashboardArray),
+					unit: unit,
+					startTime: String(startTime),
+					endTime: String(endTime),
+					graphType: "Combine"
+				}
+			}).then(function (res) {
+				console.log(res);
+				loadCombine(res);
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
+
+	document.getElementById('update').addEventListener('click', function () {
+		getAndLoad();
+		getAndCombine();
 	});
 
-	loadCombine(dummyCombine);
+	let checkFullScreen = false;
+	let checkRefresh = false;
+	let timerId;
+
+	function fullscreen() {
+		if (checkFullScreen == false) {
+			$('#dashGraph').css({
+				position: 'fixed',
+				top: 0,
+				right: 0,
+				bottom: 0,
+				left: 0,
+				padding: 3,
+				zIndex: 999
+			});
+			checkFullScreen = true;
+		} else {
+			$('#dashGraph').css({
+				position: 'static',
+				top: 'auto',
+				right: 'auto',
+				bottom: 'auto',
+				left: 'auto',
+				zIndex: 'auto'
+			});
+			checkFullScreen = false;
+		}
+	}
+
+	const queryString = window.location.search;
+	if (queryString !== "") {
+		fullscreen()
+		const urlParams = new URLSearchParams(queryString);
+		for (var i = 0; i < urlParams.getAll('id').length; i++) {
+			dashboardArray.push({
+				'type': urlParams.getAll('type')[i],
+				'id': urlParams.getAll('id')[i],
+				'name': urlParams.getAll('name')[i]
+			})
+		}
+		startTime = urlParams.get('startTime')
+		endTime = urlParams.get('endTime')
+		unit = urlParams.get('unit')
+		mode = urlParams.get('mode')
+		autoUpdate = urlParams.get('autoUpdate')
+		if (mode == "compare") {
+			showCompare()
+			getAndLoad();
+		} else if (mode == "combine") {
+			showCombine()
+			getAndCombine();
+		} else if (mode == "separate") {
+			showSeparate()
+			getAndLoad();
+		}
+		if (autoUpdate == true) {
+			refresh()
+		}
+	}
+
+	$('#genParam').click(function () {
+		param = "?";
+		$.each(dashboardArray, function (i, v) {
+			param += "id=" + encodeURIComponent(v.id) + "&"
+			param += "type=" + encodeURIComponent(v.type) + "&"
+			param += "name=" + encodeURIComponent(v.name) + "&"
+		});
+		param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" + mode +
+			"&autoUpdate=" + checkRefresh
+		console.log(param)
+	});
+
+	function shuffle(arra1) {
+		var ctr = arra1.length,
+			temp, index;
+		// While there are elements in the array
+		while (ctr > 0) {
+			// Pick a random index
+			index = Math.floor(Math.random() * ctr);
+			// Decrease ctr by 1
+			ctr--;
+			// And swap the last element with it
+			temp = arra1[ctr];
+			arra1[ctr] = arra1[index];
+			arra1[index] = temp;
+		}
+		return arra1;
+	}
+
+	function refresh() {
+		if (checkRefresh == false) {
+			$(this).removeClass('btn-outline-success').addClass('btn-outline-danger');
+			endTime = new Date(moment()).getTime() * 1000000;
+			getAndLoad()
+			getAndCombine();
+			timerId = setInterval(() => {
+				getAndLoad()
+				getAndCombine();
+			}, 180000);
+			checkRefresh = true;
+		} else {
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
+			clearInterval(timerId);
+			checkRefresh = false;
+			console.log("cancel interval")
+		}
+	};
+
+	$('#fullscreen').click(function () {
+		fullscreen();
+	});
+
+	$('#autoRefresh').click(function () {
+		refresh()
+	});
 </script>
 {% endblock %}
