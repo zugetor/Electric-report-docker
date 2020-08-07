@@ -563,9 +563,20 @@ class Query:
 	def getToken(self):
 		res = self.fetchAll("SELECT * FROM notify")
 		return res
+
 		
 	def updateNotiTime(self,unitSec):
 		self.execute("UPDATE `notify` SET ntime= %s",(unitSec))
 		
 	def updateNotiToken(self,token):
 		self.execute("UPDATE `notify` SET ntoken= %s",(token))
+
+
+	def getRoomSensor(self,rname):
+		res = self.fetchAll("""SELECT s.inf_id,s.inf_type,b.bomac,t.inf_name FROM sensor s 
+								INNER JOIN type t ON s.tid = t.tid 
+								INNER JOIN board b ON s.boid = b.boid 
+								INNER JOIN room r ON b.rid = r.rid 
+								WHERE s.inf_type IS NOT NULL AND r.rname = %s""",(rname,))
+		return res
+

@@ -38,6 +38,19 @@ class dbHandler():
 		result = infQuery('SHOW TAG VALUES FROM "{}" WITH key =~/topic/ WHERE MAC=$mac'.format(escape(table)),bind_params=param)
 		return result.raw
 
+	def getLastCT(self,sid,_type="ct"):
+		infQuery = self.query.getInfQuery()
+		param = {"s":sid}
+		result = infQuery('SELECT a FROM "{}" WHERE s=$s LIMIT 1'.format(escape(_type)),bind_params=param)
+		return result.raw
+
+	def getLastPIR(self,mac,_type="pir"):
+		infQuery = self.query.getInfQuery()
+		param = {"mac":mac}
+		result = infQuery('SELECT status FROM "{}" WHERE MAC=$mac LIMIT 1'.format(escape(_type)),bind_params=param)
+		return result.raw
+
+
 def getTimeZone():
 	cfg = getConfig()
 	return cfg.TIME_ZONE
@@ -63,6 +76,11 @@ def _topic2type(topic):
 	else:
 		return topic[-1],topic[-1]
 
+def getINFVal(raw):
+	if len(raw["series"]) > 0:
+		return raw["series"][0]["values"][0][1]
+	return 0
+
 def checkRule():
 	db = dbHandler()
 	query = db.getQuery()
@@ -70,6 +88,7 @@ def checkRule():
 	daylst = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 
 	allrule = query.getRule()
+	_rtype = query.getAllType()
 	for rule in allrule:
 		rule_name = rule["rname"]
 		rjson = rule["rjson"]
@@ -94,19 +113,40 @@ def checkRule():
 					rstatus = room["rstatus"]
 					tmp = {'dow': daylst[weekday+1], "time":now1.hour,"date":now_date,
 							"room":[rname,rstatus],"floor":fname,"building":bname}
+					rsensor = query.getRoomSensor(rname)
+
+					for rtype in _rtype:
+						tmp[rtype["inf_name"]] = 0
+
+					for s in rsensor:
+						if s["inf_type"] == "pir":
+							pir_tmp = db.getLastPIR(s["bomac"])
+							tmp["pir"] += getINFVal(pir_tmp)
+						else:
+							ct_tmp = db.getLastCT(s["inf_id"],s["inf_type"])
+							tmp[s["inf_name"]] += getINFVal(ct_tmp)
+					#print(tmp)
 					objects.append(tmp)
 
 		matched = evaluator.get_matching_objects(objects)
 
 		tokens = query.getToken()
-		for match in matched:
+		messages = []
+		message = ""
+		for idx,match in enumerate(matched):
 			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
 			match["room"] = match["room"][0]
 			match["rname"] = rule_name
-			message = getTemplate().format(**match)
+			message += getTemplate().format(**match) + "\n"
+			if idx % 5 == 0:
+				messages.append(message)
+				message = ""
+		messages.append(message)
+
+		for m in messages:
 			for token in tokens:
 				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
-					linenotify(message,token["ntoken"])
+					linenotify(m,token["ntoken"])
 
 def checkSchedule():
 	db = dbHandler()

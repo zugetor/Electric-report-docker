@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from apscheduler.schedulers.background import BackgroundScheduler
 from route import private, page, public
 from extensions import mysql, influx, query, html_escape, getConfig
@@ -28,7 +28,7 @@ atexit.register(lambda: scheduler.shutdown())
 
 @app.route("/")
 def index():
-	return render_template("sensor_view.html")
+	return redirect(url_for('Page.graph_view'))
 
 @app.errorhandler(404)
 def page_not_found(e):
