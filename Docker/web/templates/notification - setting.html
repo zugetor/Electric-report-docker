@@ -10,22 +10,21 @@
     <div class="card-body">
     <div class="row no-gutters align-items-center">
       <div class="col mr-2">
-      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Notify Time</div>
+      <div class="text-xs font-weight-bold text-primary text-uppercase mb-3">Notify Time</div>
       <div class="h5 mb-0 font-weight-bold text-gray-800">Repeat every ... </div><br>
-      <div class="form-group col-2">
-        <label for="exampleFormControlSelect1">Time</label>
-        <input type="number" class="form-control" id="notify_time">
+      <div class="form-group">
+        <label for="time">Time</label>
+        <input type="number" class="form-control" id="time">
         </div>
-        <div class="form-group col-2">
-        <label for="exampleFormControlSelect1">Unit</label>
-        <select class="form-control" id="exampleFormControlSelect1">
-          <option>Second</option>
-          <option>Minute</option>
-          <option>Hour</option>
+        <div class="form-group mb-4">
+        <label for="unit">Unit</label>
+        <select class="form-control" id="unit">
+          <option value="second">Second</option>
+          <option value="minute">Minute</option>
+          <option value="hour">Hour</option>
         </select>
-        
         </div>
-        <button type="button" class="btn btn-primary" id="save">update</button>
+        <button type="button" class="btn btn-primary" id="updateTime">update</button>
         <br>
         
       </div>
@@ -41,14 +40,14 @@
     <div class="card-body">
     <div class="row no-gutters align-items-center">
       <div class="col mr-2">
-      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Line Token</div>
-      <div class="h5 mb-0 font-weight-bold text-gray-800"><h4>Current Token : </h4>s8QED^gW7?Zs&vJn=MlDCTR0A°J°(Wy%1~wqPEeth3a$!xM#b1LrOY9G%o</div><br>
+      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Line Token</div>
+      <h4>Current Token : </h4><div class="h5 mb-0 font-weight-bold text-gray-800" id="showToken"></div><br>
       <div class="form-group">
         <label for="exampleFormControlSelect1">New Token</label>
-        <input type="text" class="form-control" id="token">
+        <input type="password" class="form-control" id="token">
         
         </div>
-        <button type="button" class="btn btn-info" id="save">update</button>
+        <button type="button" class="btn btn-info" id="updateToken">update</button>
         <br>
         
       </div>
@@ -59,5 +58,66 @@
   </div>
 {% endblock %}
 {% block js %}
+<script>
+  $("#updateTime").click(function () {
+    let unitSec = ""
+    if($("#unit").val()=="second"){
+      unitSec = $("#time").val()
+    }
+    else if($("#unit").val()=="minute"){
+      unitSec = $("#time").val()*60
+    }
+    else if($("#unit").val()=="hour"){
+      unitSec = $("#time").val()*60*60
+    }
+    $.post("{{ url_for('Private.notify_time_edit') }}",
+  {
+    unitSec: unitSec
+  },
+  function(data, status){
+    Swal.fire(
+      'Updated!',
+      'Notify time is updated',
+      'success'
+    )
+    getData()
+  })
+  });
 
+  $("#updateToken").click(function () {
+    $.post("{{ url_for('Private.notify_token_edit') }}",
+  {
+    token: $("#token").val()
+  },
+  function(data, status){
+    Swal.fire(
+      'Updated!',
+      'Token is updated',
+      'success'
+    )
+    getData()
+  })
+  });
+
+  function getData(){
+  $.get("{{ url_for('Private.getToken') }}", function(data, status){
+    if(parseInt(data[0].ntime)<60){
+      $("#time").val(data[0].ntime);
+      $("#unit").val("second");
+    }
+    else if(parseInt(data[0].ntime)<3600){
+      $("#time").val(data[0].ntime/60);
+      $("#unit").val("minute");
+    }
+    else{
+      $("#time").val(data[0].ntime/60/60);
+      $("#unit").val("hour");
+    }
+    $("#showToken").text(data[0].ntoken.substr(0,3)+"***************************"+data[0].ntoken.substr(data[0].ntoken.length - 3))
+  });
+  }
+
+  getData()
+    
+</script>
 {% endblock %}

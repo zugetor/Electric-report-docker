@@ -118,7 +118,6 @@ CREATE TABLE IF NOT EXISTS `electric_mon`.`sensor` (
   `inf_type` VARCHAR(10) NULL,
   `tid` INT NOT NULL,
   `boid` INT NOT NULL,
-  `tagid` INT NOT NULL,
   PRIMARY KEY (`sid`),
   INDEX `fk_sensor_type1_idx` (`tid` ASC),
   INDEX `fk_sensor_board1_idx` (`boid` ASC),

@@ -214,3 +214,23 @@ def user_active():
 		_allow = 0
 	query.UpdateUserActive(_id,_allow)
 	return jsonify({'Code':'200 OK'})
+	
+	
+@app.route('/notify/time/edit',methods=['POST'])
+@login_required
+def notify_time_edit():
+	unitSec = html_escape(request.form['unitSec'])
+	query.updateNotiTime(unitSec)
+	return '200 OK EDIT Notify'
+    
+@app.route('/notify/token/edit',methods=['POST'])
+@login_required
+def notify_token_edit():
+	token = html_escape(request.form['token'])
+	query.updateNotiToken(token)
+	return '200 OK EDIT Notify'
+    
+@app.route('/token/',methods=['GET'])
+@login_required
+def getToken():
+	return jsonify(query.getToken())

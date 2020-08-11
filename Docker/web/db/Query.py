@@ -71,19 +71,50 @@ class Query:
 			div="672"
 		for i in range(len(data)):
 			name = data[i]['name']
-			if(data[i]['type'] == "sensor"):
+			if(data[i]['type'] == "ct"):
 				nameCombine+=data[i]['name']+", "
 				tmp.append({'name':name,'ct':[{'values':[]}]})
-				_cur.execute("select s.tagid,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid where s.sid = %s",(data[i]['id']))
+				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid where s.sid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				ct.append(sensor[0])
 				if(len(sensor) != 0):
 					#result = self._client.query(query='select sum(volt)/$div as volt ,sum(amp)/$div as amp ,sum(watt)/$div as watt from mqtt_consumer where sid=$sid and time>=$startTime and time<=$endTime group by time($unit);',params={"params":json.dumps({'sid':data[i]['id'],'unit':unit,'div':div,'startTime':startTime,'endTime':endTime})})
-					result = self._client.query('select sum(a)/'+div+' as amp from ct where s='+str(sensor[0]['tagid'])+' and MAC=\''+str(sensor[0]['bomac'])+'\' and time>='+startTime+' and time<='+endTime+' group by time('+unit+')')
+					result = self._client.query('select sum(a)/'+div+' as amp from ct where s='+str(sensor[0]['inf_id'])+' and MAC=\''+str(sensor[0]['bomac'])+'\' and time>='+startTime+' and time<='+endTime+' group by time('+unit+')')
 					if(len(result.raw['series'])>0):
 						tmp[i]['ct'][0].update({'name':name+"_ct"})
 						for d in result.raw['series'][0]['values']:
 							tmp[i]['ct'][0]['values'].append({'t':d[0],'y':d[1]})
+			if(data[i]['type'] == "dm"):
+				nameCombine+=data[i]['name']+", "
+				tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
+				_cur.execute("select bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid where s.sid = %s",(data[i]['id']))
+				sensor = _cur.fetchall()
+				dm.append(sensor[0])
+				if(len(sensor) != 0):
+					qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where MAC=\'"+str(sensor[0]['bomac'])+"\' and time>="+startTime+" and time<="+endTime+" group by time("+unit+")"
+					result = self._client.query(query=qry)
+					if(len(result.raw['series'])>0):
+						tmp[i]['volt'][0].update({'name':name+"_VL1"})
+						tmp[i]['volt'][1].update({'name':name+"_VL2"})
+						tmp[i]['volt'][2].update({'name':name+"_VL3"})
+						tmp[i]['amp'][0].update({'name':name+"_AL1"})
+						tmp[i]['amp'][1].update({'name':name+"_AL2"})
+						tmp[i]['amp'][2].update({'name':name+"_AL3"})
+						tmp[i]['watt'][0].update({'name':name+"_P1"})
+						tmp[i]['watt'][1].update({'name':name+"_P2"})
+						tmp[i]['watt'][2].update({'name':name+"_P3"})
+						tmp[i]['ae'][0].update({'name':name+"_AE"})
+						for d in result.raw['series'][0]['values']:
+							tmp[i]['volt'][0]['values'].append({'t':d[0],'y':d[1]})
+							tmp[i]['volt'][1]['values'].append({'t':d[0],'y':d[2]})
+							tmp[i]['volt'][2]['values'].append({'t':d[0],'y':d[3]})
+							tmp[i]['amp'][0]['values'].append({'t':d[0],'y':d[4]})
+							tmp[i]['amp'][1]['values'].append({'t':d[0],'y':d[5]})
+							tmp[i]['amp'][2]['values'].append({'t':d[0],'y':d[6]})
+							tmp[i]['watt'][0]['values'].append({'t':d[0],'y':d[7]})
+							tmp[i]['watt'][1]['values'].append({'t':d[0],'y':d[8]})
+							tmp[i]['watt'][2]['values'].append({'t':d[0],'y':d[9]})
+							tmp[i]['ae'][0]['values'].append({'t':d[0],'y':d[10]})
 			if(data[i]['type'] == "room"):
 				nameCombine+=data[i]['name']+", "
 				tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
@@ -121,16 +152,16 @@ class Query:
 							tmp[i]['watt'][1]['values'].append({'t':d[0],'y':d[8]})
 							tmp[i]['watt'][2]['values'].append({'t':d[0],'y':d[9]})
 							tmp[i]['ae'][0]['values'].append({'t':d[0],'y':d[10]})
-				_cur.execute("select s.tagid,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
+				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
 					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') '
 						else:
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') or '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') or '
 					qry+=' group by time('+unit+');'
 					result = self._client.query(query=qry)
 					if(len(result.raw['series'])>0):
@@ -175,16 +206,16 @@ class Query:
 							tmp[i]['watt'][1]['values'].append({'t':d[0],'y':d[8]})
 							tmp[i]['watt'][2]['values'].append({'t':d[0],'y':d[9]})
 							tmp[i]['ae'][0]['values'].append({'t':d[0],'y':d[10]})
-				_cur.execute("select s.tagid,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
+				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
 					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') '
 						else:
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') or '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') or '
 					qry+=' group by time('+unit+');'
 					result = self._client.query(query=qry)
 					if(len(result.raw['series'])>0):
@@ -228,16 +259,16 @@ class Query:
 							tmp[i]['watt'][1]['values'].append({'t':d[0],'y':d[8]})
 							tmp[i]['watt'][2]['values'].append({'t':d[0],'y':d[9]})
 							tmp[i]['ae'][0]['values'].append({'t':d[0],'y':d[10]})
-				_cur.execute("select s.tagid,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
+				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
 					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') '
 						else:
-							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['tagid'])+') or '
+							qry+='(MAC = \''+str(sensor[index]['bomac'])+'\' and s = '+str(sensor[index]['inf_id'])+') or '
 					qry+=' group by time('+unit+');'
 					result = self._client.query(query=qry)
 					if(len(result.raw['series'])>0):
@@ -279,9 +310,9 @@ class Query:
 			qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 			for index in range(len(ct)):
 				if(index == len(ct)-1):
-					qry+='(MAC = \''+str(ct[index]['bomac'])+'\' and s = '+str(ct[index]['tagid'])+') '
+					qry+='(MAC = \''+str(ct[index]['bomac'])+'\' and s = '+str(ct[index]['inf_id'])+') '
 				else:
-					qry+='(MAC = \''+str(ct[index]['bomac'])+'\' and s = '+str(ct[index]['tagid'])+') or '
+					qry+='(MAC = \''+str(ct[index]['bomac'])+'\' and s = '+str(ct[index]['inf_id'])+') or '
 			qry+=' group by time('+unit+');'
 			result = self._client.query(query=qry)
 			if(len(result.raw['series'])>0):
@@ -295,7 +326,7 @@ class Query:
 			return tmp2
 
 	def sensor_list(self):
-		res = self.fetchAll("SELECT s.sid,s.sname,t.tname,r.rname,f.fname,b.bname,bo.bomac,r.rid,f.fid,b.bid FROM sensor AS s INNER JOIN board AS bo ON (s.boid=bo.boid) INNER JOIN room AS r ON (bo.rid=r.rid) INNER JOIN floor AS f ON (r.fid=f.fid) INNER JOIN building AS b ON (f.bid=b.bid) INNER JOIN type as t ON (s.tid=t.tid)")
+		res = self.fetchAll("SELECT s.inf_type,s.sid,s.sname,t.tname,r.rname,f.fname,b.bname,bo.bomac,r.rid,f.fid,b.bid FROM sensor AS s INNER JOIN board AS bo ON (s.boid=bo.boid) INNER JOIN room AS r ON (bo.rid=r.rid) INNER JOIN floor AS f ON (r.fid=f.fid) INNER JOIN building AS b ON (f.bid=b.bid) INNER JOIN type as t ON (s.tid=t.tid)")
 		return res
 
 	def all_room_list(self):
@@ -533,6 +564,14 @@ class Query:
 		res = self.fetchAll("SELECT * FROM notify")
 		return res
 
+		
+	def updateNotiTime(self,unitSec):
+		self.execute("UPDATE `notify` SET ntime= %s",(unitSec))
+		
+	def updateNotiToken(self,token):
+		self.execute("UPDATE `notify` SET ntoken= %s",(token))
+
+
 	def getRoomSensor(self,rname):
 		res = self.fetchAll("""SELECT s.inf_id,s.inf_type,b.bomac,t.inf_name FROM sensor s 
 								INNER JOIN type t ON s.tid = t.tid 
@@ -540,3 +579,4 @@ class Query:
 								INNER JOIN room r ON b.rid = r.rid 
 								WHERE s.inf_type IS NOT NULL AND r.rname = %s""",(rname,))
 		return res
+
