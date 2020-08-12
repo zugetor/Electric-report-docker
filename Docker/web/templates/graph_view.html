@@ -224,8 +224,9 @@ cursor:pointer;
 				<div class="row no-gutters align-items-center">
 					<div class="col mr-2">
 						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Create graph</div>
-						<button id="update" class="btn btn-outline-primary">update</button>
-						<button class="btn btn-outline-success" id="autoRefresh">auto update</button>
+						<button id="update" class="btn btn-outline-primary">Update</button>
+						<button class="btn btn-outline-success" id="autoRefresh">Auto update</button>
+						<button class="btn btn-outline-warning" id="editLegend">Edit legend</button>
 					</div>
 					<div class="col-auto">
 
@@ -580,6 +581,10 @@ cursor:pointer;
 			}]
 		},
 		options: {
+			title: {
+				display: true,
+				text: 'Chart'
+			},
 			maintainAspectRatio: false,
 			animation: {
 				duration: 0
@@ -683,7 +688,6 @@ cursor:pointer;
 	}
 
 	function loadCompare(data) {
-		console.log(data)
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
 			var divChart = "<div class=\"col mb-5\" name=\"compare" + value +
 				"\"><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
@@ -746,26 +750,26 @@ cursor:pointer;
 				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length + index];
 				var newColor = window.chartColors[colorName];
 				var chart = new Chart(ctxTmp, cfgTmp);
-				chart.canvas.parentNode.style.height = '300px';
-				chart.canvas.parentNode.style.width = '400px';
+				chart.canvas.parentNode.style.height = '500px';
+				chart.canvas.parentNode.style.width = '600px';
 				separateChart.push(chart);
 				$.each(value, function (i2, v2) {
 					if (i2 == v) {
 						$.each(v2, function (i3, v3) {
 							if (v3.name !== undefined) {
-							var newDataset = {
-								label: v3.name,
-								backgroundColor: newColor,
-								borderColor: newColor,
-								data: v3.values,
-								type: 'line',
-								pointRadius: 0,
-								fill: false,
-								lineTension: 0,
-								borderWidth: 2
-							};
-							chart.config.data.datasets.push(newDataset);
-						}
+								var newDataset = {
+									label: v3.name,
+									backgroundColor: newColor,
+									borderColor: newColor,
+									data: v3.values,
+									type: 'line',
+									pointRadius: 0,
+									fill: false,
+									lineTension: 0,
+									borderWidth: 2
+								};
+								chart.config.data.datasets.push(newDataset);
+							}
 						});
 					}
 				});
@@ -778,7 +782,19 @@ cursor:pointer;
 				}
 			});
 		});
+	if(separateChart.length>=7){
+		$.each(separateChart, function (i, v) {
+			v.canvas.parentNode.style.height = '300px';
+			v.canvas.parentNode.style.width = '400px';
+		});
 	}
+	else if(separateChart.length<=2){
+		$.each(separateChart, function (i, v) {
+			v.canvas.parentNode.style.height = '500px';
+		});
+	}
+	}
+	
 
 	function loadCombine(data) {
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
@@ -835,9 +851,6 @@ cursor:pointer;
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
 		}
-		// console.log(startTime);
-		// console.log(endTime);
-		// console.log(dashboardArray);
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
@@ -851,7 +864,9 @@ cursor:pointer;
 			}).then(function (res) {
 				loadSeparate(res);
 				loadCompare(res);
-				console.log(res);
+				if(legends!=undefined && titles!=undefined){
+					updateLegend(titles,legends)
+				}
 			})
 			.catch(function (err) {
 				console.log(err);
@@ -875,8 +890,10 @@ cursor:pointer;
 					graphType: "Combine"
 				}
 			}).then(function (res) {
-				console.log(res);
 				loadCombine(res);
+				if(legends!=undefined && titles!=undefined){
+					updateLegend(titles,legends)
+				}
 			})
 			.catch(function (err) {
 				console.log(err);
@@ -915,7 +932,8 @@ cursor:pointer;
 			checkFullScreen = false;
 		}
 	}
-
+	let titles;
+	let legends;
 	const queryString = window.location.search;
 	if (queryString !== "") {
 		fullscreen()
@@ -942,6 +960,8 @@ cursor:pointer;
 			showSeparate()
 			getAndLoad();
 		}
+		titles = urlParams.getAll('titles')
+		legends = urlParams.getAll('legends')
 		if (autoUpdate == true) {
 			refresh()
 		}
@@ -980,9 +1000,17 @@ cursor:pointer;
 				param += "type=" + encodeURIComponent(v.type) + "&"
 				param += "name=" + encodeURIComponent(v.name) + "&"
 			});
-			param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" +
-				mode +
-				"&autoUpdate=" + checkRefresh
+			param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" + mode +"&autoUpdate=" + checkRefresh + "&"
+			var chartArray = [compareChart, combineChart, separateChart]
+			if (mode == "compare") chartIndex = 0;
+			if (mode == "combine") chartIndex = 1;
+			if (mode == "separate") chartIndex = 2;
+			$.each(chartArray[chartIndex], function (i, v) {
+				param += "titles=" + v.config.options.title.text +"&"
+				$.each(v.config.data.datasets, function (i2, v2) {
+					param += "legends=" + v2.label +"&"
+				});
+			});
 			var swal_html = '<div class="card shadow mb-4">\
     			<div class="card-body">\
         		<div class="table-responsive">\
@@ -1063,7 +1091,6 @@ cursor:pointer;
 			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
 			clearInterval(timerId);
 			checkRefresh = false;
-			console.log("cancel interval")
 		}
 		$("#autoUpdateTable").text(checkRefresh);
 	};
@@ -1075,5 +1102,62 @@ cursor:pointer;
 	$('#autoRefresh').click(function () {
 		refresh()
 	});
+
+	$('#editLegend').click(function () {
+		var swal_html = '<div class="card shadow mb-4">\
+    			<div class="card-body">\
+        		<div class="table-responsive">\
+            	<table class="table table-bordered" id="sensor_list" width="100%" cellspacing="0">\
+                <thead>\
+                </thead>\
+                <tbody>'
+		var chartArray = [compareChart, combineChart, separateChart]
+		var chartIndex
+		if (mode == "compare") chartIndex = 0;
+		if (mode == "combine") chartIndex = 1;
+		if (mode == "separate") chartIndex = 2;
+
+		$.each(chartArray[chartIndex], function (i, v) {
+			swal_html += '<tr><td><input type="text" class="form-control" value="' + v.config.options.title.text + '" style="text-align:center;font-weight: bold;" name="title[]"></td></tr>'
+			$.each(v.config.data.datasets, function (i2, v2) {
+				swal_html += '<tr><td><input type="text" class="form-control" value="' + v2.label +'" name="legend[]"></td></tr>'
+			})
+		})
+
+		swal_html += '</tbody>\
+            </table>\
+        </div>\
+		</div>';
+		swal.fire({
+			title: "Edit Legend",
+			html: swal_html,
+			focusConfirm: false,
+			confirmButtonColor: '#d33',
+			confirmButtonText: 'Edit',
+			preConfirm: () => {
+				var titles = $('input[name="title[]"]').map(function(){return $(this).val();}).get();
+				var legends = $('input[name="legend[]"]').map(function(){return $(this).val();}).get();
+				updateLegend(titles,legends)
+			}
+		});
+	});
+
+	function updateLegend(titles,legends){
+		var chartArray = [compareChart, combineChart, separateChart]
+		var chartIndex
+		if (mode == "compare") chartIndex = 0;
+		if (mode == "combine") chartIndex = 1;
+		if (mode == "separate") chartIndex = 2;
+		var countLegend = 0;
+		
+				$.each(chartArray[chartIndex], function (i, v) {
+					v.config.options.title.text = titles[i]
+					$.each(v.config.data.datasets, function (i2, v2) {
+						v2.label = legends[countLegend];
+						countLegend++;
+					});
+					v.update();
+				});
+	}
 </script>
 {% endblock %}
