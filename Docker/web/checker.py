@@ -194,5 +194,6 @@ def updateNewsensor():
 				for idx,top in enumerate(topic['series'][0]["values"], start=1):
 					etype,stype = _topic2type(top[1])
 					res["data"].append([ "{}({})-{}".format(etype,stype,int(idx)), idx, t, typelst[etype] ])
-		query.addnewSensor(res)
+			query.addnewSensor(res)
+			res = {"MAC":"","data":[]}
 	db.close()

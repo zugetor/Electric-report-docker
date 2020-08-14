@@ -11,7 +11,7 @@ def login_required(f):
 				flash('Please Login to access this page.')
 				return redirect(url_for('Page.login'))
 			user = query.get_userByid(session['id'])
-			if(user["flogout"] == 1 or user['is_active'] == 0):
+			if(user == None or (user["flogout"] == 1 or user['is_active'] == 0)):
 				logout_user()
 				return redirect(url_for('Page.login'))
 			session['login_time'] = int(time())

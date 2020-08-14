@@ -57,18 +57,18 @@ class Query:
 		dm=[] #collect data and query one time for combine
 		nameCombine=""
 		div="0"
-		if(unit=="15m"):
+		if(unit=="1m"):
 			div="1"
+		elif(unit=="5m"):
+			div="5"
 		elif(unit=="30m"):
-			div="2"
+			div="30"
 		elif(unit=="1h"):
-			div="4"
+			div="60"
 		elif(unit=="12h"):
-			div="48"
+			div="720"
 		elif(unit=="1d"):
-			div="96"
-		elif(unit=="7d"):
-			div="672"
+			div="1440"
 		for i in range(len(data)):
 			name = data[i]['name']
 			if(data[i]['type'] == "ct"):
