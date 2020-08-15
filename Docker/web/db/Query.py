@@ -577,6 +577,6 @@ class Query:
 								INNER JOIN type t ON s.tid = t.tid 
 								INNER JOIN board b ON s.boid = b.boid 
 								INNER JOIN room r ON b.rid = r.rid 
-								WHERE s.inf_type IS NOT NULL AND r.rname = %s""",(rname,))
+								WHERE s.inf_type IS NOT NULL AND r.rname = %s AND b.register = 1""",(rname,))
 		return res
 
