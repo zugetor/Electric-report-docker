@@ -202,12 +202,12 @@ cursor:pointer;
 					<div class="col mr-2">
 						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Unit</div>
 						<select id="unit" class="form-control input-lg">
-							<option value="15m" selected>15minutes</option>
-							<option value="30m">30mimutes</option>
-							<option value="1h">1hour</option>
+							<option value="1m" selected>1minute</option>
+							<option value="5m">5mimutes</option>
+							<option value="30h">30minutes</option>
+							<option value="1h">1hours</option>
 							<option value="12h">12hours</option>
 							<option value="1d">1day</option>
-							<option value="7d">1week</option>
 						</select>
 
 					</div>
@@ -279,10 +279,11 @@ cursor:pointer;
 	});
 
 	$('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
-		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
-		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm:ss')).getTime() * 1000000
-		$("#sTimeTable").text(picker.startDate.format('YYYY-MM-DD hh:mm:ss'));
-		$("#eTimeTable").text(picker.endDate.format('YYYY-MM-DD hh:mm:ss'));
+		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm A')).getTime() * 1000000
+		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm A')).getTime() * 1000000
+		
+		$("#sTimeTable").text(picker.startDate.format('YYYY-MM-DD hh:mm A'));
+		$("#eTimeTable").text(picker.endDate.format('YYYY-MM-DD hh:mm A'));
 	});
 
 
@@ -430,6 +431,7 @@ cursor:pointer;
 
 
 	var unit = $("#unit").val();
+	var updateTime = ""
 	$("#unit").change(function () {
 		unit = $("#unit").val();
 		$("#unitTable").text($("#unit").val());
@@ -626,25 +628,14 @@ cursor:pointer;
 			},
 			pan: {
 				enabled: true,
-				mode: "x",
-				speed: 100,
-				threshold: 100
-			},
-			pan: {
-				enabled: true,
-				mode: "y",
+				mode: "xy",
 				speed: 100,
 				threshold: 100
 			},
 			zoom: {
 				enabled: true,
 				drag: false,
-				mode: "x",
-			},
-			zoom: {
-				enabled: true,
-				drag: false,
-				mode: "y",
+				mode: "xy",
 			},
 			tooltips: {
 				intersect: false,
@@ -851,6 +842,7 @@ cursor:pointer;
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
 		}
+		console.log(startTime+":::::"+endTime)
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
@@ -862,6 +854,7 @@ cursor:pointer;
 					graphType: "CompareAndSeparate"
 				}
 			}).then(function (res) {
+				console.log(res)
 				loadSeparate(res);
 				loadCompare(res);
 				if(legends!=undefined && titles!=undefined){
@@ -901,6 +894,12 @@ cursor:pointer;
 	}
 
 	document.getElementById('update').addEventListener('click', function () {
+		if(unit == "1m") updateTime=60000
+		if(unit == "5m") updateTime=300000
+		if(unit == "30m") updateTime=1800000
+		if(unit == "1hr") updateTime=3600000
+		if(unit == "12hr") updateTime=43200000
+		if(unit == "1d") updateTime=86400000
 		getAndLoad();
 		getAndCombine();
 	});
@@ -1020,11 +1019,11 @@ cursor:pointer;
                 <tbody>\
 				<tr>\
 					<th>From</th>\
-					<td>' + $('input[name="datetimes"]').data('daterangepicker').startDate.format('YYYY-MM-DD hh:mm:ss') + '</td>\
+					<td>' + $('input[name="datetimes"]').data('daterangepicker').startDate.format('YYYY-MM-DD hh:mm A') + '</td>\
 				</tr>\
 				<tr>\
 					<th>To</th>\
-					<td>' + $('input[name="datetimes"]').data('daterangepicker').endDate.format('YYYY-MM-DD hh:mm:ss') + '</td>\
+					<td>' + $('input[name="datetimes"]').data('daterangepicker').endDate.format('YYYY-MM-DD hh:mm A') + '</td>\
 				</tr>\
 				<tr>\
 					<th>Unit</th>\
@@ -1084,7 +1083,7 @@ cursor:pointer;
 			timerId = setInterval(() => {
 				getAndLoad()
 				getAndCombine();
-			}, 180000);
+			}, updateTime);
 			checkRefresh = true;
 		} else {
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;

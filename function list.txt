@@ -1,0 +1,55 @@
+dashboard
+-view graph
+	-compare,combine,separate mode
+	-real time graph
+	-time range filter
+	-get link to open fullscreen graph
+	-customize graph legend and title
+
+room management
+-auto add room floor building
+-add edit delete move
+
+Micro controller register
+-serch micro controller
+	-by time and name
+-auto add microcontroller from mqtt subscribe
+-register by select room for micro controller
+-delete micro controller
+
+sensor management
+-search sensor
+	-by name ,(room,floor,building),type
+-auto add sensor from mqtt subscribe
+-edit sensor name
+-delete sensor
+
+rules management
+-add flexible rule
+	option:
+		type : on/off
+		day of week : select active days
+		room : select room
+		time : rule time active
+		date : daterange active
+-edit rule
+-delete rule
+
+logs
+-last notify
+-log count
+-search by timerange
+-view logs
+-auto clear logs (logs older than 3 months)
+
+notify
+-set notify repeat time 
+	seconds,minutes,hours
+-Line Notify
+-change Line token
+
+user management
+-register
+-password reset
+-captcha
+-allow new user

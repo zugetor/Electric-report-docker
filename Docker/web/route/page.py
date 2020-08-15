@@ -120,7 +120,7 @@ def settings():
 @app.route("/sensor_add")
 @login_required
 def sensor_add():
-	return render_template("sensor_add_v1.html")
+	return render_template("sensor_add.html")
 
 @app.route("/conditions")
 @login_required

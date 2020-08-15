@@ -23,12 +23,13 @@ services:
      container_name: influxdb
      image: influxdb:1.8.0
      environment:
+       - INFLUXDB_DB=electric_data
        - INFLUXDB_HTTP_AUTH_ENABLED=true
        - INFLUXDB_ADMIN_USER=admin #influx admin username
        - INFLUXDB_ADMIN_PASSWORD=securepassword  #influx admin password
        - INFLUXDB_USER=telegraf #influx username
        - INFLUXDB_USER_PASSWORD=secretpassword #influx password
-       - INFLUXDB_DB=electric_data
+       
      networks:
        - dev_net
      volumes:
