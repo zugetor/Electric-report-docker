@@ -60,15 +60,15 @@ class Query:
 		if(unit=="1m"):
 			div="1"
 		elif(unit=="5m"):
-			div="5"
+			div="1"
 		elif(unit=="30m"):
-			div="30"
+			div="6"
 		elif(unit=="1h"):
-			div="60"
+			div="12"
 		elif(unit=="12h"):
-			div="720"
+			div="144"
 		elif(unit=="1d"):
-			div="1440"
+			div="288"
 		for i in range(len(data)):
 			name = data[i]['name']
 			if(data[i]['type'] == "ct"):
