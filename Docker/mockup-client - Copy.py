@@ -54,7 +54,6 @@ for floor in range(1, 8):
 	client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/air",json.dumps(message))
 	message = mockupDMdata(MAC1+"-D2"+"-CC-DD-EE-FF", floor, 2)
 	client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/all",json.dumps(message))
-	time.sleep(60)
 
 
 

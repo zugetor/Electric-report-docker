@@ -56,6 +56,8 @@ def sensor_del():
 def register_del():
 	boid = request.args.get('id')
 	query.register_del(boid)
+	response = jsonify({'Code':'200 ok'})
+	return response
 	
 
 @app.route('/register',methods=['POST'])
@@ -222,14 +224,14 @@ def notify_time_edit():
 	unitSec = html_escape(request.form['unitSec'])
 	query.updateNotiTime(unitSec)
 	return '200 OK EDIT Notify'
-    
+	
 @app.route('/notify/token/edit',methods=['POST'])
 @login_required
 def notify_token_edit():
 	token = html_escape(request.form['token'])
 	query.updateNotiToken(token)
 	return '200 OK EDIT Notify'
-    
+	
 @app.route('/token/',methods=['GET'])
 @login_required
 def getToken():
