@@ -188,12 +188,15 @@ def updateNewsensor():
 				slst = list(set(tuple(sub) for sub in slst))
 				for s in slst:
 					etype,stype = _topic2type(s[1])
-					res["data"].append([ "{}({})-{}".format(etype,stype,int(s[0])), int(s[0]), t, typelst[etype] ])
+					if etype in typelst.keys():
+						res["data"].append([ "{}({})-{}".format(etype,stype,int(s[0])), int(s[0]), t, typelst[etype] ])
 			else:
 				topic = db.getallTopic(t,i[1])
 				for idx,top in enumerate(topic['series'][0]["values"], start=1):
 					etype,stype = _topic2type(top[1])
-					res["data"].append([ "{}({})-{}".format(etype,stype,int(idx)), idx, t, typelst[etype] ])
+					if etype in typelst.keys():
+						res["data"].append([ "{}({})-{}".format(etype,stype,int(idx)), idx, t, typelst[etype] ])
+
 			query.addnewSensor(res)
 			res = {"MAC":"","data":[]}
 	db.close()
