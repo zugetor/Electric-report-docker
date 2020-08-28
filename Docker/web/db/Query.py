@@ -56,19 +56,6 @@ class Query:
 		ct=[] #collect data and query one time for combine
 		dm=[] #collect data and query one time for combine
 		nameCombine=""
-		div="0"
-		if(unit=="1m"):
-			div="1"
-		elif(unit=="5m"):
-			div="1"
-		elif(unit=="30m"):
-			div="6"
-		elif(unit=="1h"):
-			div="12"
-		elif(unit=="12h"):
-			div="144"
-		elif(unit=="1d"):
-			div="288"
 		for i in range(len(data)):
 			name = data[i]['name']
 			if(data[i]['type'] == "ct"):
@@ -79,7 +66,7 @@ class Query:
 				ct.append(sensor[0])
 				if(len(sensor) != 0):
 					#result = self._client.query(query='select sum(volt)/$div as volt ,sum(amp)/$div as amp ,sum(watt)/$div as watt from mqtt_consumer where sid=$sid and time>=$startTime and time<=$endTime group by time($unit);',params={"params":json.dumps({'sid':data[i]['id'],'unit':unit,'div':div,'startTime':startTime,'endTime':endTime})})
-					result = self._client.query('select sum(a)/'+div+' as amp from ct where s='+str(sensor[0]['inf_id'])+' and MAC=\''+str(sensor[0]['bomac'])+'\' and time>='+startTime+' and time<='+endTime+' group by time('+unit+')')
+					result = self._client.query('select sum(a) as amp from ct where s='+str(sensor[0]['inf_id'])+' and MAC=\''+str(sensor[0]['bomac'])+'\' and time>='+startTime+' and time<='+endTime+' group by time('+unit+')')
 					if(len(result.raw['series'])>0):
 						tmp[i]['ct'][0].update({'name':name+"_ct"})
 						for d in result.raw['series'][0]['values']:
@@ -91,7 +78,7 @@ class Query:
 				sensor = _cur.fetchall()
 				dm.append(sensor[0])
 				if(len(sensor) != 0):
-					qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where MAC=\'"+str(sensor[0]['bomac'])+"\' and time>="+startTime+" and time<="+endTime+" group by time("+unit+")"
+					qry = "select sum(VL1) as VL1 ,sum(VL2) as VL2 ,sum(VL3) as VL3 ,sum(AL1) as AL1 ,sum(AL2) as AL2 ,sum(AL3) as AL3,sum(P1) as P1 ,sum(P2) as P2 ,sum(P3) as P3 ,sum(AE) as AE from dm where MAC=\'"+str(sensor[0]['bomac'])+"\' and time>="+startTime+" and time<="+endTime+" group by time("+unit+")"
 					result = self._client.query(query=qry)
 					if(len(result.raw['series'])>0):
 						tmp[i]['volt'][0].update({'name':name+"_VL1"})
@@ -121,7 +108,7 @@ class Query:
 				_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(VL1) as VL1 ,sum(VL2) as VL2 ,sum(VL3) as VL3 ,sum(AL1) as AL1 ,sum(AL2) as AL2 ,sum(AL3) as AL3,sum(P1) as P1 ,sum(P2) as P2 ,sum(P3) as P3 ,sum(AE) as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						dm.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -155,7 +142,7 @@ class Query:
 				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(a) as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -175,7 +162,7 @@ class Query:
 				_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(VL1) as VL1 ,sum(VL2) as VL2 ,sum(VL3) as VL3 ,sum(AL1) as AL1 ,sum(AL2) as AL2 ,sum(AL3) as AL3,sum(P1) as P1 ,sum(P2) as P2 ,sum(P3) as P3 ,sum(AE) as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						dm.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -209,7 +196,7 @@ class Query:
 				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(a) as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -228,7 +215,7 @@ class Query:
 				_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(VL1) as VL1 ,sum(VL2) as VL2 ,sum(VL3) as VL3 ,sum(AL1) as AL1 ,sum(AL2) as AL2 ,sum(AL3) as AL3,sum(P1) as P1 ,sum(P2) as P2 ,sum(P3) as P3 ,sum(AE) as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						dm.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -262,7 +249,7 @@ class Query:
 				_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
 				sensor = _cur.fetchall()
 				if(len(sensor) != 0):
-					qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+					qry = "select sum(a) as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 					for index in range(len(sensor)):
 						ct.append(sensor[index])
 						if(index == len(sensor)-1):
@@ -276,7 +263,7 @@ class Query:
 						for d in result.raw['series'][0]['values']:
 							tmp[i]['ct'][0]['values'].append({'t':d[0],'y':d[1]})
 		if(len(dm) != 0):
-			qry = "select sum(VL1)/"+div+" as VL1 ,sum(VL2)/"+div+" as VL2 ,sum(VL3)/"+div+" as VL3 ,sum(AL1)/"+div+" as AL1 ,sum(AL2)/"+div+" as AL2 ,sum(AL3)/"+div+" as AL3,sum(P1)/"+div+" as P1 ,sum(P2)/"+div+" as P2 ,sum(P3)/"+div+" as P3 ,sum(AE)/"+div+" as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+			qry = "select sum(VL1) as VL1 ,sum(VL2) as VL2 ,sum(VL3) as VL3 ,sum(AL1) as AL1 ,sum(AL2) as AL2 ,sum(AL3) as AL3,sum(P1) as P1 ,sum(P2) as P2 ,sum(P3) as P3 ,sum(AE) as AE from dm where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 			for index in range(len(dm)):
 				if(index == len(dm)-1):
 					qry+='MAC = \''+str(dm[index]['bomac'])+'\''
@@ -307,7 +294,7 @@ class Query:
 					tmp2['watt'][2]['values'].append({'t':d[0],'y':d[9]})
 					tmp2['ae'][0]['values'].append({'t':d[0],'y':d[10]})
 		if(len(ct) != 0):
-			qry = "select sum(a)/"+div+" as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
+			qry = "select sum(a) as a from ct where (time>="+str(startTime)+" and time<="+str(endTime)+") and "
 			for index in range(len(ct)):
 				if(index == len(ct)-1):
 					qry+='(MAC = \''+str(ct[index]['bomac'])+'\' and s = '+str(ct[index]['inf_id'])+') '
