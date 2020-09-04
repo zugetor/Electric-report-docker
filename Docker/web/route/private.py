@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, escape
+from flask import Blueprint, jsonify, request, escape, session
 from extensions import query, html_escape, toHourandMin
 from login import login_required
 import json, time
@@ -222,14 +222,14 @@ def user_active():
 @login_required
 def notify_time_edit():
 	unitSec = html_escape(request.form['unitSec'])
-	query.updateNotiTime(unitSec)
+	query.updateNotiTime(session['id'],unitSec)
 	return '200 OK EDIT Notify'
 	
 @app.route('/notify/token/edit',methods=['POST'])
 @login_required
 def notify_token_edit():
 	token = html_escape(request.form['token'])
-	query.updateNotiToken(token)
+	query.updateNotiToken(session['id'],token)
 	return '200 OK EDIT Notify'
 	
 @app.route('/token/',methods=['GET'])

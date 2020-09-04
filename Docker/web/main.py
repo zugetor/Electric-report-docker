@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, send_from_directory
 from apscheduler.schedulers.background import BackgroundScheduler
 from route import private, page, public
 from extensions import mysql, influx, query, html_escape, getConfig
@@ -29,6 +29,10 @@ atexit.register(lambda: scheduler.shutdown())
 @app.route("/")
 def index():
 	return redirect(url_for('Page.graph_view'))
+
+@app.route("/favicon.ico")
+def favicon():
+	return send_from_directory("static","img/bulb.ico")
 
 @app.errorhandler(404)
 def page_not_found(e):

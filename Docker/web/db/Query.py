@@ -554,12 +554,15 @@ class Query:
 		return res
 
 		
-	def updateNotiTime(self,unitSec):
-		self.execute("UPDATE `notify` SET ntime= %s",(unitSec))
+	def updateNotiTime(self,uid,unitSec):
+		self.execute("UPDATE `notify` SET ntime= %s WHERE `nid` = %s;",(unitSec,uid))
 		
-	def updateNotiToken(self,token):
-		self.execute("UPDATE `notify` SET ntoken= %s",(token))
-
+	def updateNotiToken(self,uid,token):
+		lst_token = self.fetchOne("SELECT `nid` FROM `notify` WHERE `user_id` = %s",(uid))
+		if lst_token:
+			self.execute("UPDATE `notify` SET ntoken= %s",(token))
+		else:
+			self.execute("INSERT INTO `notify` (`nid`, `ntoken`, `ntime`, `nlast_time`, `user_id`) VALUES (NULL, %s, 10, CURRENT_TIMESTAMP, %s);",(token,uid))
 
 	def getRoomSensor(self,rname):
 		res = self.fetchAll("""SELECT s.inf_id,s.inf_type,b.bomac,t.inf_name FROM sensor s 
