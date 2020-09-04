@@ -35,26 +35,27 @@ host = "broker.mqttdashboard.com"
 port = 1883
 client = mqtt.Client()
 client.connect(host,port)
-for floor in range(1, 8):
-	MAC1 = "F" + str(floor)
-	if floor < 4:
-		for room in range(1, 3):
-			MAC2 = MAC1 + "-R" + str(room)
-			for sensor in range(1, 7):
-				MAC3 = MAC2 + "-S" + str(sensor) + "-DD-EE-FF"
-				message = mockupCTdata(MAC3, floor, room, sensor)
-				if sensor < 4 :
-					client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/ct/light",json.dumps(message))
-				else :
-					client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/ct/plug",json.dumps(message))
-				if sensor < 2:
-					message = mockupPIRdata(MAC3, room)
-					client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/pir",json.dumps(message))
-	message = mockupDMdata(MAC1+"-D1"+"-CC-DD-EE-FF", floor, 1)
-	client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/air",json.dumps(message))
-	message = mockupDMdata(MAC1+"-D2"+"-CC-DD-EE-FF", floor, 2)
-	client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/all",json.dumps(message))
-
+while True:
+    for floor in range(1, 8):
+        MAC1 = "F" + str(floor)
+        if floor < 4:
+            for room in range(1, 3):
+                MAC2 = MAC1 + "-R" + str(room)
+                for sensor in range(1, 7):
+                    MAC3 = MAC2 + "-S" + str(sensor) + "-DD-EE-FF"
+                    message = mockupCTdata(MAC3, floor, room, sensor)
+                    if sensor < 4 :
+                        client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/ct/light",json.dumps(message))
+                    else :
+                        client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/ct/plug",json.dumps(message))
+                    if sensor < 2:
+                        message = mockupPIRdata(MAC3, room)
+                        client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"0"+str(room)+"/pir",json.dumps(message))
+        message = mockupDMdata(MAC1+"-D1"+"-CC-DD-EE-FF", floor, 1)
+        client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/air",json.dumps(message))
+        message = mockupDMdata(MAC1+"-D2"+"-CC-DD-EE-FF", floor, 2)
+        client.publish("/infbuu/IF/"+str(floor)+"/IF-"+str(floor)+"03/dm/all",json.dumps(message))
+    time.sleep(300)
 
 
 
