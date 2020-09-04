@@ -555,7 +555,7 @@ class Query:
 
 		
 	def updateNotiTime(self,uid,unitSec):
-		self.execute("UPDATE `notify` SET ntime= %s WHERE `nid` = %s;",(unitSec,uid))
+		self.execute("UPDATE `notify` SET ntime= %s WHERE `user_id` = %s;",(unitSec,uid))
 		
 	def updateNotiToken(self,uid,token):
 		lst_token = self.fetchOne("SELECT `nid` FROM `notify` WHERE `user_id` = %s",(uid))
