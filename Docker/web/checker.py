@@ -13,7 +13,8 @@ class dbHandler():
 		cfg = getConfig()
 		self.mysql.init_cfg(cfg)
 		self.influx.init_cfg(cfg)
-		self.query.init_db(self.mysql.get_connection(), self.influx.get_client())
+		self._con = self.mysql.get_connection()
+		self.query.init_db(self._con, self.influx.get_client())
 
 	def getQuery(self):
 		return self.query
@@ -168,7 +169,6 @@ def checkSchedule():
 				query.UpdateRoomStatue(1,room["rname"])
 			else:
 				query.UpdateRoomStatue(0,room["rname"])
-	db.close()
 
 def updateNewsensor():
 	db = dbHandler()
@@ -199,4 +199,3 @@ def updateNewsensor():
 
 			query.addnewSensor(res)
 			res = {"MAC":"","data":[]}
-	db.close()

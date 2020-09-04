@@ -22,7 +22,7 @@ class MySQL:
 						cursorclass=pymysql.cursors.DictCursor, autocommit=True)
 		
 	def get_connection(self):
-		if not self._conn:
+		if self._conn == None or not self._conn.open:
 			try:
 				self.connect()
 			except:

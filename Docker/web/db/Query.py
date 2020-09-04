@@ -12,10 +12,12 @@ class Query:
 		self._client = client
 
 	def _newCursor(self):
+		self._conn.ping()
 		return self._conn.cursor()
 
 	def _CloseCursor(self,cursor):
-		return cursor.close()
+		cursor.close()
+		return self._conn.close()
 
 	def fetchAll(self,sql,param=None):
 		_cur = self._newCursor()
