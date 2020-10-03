@@ -132,19 +132,19 @@ def checkRule():
 		matched = evaluator.get_matching_objects(objects)
 
 		tokens = query.getToken()
-		messages = []
-		message = ""
+		all_messages = []
+		line_message = ""
 		for idx,match in enumerate(matched):
 			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
 			match["room"] = match["room"][0]
 			match["rname"] = rule_name
-			message += getTemplate().format(**match) + "\n"
-			if idx % 5 == 0:
-				messages.append(message)
-				message = ""
-		messages.append(message)
+			line_message += getTemplate().format(**match) + ("-" * 10) + "\n"
+			if idx % 3 == 0:
+				all_messages.append(line_message)
+				line_message = ""
+		all_messages.append(line_message)
 
-		for m in messages:
+		for m in all_messages:
 			for token in tokens:
 				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
 					linenotify(m,token["ntoken"])
