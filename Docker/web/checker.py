@@ -35,9 +35,12 @@ class dbHandler():
 
 	def getallTopic(self,table,mac):
 		infQuery = self.query.getInfQuery()
-		param = {"mac":mac}
-		result = infQuery('SHOW TAG VALUES FROM "{}" WITH key =~/topic/ WHERE MAC=$mac'.format(escape(table)),bind_params=param)
-		return result.raw
+		result = infQuery('SELECT topic,MAC,status FROM "{}"'.format(escape(table)))
+		for sensor in result.raw["series"][0]["values"]:
+			smac = sensor[2]
+			topic = sensor[1]
+			if(smac == mac):
+				return ['topic', topic, 'MAC', smac]
 
 	def getLastCT(self,sid,_type="ct"):
 		infQuery = self.query.getInfQuery()
@@ -192,10 +195,8 @@ def updateNewsensor():
 						res["data"].append([ "{}({})-{}".format(etype,stype,int(s[0])), int(s[0]), t, typelst[etype] ])
 			else:
 				topic = db.getallTopic(t,i[1])
-				for idx,top in enumerate(topic['series'][0]["values"], start=1):
-					etype,stype = _topic2type(top[1])
-					if etype in typelst.keys():
-						res["data"].append([ "{}({})-{}".format(etype,stype,int(idx)), idx, t, typelst[etype] ])
-
+				etype,stype = _topic2type(topic[1])
+				if etype in typelst.keys():
+					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[etype] ])
 			query.addnewSensor(res)
 			res = {"MAC":"","data":[]}
