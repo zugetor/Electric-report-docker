@@ -18,7 +18,9 @@ app.register_blueprint(page.app)
 app.register_blueprint(private.app, url_prefix="/api/private")
 app.register_blueprint(public.app, url_prefix="/api/public")
 
-scheduler = BackgroundScheduler()
+job_config = {'max_instances': 10}
+
+scheduler = BackgroundScheduler(job_defaults=job_config)
 scheduler.add_job(func=checkRule, trigger="interval", minutes=cfg.RULE_UPDATE)
 scheduler.add_job(func=checkSchedule, trigger="interval", minutes=cfg.SCHEDULE_UPDATE)
 scheduler.add_job(func=updateNewsensor, trigger="interval", minutes=cfg.SENSOR_UPDATE)
