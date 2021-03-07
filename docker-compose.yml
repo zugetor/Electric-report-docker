@@ -62,7 +62,7 @@ services:
      restart: always
      volumes:
        - ./db/mysql/initdb/:/docker-entrypoint-initdb.d
-       #- ./db/mysql/data:/var/lib/mysql #MySQL Data folder
+       - ./db/mysql/data:/var/lib/mysql #MySQL Data folder
 
 
    phpmyadmin:
