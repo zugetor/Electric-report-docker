@@ -1,83 +1,70 @@
 version: "3.0"
 services:
 
-   web:
-     container_name: web
-     image: python:3.7
-     command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
-     ports:
-       - "80:5000"
-     restart: always
-     networks:
-       - dev_net
-     links:
-       - influxdb
-       - db
-     volumes:
-       - ./web:/src
-     depends_on:
-       - db
-       - influxdb
+    web:
+        container_name: web
+        image: python:3.7
+        command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
+        networks:
+            - dev_net
+        ports:
+            - "80:5000"
+        volumes:
+            - ./web:/src
+        links:
+            - rabbitmq
+            - db
+        depends_on:
+            - db
+            - rabbitmq
+        restart: always
 
-   influxdb:
-     container_name: influxdb
-     image: influxdb:1.8.0
-     environment:
-       - INFLUXDB_DB=electric_data
-       - INFLUXDB_HTTP_AUTH_ENABLED=true
-       - INFLUXDB_ADMIN_USER=admin #influx admin username
-       - INFLUXDB_ADMIN_PASSWORD=securepassword  #influx admin password
-       - INFLUXDB_USER=telegraf #influx username
-       - INFLUXDB_USER_PASSWORD=secretpassword #influx password
-       
-     networks:
-       - dev_net
-     volumes:
-       - ./db/influxdb/data:/var/lib/influxdb
-     restart: always
+    rabbitmq:
+        container_name: rabbitmq
+        image: rabbitmq:3-management
+        networks:
+            - dev_net
+        ports:
+            - "5672:5672"
+            - "8080:15672"
+            - "1880:1880"
+            - "18800:18800"
+        environment:
+            - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit.definitions.json"
+        volumes:
+            - ./rabbitmq/enabled_plugins.txt:/etc/rabbitmq/enabled_plugins
+            - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+            - ./rabbitmq/rabbit_definitions.json:/tmp/rabbit.definitions.json
+        restart: always
 
-   telegraf:
-     container_name: telegraf
-     image: telegraf:1.14
-     networks:
-       - dev_net
-     links:
-       - influxdb
-     volumes:
-       - ./db/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
-     restart: always
-     depends_on:
-       - influxdb
+    db:
+        container_name: db
+        image: mysql:8
+        networks:
+            - dev_net
+        environment:
+            - MYSQL_RANDOM_ROOT_PASSWORD=yes #random root password
+            - MYSQL_USER=myuser #MySQL username
+            - MYSQL_PASSWORD=verysecure #MySQL password
+            - MYSQL_DATABASE=electric_mon
+        volumes:
+            - ./db/mysql/initdb/:/docker-entrypoint-initdb.d
+            - ./db/mysql/data:/var/lib/mysql #MySQL Data folder
+        restart: always
 
-   db:
-     container_name: db
-     image: mysql:8
-     environment:
-       - MYSQL_RANDOM_ROOT_PASSWORD=yes #random root password
-       - MYSQL_USER=myuser #MySQL username
-       - MYSQL_PASSWORD=verysecure #MySQL password
-       - MYSQL_DATABASE=electric_mon
-     networks:
-       - dev_net
-     restart: always
-     volumes:
-       - ./db/mysql/initdb/:/docker-entrypoint-initdb.d
-       - ./db/mysql/data:/var/lib/mysql #MySQL Data folder
-
-
-   phpmyadmin:
-     container_name: phpmyadmin
-     image: phpmyadmin/phpmyadmin
-     environment:
-       - PMA_HOST=db
-     ports:
-       - "81:80"
-     networks:
-       - dev_net
-     restart: always
-     links:
-       - db
+    phpmyadmin:
+        container_name: phpmyadmin
+        image: phpmyadmin/phpmyadmin
+        networks:
+            - dev_net
+        ports:
+            - "81:80"
+        environment:
+            - PMA_HOST=db
+        links:
+            - db
+        restart: always
 
 networks:
-   dev_net:
-     driver: bridge
+    dev_net:
+        driver: bridge
