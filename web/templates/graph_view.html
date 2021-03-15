@@ -51,21 +51,21 @@ cursor:pointer;
 						<label for="sName">Sensor Type :</label>
 					</div>
 					<div class="form-row">
-						<div class="col-md-2 mb-4">
+						<div class="col-md-3 mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
 									value="Light" name="typeFilter">
 								<label class="custom-control-label" for="Light">Light</label>
 							</div>
 						</div>
-						<div class="col-md-2 mb-4">
+						<div class="col-md-3 mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Electricity" data-type=""
 									checked value="Electricity" name="typeFilter">
 								<label class="custom-control-label" for="Electricity">Electricity</label>
 							</div>
 						</div>
-						<div class="col-md-3 mb-4">
+						<div class="col-md-5 mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Air Conditioner" data-type=""
 									checked value="Air Conditioner" name="typeFilter">
@@ -75,7 +75,7 @@ cursor:pointer;
 					</div>
 
 					<div class="form-row">
-						<div class="col-md-8">
+						<div class="col-md-12">
 							<button class="btn btn-primary mr-3 mt-2" type="button" id="search">Search</button>
 							<button class="btn btn-primary mr-3 mt-2" type="button" id="addToDash">Add to
 								Dashboard</button>
@@ -152,22 +152,22 @@ cursor:pointer;
 </div>
 <br>
 <div class="row">
-	<div class="col-xl-3 col-md-6 mb-2">
+	<div class="col-xl-6 col-md-6 mb-2">
 		<div class="card border-left-secondary shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
 					<div class="col mr-2">
 						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Graph Mode</div>
 						<div class="row">
-							<div class="col">
-								<button class="btn btn-success btn-block" type="button" id="Bcompare">Compare</button>
-							</div>
-							<div class="col">
-								<button class="btn btn-danger btn-block" type="button" id="Bcombine">Combine</button>
-							</div>
-							<div class="col">
-								<button class="btn btn-warning btn-block" type="button" id="Bseparate">Separate</button>
-							</div>
+							
+								<button class="btn btn-success mr-2" type="button" id="Bcompare">Compare</button>
+							
+								
+								<button class="btn btn-danger mr-2" type="button" id="Bcombine">Combine</button>
+						
+						
+								<button class="btn btn-warning" type="button" id="Bseparate">Separate</button>
+						
 						</div>
 					</div>
 					<div class="col-auto">
@@ -177,7 +177,7 @@ cursor:pointer;
 			</div>
 		</div>
 	</div>
-	<div class="col-xl-3 col-md-6 mb-2">
+	<div class="col-xl-6 col-md-6 mb-2">
 		<div class="card border-left-secondary shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -192,7 +192,7 @@ cursor:pointer;
 			</div>
 		</div>
 	</div>
-	<div class="col-xl-3 col-md-6 mb-2">
+	<div class="col-xl-6 col-md-6 mb-2">
 		<div class="card border-left-secondary shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
@@ -214,15 +214,17 @@ cursor:pointer;
 			</div>
 		</div>
 	</div>
-	<div class="col-xl-3 col-md-6 mb-4">
+	<div class="col-xl-6 col-md-6 mb-2">
 		<div class="card border-left-secondary shadow h-100 py-2">
 			<div class="card-body">
 				<div class="row no-gutters align-items-center">
-					<div class="col mr-2">
+					<div class="col">
 						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Create graph</div>
-						<button id="update" class="btn btn-outline-primary">Update</button>
-						<button class="btn btn-outline-success" id="autoRefresh">Auto update</button>
+						<div class="row">
+						<button id="update" class="btn btn-outline-primary mr-2">Update</button>
+						<button class="btn btn-outline-success mr-2" id="autoRefresh">Auto update</button>
 						<button class="btn btn-outline-warning" id="editLegend">Edit legend</button>
+					</div>
 					</div>
 					<div class="col-auto">
 
