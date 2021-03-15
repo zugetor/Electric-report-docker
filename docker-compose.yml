@@ -21,6 +21,24 @@ services:
             - mongo
         restart: always
 
+    web:
+        container_name: timetable
+        image: python:3.7
+        command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn main:app --reload"
+        networks:
+            - dev_net
+        volumes:
+            - ./timetable:/src
+        links:
+            - rabbitmq
+            - db
+            - mongo
+        depends_on:
+            - db
+            - rabbitmq
+            - mongo
+        restart: always
+
     rabbitmq:
         container_name: rabbitmq
         image: rabbitmq:3-management
