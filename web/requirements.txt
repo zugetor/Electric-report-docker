@@ -12,3 +12,4 @@ pandas==1.0.5
 APScheduler==3.6.3
 pytz==2020.1
 pytimeparse==1.1.8
+pymongo[srv,tls]==3.11.3

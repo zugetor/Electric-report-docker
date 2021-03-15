@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, send_from_directory
 from route import private, page, public
-from extensions import mysql, influx, query, html_escape, getConfig
+from extensions import mysql, mongoDB, query, html_escape, getConfig
 
 cfg = getConfig()
 
@@ -8,14 +8,12 @@ app = Flask(__name__)
 app.config.from_object(cfg)
 
 mysql.init_app(app.config)
-influx.init_app(app.config)
-query.init_db(mysql.get_connection(), influx.get_client())
+mongoDB.init_app(app.config)
+query.init_db(mysql.get_connection(), mongoDB.get_client())
 
 app.register_blueprint(page.app)
 app.register_blueprint(private.app, url_prefix="/api/private")
 app.register_blueprint(public.app, url_prefix="/api/public")
-
-job_config = {'max_instances': 10}
 
 @app.route("/")
 def index():

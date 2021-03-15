@@ -1,3 +1,3 @@
 from .MySQL import MySQL
-from .InfluxDB import InfluxDB
+from .MongoDB import MongoDB
 from .Query import Query
