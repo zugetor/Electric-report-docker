@@ -1,6 +1,6 @@
-from influxdb import InfluxDBClient
+import pymongo 
 
-class InfluxDB:
+class MongoDB:
 	def __init__(self):
 		self._app = None
 		self._client = None
@@ -14,11 +14,11 @@ class InfluxDB:
 		self.connect_cfg()
 
 	def connect(self):
-		self._client = InfluxDBClient(self._app["INFLUX_HOST"], 8086, self._app["INFLUX_USER"], self._app["INFLUX_PASSWORD"], self._app["INFLUX_DB"])
+		self._client = pymongo.MongoClient(self._app["MONGODB_URL"])
 		return self._client
 
 	def connect_cfg(self):
-		self._client = InfluxDBClient(self._app.INFLUX_HOST, 8086, self._app.INFLUX_USER, self._app.INFLUX_PASSWORD, self._app.INFLUX_DB)
+		self._client = pymongo.MongoClient(self._app.MONGODB_URL)
 		return self._client
 		
 	def get_client(self):
