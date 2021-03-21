@@ -47,9 +47,6 @@ class Query:
 			res = _cur.execute(sql)
 		self._CloseCursor(_cur)
 		return res
-
-	def getInfQuery(self):
-		return self._client.query
 		
 	def dashboard_list(self,data,unit,startTime,endTime,graphType):
 		_cur = self._newCursor()

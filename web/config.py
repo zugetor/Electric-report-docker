@@ -4,10 +4,7 @@ class Config(object):
     MYSQL_USER = 'myuser' #MySQL username
     MYSQL_PASSWORD = 'verysecure' #MySQL password
     MYSQL_DB = 'electric_mon' #MySQL DB name
-    INFLUX_HOST = 'influxdb' #INFLUX Host
-    INFLUX_USER = 'telegraf' #influxdb username
-    INFLUX_PASSWORD = 'secretpassword' #influxdb password
-    INFLUX_DB = 'electric_data' #INFLUX DB name
+    MONGODB_URL = 'mongodb://root:password@mongo:27017/?authSource=admin' #MongoDB Connection String
     SECRET_KEY = "mysecretkey" #your secret key
     SESSION_COOKIE_HTTPONLY = True #Cookie can access from HTTP Only
     REMEMBER_COOKIE_HTTPONLY = True #Cookie can access from HTTP Only

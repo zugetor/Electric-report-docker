@@ -1,9 +1,9 @@
 from flask import escape
 from config import Config, ProductionConfig, DevelopmentConfig
-from db import MySQL, InfluxDB, Query
+from db import MySQL, MongoDB, Query
 
 mysql = MySQL()
-influx = InfluxDB()
+mongoDB = MongoDB()
 query = Query()
 
 def html_escape(inp):

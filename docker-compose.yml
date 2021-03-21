@@ -21,14 +21,14 @@ services:
             - mongo
         restart: always
 
-    web:
-        container_name: timetable
+    mqtt_collector:
+        container_name: mqtt_collector
         image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn main:app --reload"
+        command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
         networks:
             - dev_net
         volumes:
-            - ./timetable:/src
+            - ./consumer/mqtt_collector:/src
         links:
             - rabbitmq
             - db
