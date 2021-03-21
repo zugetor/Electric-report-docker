@@ -20,6 +20,24 @@ services:
             - rabbitmq
             - mongo
         restart: always
+        
+    timetable:
+        container_name: timetable
+        image: python:3.7
+        command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
+        networks:
+            - dev_net
+        volumes:
+            - ./timetable:/src
+        links:
+            - rabbitmq
+            - db
+            - mongo
+        depends_on:
+            - db
+            - rabbitmq
+            - mongo
+        restart: always
 
     mqtt_collector:
         container_name: mqtt_collector

@@ -4,13 +4,8 @@ class Config(object):
     MYSQL_USER = 'myuser' #MySQL username
     MYSQL_PASSWORD = 'verysecure' #MySQL password
     MYSQL_DB = 'electric_mon' #MySQL DB name
-    INFLUX_HOST = 'influxdb' #INFLUX Host
-    INFLUX_USER = 'telegraf' #influxdb username
-    INFLUX_PASSWORD = 'secretpassword' #influxdb password
-    INFLUX_DB = 'electric_data' #INFLUX DB name
     ENABLE_DEV = True #Enable Development Config
     TIME_ZONE = "Asia/Bangkok" #Time zone for check room schedule
-    INF_TABLE = ["ct","dm","pir"] #Name of table in InfluxDB
     Nofify_Template = "Rule: {rname}\nDate: {date}\nDay: {dow}\nTime: {time}\nBuilding: {building}\nfloor: {floor}\nRoom: {room}\nStatus: {status}\nLight: {light}\nPlug: {plug}\nAir: {air}\nPir: {pir}\n"
     #{rname} = Rule Name
     #{date} = Current Date at notify time
