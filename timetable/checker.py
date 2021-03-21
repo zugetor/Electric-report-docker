@@ -1,6 +1,6 @@
 from notify import linenotify
 from extensions import getConfig
-from db import MySQL, InfluxDB, Query
+from db import MySQL, Query
 from jqqb_evaluator.evaluator import Evaluator
 from time import time
 import datetime, pytz, reg, json
@@ -8,13 +8,10 @@ import datetime, pytz, reg, json
 class dbHandler():
 	def __init__(self):
 		self.mysql = MySQL()
-		self.influx = InfluxDB()
 		self.query = Query()
 		cfg = getConfig()
 		self.mysql.init_cfg(cfg)
-		self.influx.init_cfg(cfg)
 		self._con = self.mysql.get_connection()
-		self.query.init_db(self._con, self.influx.get_client())
 
 	def getQuery(self):
 		return self.query
