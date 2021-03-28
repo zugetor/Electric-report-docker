@@ -36,6 +36,9 @@ def callback(ch, method, properties, body):
 	except ValueError:
 		print("[ERROR] ValueError: ", body)
 		ch.basic_ack(delivery_tag = method.delivery_tag)
+	except Exception as e:
+		print("[ERROR] Error: ", e)
+		ch.basic_nack(delivery_tag = method.delivery_tag)
 
 if __name__ == '__main__':
 	try:
