@@ -3,8 +3,8 @@ services:
 
     web:
         container_name: web
-        image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
+        image: zugetor/web_gunicorn:latest
+        #command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
         networks:
             - dev_net
         ports:
@@ -23,8 +23,8 @@ services:
         
     timetable:
         container_name: timetable
-        image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
+        image: zugetor/web_gunicorn:latest
+        #command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
         networks:
             - dev_net
         volumes:
