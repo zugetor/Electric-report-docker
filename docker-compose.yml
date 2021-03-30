@@ -45,7 +45,7 @@ services:
         networks:
             - dev_net
         volumes:
-            - ./consumer/mqtt_collector:/src
+            - ./tool/mqtt_collector:/src
         links:
             - rabbitmq
             - db
