@@ -109,6 +109,8 @@ services:
         image: mysql:8
         networks:
             - dev_net
+        ports:
+            - "3306:3306"
         environment:
             - MYSQL_RANDOM_ROOT_PASSWORD=yes #random root password
             - MYSQL_USER=myuser #MySQL username
