@@ -26,7 +26,8 @@ def callback(ch, method, properties, body):
 		print("Collection name: %r" % collectionName)
 
 		db = client[cfg.MONGODB_COLLECTION]
-		db["iot_type"].insert_one({"sensor_type": sensorType, "device_type": deviceType})
+		_type = {"sensor_type": sensorType, "device_type": deviceType}
+		db["iot_type"].update(_type, _type, upsert=True)
 		doc = {}
 		doc["topic"] = topicRaw.replace(".","/")
 		doc["created_at"] = int(time())

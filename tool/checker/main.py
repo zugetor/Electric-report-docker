@@ -1,22 +1,35 @@
-import time, check
+import time, checker
 from timeloop import Timeloop
 from datetime import timedelta
 
 tl = Timeloop()
 
-@tl.job(interval=timedelta(seconds=3))
-def sample_job_every_2s():
-    print("2s job current time : {}".format(time.ctime()))
-    try:
-        check.auto_sensor()
-    except:
-        print("Execution expired")
+# @tl.job(interval=timedelta(seconds=10))
+# def ruleChecker():
+# 	try:
+# 		checker.checkRule()
+# 	except Exception as e:
+# 		print("Except: ", e)
 
+@tl.job(interval=timedelta(seconds=10))
+def scheduleChecker():
+	try:
+		checker.checkSchedule()
+	except Exception as e:
+		print("Except: ", e)
+
+@tl.job(interval=timedelta(seconds=10))
+def sensorChecker():
+	try:
+		checker.updateNewsensor()
+	except Exception as e:
+		print("Except: ", e)
+		
 tl.start()
 
 while True:
-  try:
-    time.sleep(1)
-  except KeyboardInterrupt:
-    tl.stop()
-    break
+	try:
+		time.sleep(1)
+	except KeyboardInterrupt:
+		tl.stop()
+		break
