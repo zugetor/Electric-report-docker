@@ -16,9 +16,10 @@ def mockupdata2(MAC):
 	return { "MAC": MAC, "status": random.randint(0, 1)}
 
 
-host = "broker.mqttdashboard.com"
-port = 1883
+host = "localhost"
+port = 1880
 client = mqtt.Client()
+client.username_pw_set(username="admin",password="password")
 client.connect(host,port)
 for _ in range(999):
 	message = mockupdata1(1,"AA-BB-CC-DD-EE")
