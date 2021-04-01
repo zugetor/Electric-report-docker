@@ -4,21 +4,21 @@ from datetime import timedelta
 
 tl = Timeloop()
 
-# @tl.job(interval=timedelta(seconds=10))
-# def ruleChecker():
-# 	try:
-# 		checker.checkRule()
-# 	except Exception as e:
-# 		print("Except: ", e)
+@tl.job(interval=timedelta(minutes=3))
+def ruleChecker():
+	try:
+		checker.checkRule()
+	except Exception as e:
+		print("Except: ", e)
 
-@tl.job(interval=timedelta(seconds=10))
+@tl.job(interval=timedelta(minutes=30))
 def scheduleChecker():
 	try:
 		checker.checkSchedule()
 	except Exception as e:
 		print("Except: ", e)
 
-@tl.job(interval=timedelta(seconds=10))
+@tl.job(interval=timedelta(minutes=5))
 def sensorChecker():
 	try:
 		checker.updateNewsensor()
