@@ -46,7 +46,7 @@ class PassResetForm(Form):
 def login():
 	form = LoginForm(request.form)
 	if request.method == 'POST' and form.validate():
-		user = query.get_userLogin(form.username.data)
+		user = query.user.get_userLogin(form.username.data)
 		try:
 			if not user or not pbkdf2_sha256.verify(form.password.data, user["password"]):
 				flash('Please check your login credentials and try again.')
@@ -65,11 +65,11 @@ def login():
 @allow_register
 def register():
 	form = RegistrationForm(request.form)
-	if request.method == 'POST' and form.validate() and not query.get_userLogin(form.username.data) and not query.get_userLogin(form.email.data):
+	if request.method == 'POST' and form.validate() and not query.user.get_userLogin(form.username.data) and not query.user.get_userLogin(form.email.data):
 		username = html_escape(form.username.data)
 		email = html_escape(form.email.data)
 		password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(html_escape(form.password.data))
-		query.register_user(username, email, password)
+		query.user.register_user(username, email, password)
 		return redirect(url_for('Page.login'))
 	return render_template("register.html",form=form)
 
@@ -86,11 +86,11 @@ def reset():
 	form = PassResetForm(request.form)
 	if request.method == 'POST' and form.validate():
 		username = getSessionUsername()
-		user = query.get_userLogin(username)
+		user = query.user.get_userLogin(username)
 		try:
 			if user and pbkdf2_sha256.verify(form.password.data, user["password"]) and user["is_active"] == 1:
 				new_password = pbkdf2_sha256.using(rounds=10000, salt_size=16).hash(html_escape(form.new_password.data))
-				query.Updatepassword(username,new_password)
+				query.user.Updatepassword(username,new_password)
 				flash('Your password has been change.')
 			else:
 				flash('Please check your password and try again.')
@@ -143,5 +143,5 @@ def room_add():
 @app.route("/user")
 @login_required
 def user_manage():
-	user = query.getAllUser()
+	user = query.user.getAllUser()
 	return render_template("user_manage.html",user=user)

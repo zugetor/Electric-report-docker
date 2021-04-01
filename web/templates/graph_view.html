@@ -199,11 +199,11 @@ cursor:pointer;
 					<div class="col mr-2">
 						<div class="text-xm font-weight-bold text-secondary text-uppercase mb-1">Unit</div>
 						<select id="unit" class="form-control input-lg">
-							<option value="5m">5mimutes</option>
-							<option value="30h">30minutes</option>
-							<option value="1h">1hours</option>
-							<option value="12h">12hours</option>
-							<option value="1d">1day</option>
+							<option value="300">5mimutes</option>
+							<option value="1800">30minutes</option>
+							<option value="3600">1hours</option>
+							<option value="43200">12hours</option>
+							<option value="86400">1day</option>
 						</select>
 
 					</div>
@@ -277,8 +277,8 @@ cursor:pointer;
 	});
 
 	$('input[name="datetimes"]').on('apply.daterangepicker', function (ev, picker) {
-		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm A')).getTime() * 1000000
-		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm A')).getTime() * 1000000
+		startTime = new Date(picker.startDate.format('YYYY-MM-DD hh:mm A')).getTime()/1000
+		endTime = new Date(picker.endDate.format('YYYY-MM-DD hh:mm A')).getTime()/1000
 		
 		$("#sTimeTable").text(picker.startDate.format('YYYY-MM-DD hh:mm A'));
 		$("#eTimeTable").text(picker.endDate.format('YYYY-MM-DD hh:mm A'));
@@ -699,7 +699,8 @@ cursor:pointer;
 									label: v3.name,
 									backgroundColor: newColor,
 									borderColor: newColor,
-									data: v3.values,
+									data: JSON.stringify(v3.values),
+									//data: [{t: "1970-01-19T17:07:31Z", y: 42},{t: "1970-01-19T17:07:32Z", y: 110},{t: "1970-01-19T17:07:33Z", y: 114},{t: "1970-01-19T17:07:34Z", y: 114},{t: "1970-01-19T17:07:35Z", y: 104},{t: "1970-01-19T17:07:36Z", y: 6},{t: "1970-01-19T17:07:40Z", y: 94},{t: "1970-01-19T17:07:41Z", y: 106},{t: "1970-01-19T17:07:42Z", y: 118},{t: "1970-01-19T17:07:43Z", y: 105},{t: "1970-01-19T17:07:44Z", y: 114},{t: "1970-01-19T17:07:45Z", y: 67},{t: "1970-01-19T17:07:47Z", y: 9},{t: "1970-01-19T17:07:48Z", y: 9},{t: "1970-01-19T17:07:48Z", y: 7},{t: "1970-01-19T17:07:49Z", y: 8},{t: "1970-01-19T17:07:52Z", y: 10},{t: "1970-01-19T17:07:56Z", y: 6},{t: "1970-01-19T17:07:57Z", y: 9},{t: "1970-01-19T17:07:58Z", y: 8},{t: "1970-01-19T17:08:00Z", y: 9},{t: "1970-01-19T17:08:04Z", y: 10},{t: "1970-01-19T17:08:06Z", y: 6}],
 									type: 'line',
 									pointRadius: 0,
 									fill: false,
@@ -837,18 +838,18 @@ cursor:pointer;
 		clearChart();
 
 		if (startTime == undefined) {
-			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
-			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
-		console.log(startTime+":::::"+endTime)
+		console.log(parseInt(startTime)+":::::"+parseInt(endTime))
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
 				data: {
 					data: JSON.stringify(dashboardArray),
-					unit: unit,
-					startTime: String(startTime),
-					endTime: String(endTime),
+					unit: parseInt(unit),
+					startTime: parseInt(startTime),
+					endTime: parseInt(endTime),
 					graphType: "CompareAndSeparate"
 				}
 			}).then(function (res) {
@@ -867,17 +868,18 @@ cursor:pointer;
 	function getAndCombine() {
 		clearChart();
 		if (startTime == undefined && endTime == undefined) {
-			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() * 1000000;
-			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
+		console.log(parseInt(startTime)+":::::"+parseInt(endTime))
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
 				data: {
 					data: JSON.stringify(dashboardArray),
-					unit: unit,
-					startTime: String(startTime),
-					endTime: String(endTime),
+					unit: parseInt(unit),
+					startTime: parseInt(startTime),
+					endTime: parseInt(endTime),
 					graphType: "Combine"
 				}
 			}).then(function (res) {
@@ -892,12 +894,12 @@ cursor:pointer;
 	}
 
 	document.getElementById('update').addEventListener('click', function () {
-		if(unit == "1m") updateTime=60000
-		if(unit == "5m") updateTime=300000
-		if(unit == "30m") updateTime=1800000
-		if(unit == "1hr") updateTime=3600000
-		if(unit == "12hr") updateTime=43200000
-		if(unit == "1d") updateTime=86400000
+
+		if(unit == "300") updateTime=300000
+		if(unit == "1800") updateTime=1800000
+		if(unit == "3600") updateTime=3600000
+		if(unit == "43200") updateTime=43200000
+		if(unit == "86400") updateTime=86400000
 		getAndLoad();
 		getAndCombine();
 	});
@@ -986,10 +988,8 @@ cursor:pointer;
 			)
 		} else {
 			if (startTime == undefined && endTime == undefined) {
-				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime() *
-					1000000;
-				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() *
-					1000000;
+				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
+				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 			}
 			param = "?";
 			$.each(dashboardArray, function (i, v) {
@@ -1075,7 +1075,7 @@ cursor:pointer;
 	function refresh() {
 		if (checkRefresh == false) {
 			$(this).removeClass('btn-outline-success').addClass('btn-outline-danger');
-			endTime = new Date(moment()).getTime() * 1000000;
+			endTime = new Date(moment()).getTime()/1000;
 			getAndLoad()
 			getAndCombine();
 			timerId = setInterval(() => {
@@ -1084,7 +1084,7 @@ cursor:pointer;
 			}, updateTime);
 			checkRefresh = true;
 		} else {
-			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime() * 1000000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
 			clearInterval(timerId);
 			checkRefresh = false;

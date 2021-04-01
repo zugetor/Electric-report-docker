@@ -10,7 +10,7 @@ def login_required(f):
 			if 'id' not in session or session['id'] is None:
 				flash('Please Login to access this page.')
 				return redirect(url_for('Page.login'))
-			user = query.get_userByid(session['id'])
+			user = query.user.get_userByid(session['id'])
 			if(user == None or (user["flogout"] == 1 or user['is_active'] == 0)):
 				logout_user()
 				return redirect(url_for('Page.login'))
