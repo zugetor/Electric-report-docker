@@ -3,7 +3,7 @@ from extensions import getConfig
 from db import MySQL, MongoDB, Query
 from jqqb_evaluator.evaluator import Evaluator
 from time import time
-import datetime, pytz, reg, json
+import datetime, pytz, reg, json, sys
 from timeout import timeout
 
 class dbHandler():
@@ -45,20 +45,35 @@ class dbHandler():
 		return res
 
 	def getallTopic(self,table,mac): #/
-		result = self._db[table].find_one({"message.MAC": mac})
+		result = self._db[table].find_one({
+			"$or": [
+				{"message.MAC": mac},
+				{"message.s" : mac}
+			]
+		})
 		return ['topic', result["topic"], 'MAC', result["message"]["MAC"]]
 
 	def getLastCT(self,sid,_type="ct"):
-		infQuery = self.query.getInfQuery()
-		param = {"s":sid}
-		result = infQuery('SELECT a FROM "{}" WHERE s=$s LIMIT 1'.format(_type),bind_params=param)
-		return result.raw
+		createdAt = 0
+		res = {}
+		for t in self.getTable({"sensor_type":_type}):
+			rawCT = self._db[t].find({"message.s": sid}).sort("created_at", -1).limit(1)
+			for CT in rawCT:
+				if(CT["created_at"] > createdAt):
+					res = CT
+					createdAt = CT["created_at"]
+		return res
 
 	def getLastPIR(self,mac,_type="pir"):
-		infQuery = self.query.getInfQuery()
-		param = {"mac":mac}
-		result = infQuery('SELECT status FROM "{}" WHERE MAC=$mac LIMIT 1'.format(_type),bind_params=param)
-		return result.raw
+		createdAt = 0
+		res = {}
+		for t in self.getTable({"sensor_type":_type}):
+			rawPIR = self._db[t].find({"message.MAC": mac}).sort("created_at", -1).limit(1)
+			for PIR in rawPIR:
+				if(PIR["created_at"] > createdAt):
+					res = PIR
+					createdAt = PIR["created_at"]
+		return res
 
 	def getTable(self,devFind={}): #/
 		res = []
@@ -84,15 +99,10 @@ def _topic2type(topic):
 	else:
 		return topic[-1],topic[-1]
 
-def getINFVal(raw):
-	if len(raw["series"]) > 0:
-		return raw["series"][0]["values"][0][1]
-	return 0
-
 def checkRule():
 	db = dbHandler()
 	query = db.getQuery()
-
+	print("Checking Rule")
 	daylst = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 
 	allrule = query.getRule()
@@ -129,10 +139,12 @@ def checkRule():
 					for s in rsensor:
 						if s["inf_type"] == "pir":
 							pir_tmp = db.getLastPIR(s["bomac"])
-							tmp["pir"] += getINFVal(pir_tmp)
+							if(pir_tmp != {}):
+								tmp["pir"] += pir_tmp["message"]["status"]
 						else:
 							ct_tmp = db.getLastCT(s["inf_id"],s["inf_type"])
-							tmp[s["inf_name"]] += getINFVal(ct_tmp)
+							if(ct_tmp != {}):
+								tmp[s["inf_name"]] += ct_tmp["message"]["a"]
 					#print(tmp)
 					objects.append(tmp)
 
@@ -154,12 +166,12 @@ def checkRule():
 		for m in all_messages:
 			for token in tokens:
 				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
-					linenotify(m,token["ntoken"])
+					linenotify(m,token["ntoken"],True,query)
 
 def checkSchedule():
 	db = dbHandler()
 	query = db.getQuery()
-
+	print("Checking Schedule")
 	allroom = query.roomWithBPrefix()
 	if len(allroom) > 0:
 		burl = allroom[0]["burl"]
@@ -181,7 +193,7 @@ def checkSchedule():
 def updateNewsensor():
 	db = dbHandler()
 	query = db.getQuery()
-
+	print("Checking Sensor")
 	alltype = query.getAllType()
 	typelst = {}
 	for _type in alltype:
@@ -190,15 +202,15 @@ def updateNewsensor():
 		allmac = db.getallMAC(t)
 		res = {"MAC":"","data":[]}
 		for i in allmac:
-			res["MAC"] = i[1]
-			sensor = db.getallSensor(t,i[1])
+			res["MAC"] = i
+			sensor = db.getallSensor(t,i)
 			if len(sensor) > 0: # sensor > 0 when s and topic found
 				for s in sensor:
 					etype,stype = _topic2type(s["topic"])
 					if etype in typelst.keys():
 						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[etype] ])
 			else:
-				topic = db.getallTopic(t,i[1])
+				topic = db.getallTopic(t,i)
 				etype,stype = _topic2type(topic[1])
 				if etype in typelst.keys():
 					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[etype] ])

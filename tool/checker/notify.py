@@ -1,10 +1,9 @@
 import requests, json
 import urllib.parse
-from extensions import query
 
 _url = "https://notify-api.line.me/api/notify" 
 
-def linenotify(message,token,log=True):
+def linenotify(message,token,log=True,query=None):
 	msg = urllib.parse.urlencode({"message":message})
 	LINE_HEADERS = {'Content-Type':'application/x-www-form-urlencoded',"Authorization":"Bearer "+token}
 	session = requests.Session()
