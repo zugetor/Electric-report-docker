@@ -3,7 +3,7 @@ from extensions import getConfig
 from db import MySQL, MongoDB, Query
 from jqqb_evaluator.evaluator import Evaluator
 from time import time
-import datetime, pytz, reg, json, sys
+import datetime, pytz, reg, json
 from timeout import timeout
 
 class dbHandler():
