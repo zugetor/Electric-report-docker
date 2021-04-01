@@ -1,0 +1,4 @@
+timeloop==1.0.2
+PyMySQL[rsa]==0.9.3
+pymongo[srv,tls]==3.11.3
+pytimeparse==1.1.8

@@ -19,6 +19,7 @@ def mockupdata2(MAC):
 host = "localhost"
 port = 1880
 client = mqtt.Client()
+client.username_pw_set(username="admin",password="password")
 client.connect(host,port)
 for _ in range(999):
 	message = mockupdata1(1,"AA-BB-CC-DD-EE")

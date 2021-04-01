@@ -1,9 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, send_from_directory
 from apscheduler.schedulers.background import BackgroundScheduler
 from extensions import mysql, query, html_escape, getConfig
-from checker import checkRule, checkSchedule, updateNewsensor
 from route import public
-import atexit
 
 cfg = getConfig()
 
