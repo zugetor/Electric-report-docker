@@ -3,8 +3,8 @@ services:
 
     web:
         container_name: web
-        image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
+        image: zugetor/web_gunicorn:latest
+        #command: bash -c "cd /src && pip install -r ./requirements.txt && pip install gunicorn && gunicorn --bind 0.0.0.0:5000 main:app --reload"
         networks:
             - dev_net
         ports:
@@ -23,8 +23,8 @@ services:
         
     timetable:
         container_name: timetable
-        image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
+        image: zugetor/web_gunicorn:latest
+        #command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
         networks:
             - dev_net
         volumes:
@@ -41,12 +41,11 @@ services:
 
     mqtt_collector:
         container_name: mqtt_collector
-        image: python:3.7
-        command: bash -c "cd /src && pip install -r ./requirements.txt && python ./main.py"
+        image: zugetor/python3:latest
         networks:
             - dev_net
         volumes:
-            - ./consumer/mqtt_collector:/src
+            - ./tool/mqtt_collector:/src
         links:
             - rabbitmq
             - db
@@ -110,6 +109,8 @@ services:
         image: mysql:8
         networks:
             - dev_net
+        ports:
+            - "3306:3306"
         environment:
             - MYSQL_RANDOM_ROOT_PASSWORD=yes #random root password
             - MYSQL_USER=myuser #MySQL username

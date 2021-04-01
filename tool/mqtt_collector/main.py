@@ -26,7 +26,8 @@ def callback(ch, method, properties, body):
 		print("Collection name: %r" % collectionName)
 
 		db = client[cfg.MONGODB_COLLECTION]
-		db["iot_type"].insert_one({"sensor_type": sensorType, "device_type": deviceType})
+		_type = {"sensor_type": sensorType, "device_type": deviceType}
+		db["iot_type"].update(_type, _type, upsert=True)
 		doc = {}
 		doc["topic"] = topicRaw.replace(".","/")
 		doc["created_at"] = int(time())
@@ -36,6 +37,9 @@ def callback(ch, method, properties, body):
 	except ValueError:
 		print("[ERROR] ValueError: ", body)
 		ch.basic_ack(delivery_tag = method.delivery_tag)
+	except Exception as e:
+		print("[ERROR] Error: ", e)
+		ch.basic_nack(delivery_tag = method.delivery_tag)
 
 if __name__ == '__main__':
 	try:

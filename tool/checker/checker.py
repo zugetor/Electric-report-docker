@@ -1,74 +1,81 @@
 from notify import linenotify
 from extensions import getConfig
-from db import MySQL, Query
+from db import MySQL, MongoDB, Query
 from jqqb_evaluator.evaluator import Evaluator
 from time import time
 import datetime, pytz, reg, json
+from timeout import timeout
 
 class dbHandler():
 	def __init__(self):
 		self.mysql = MySQL()
+		self.mongo = MongoDB()
 		self.query = Query()
 		cfg = getConfig()
 		self.mysql.init_cfg(cfg)
+		self.mongo.init_cfg(cfg)
 		self._con = self.mysql.get_connection()
+		self._client = self.mongo.get_client()
+		self.query.init_db(self._con, self._client)
+		self._db = self._client[cfg.MONGODB_COLLECTION]
 
 	def getQuery(self):
 		return self.query
 
-	def close(self):
-		return self.mysql.close()
+	def getallMAC(self,table): #/
+		allmac = self._db[table].find().distinct("message.MAC")
+		return allmac
 
-	def getallMAC(self,table):
-		infQuery = self.query.getInfQuery()
-		result = infQuery('SELECT distinct("MAC") as MAC FROM "{}";'.format(escape(table)))
-		return result.raw
+	def getallSensor(self,table,mac): #/
+		result = self._db[table].find({
+			"$and": [
+				{"message.MAC": mac},
+				{"message.s" : {"$exists" : True}}
+			]
+		})
+		alltopic = result.distinct("topic")
+		allnum = result.distinct("message.s")
+		res = []
+		for s in allnum:
+			for topic in alltopic:
+				res.append({
+					"s" : s,
+					"topic" : topic
+				})
+		return res
 
-	def getallSensor(self,table,mac):
-		infQuery = self.query.getInfQuery()
-		param = {"mac":mac}
-		result = infQuery('SELECT s,topic FROM "{}" WHERE MAC=$mac;'.format(escape(table)),bind_params=param)
-		return result.raw
-
-	def getallTopic(self,table,mac):
-		infQuery = self.query.getInfQuery()
-		result = infQuery('SELECT topic,MAC,status FROM "{}"'.format(escape(table)))
-		for sensor in result.raw["series"][0]["values"]:
-			smac = sensor[2]
-			topic = sensor[1]
-			if(smac == mac):
-				return ['topic', topic, 'MAC', smac]
+	def getallTopic(self,table,mac): #/
+		result = self._db[table].find_one({"message.MAC": mac})
+		return ['topic', result["topic"], 'MAC', result["message"]["MAC"]]
 
 	def getLastCT(self,sid,_type="ct"):
 		infQuery = self.query.getInfQuery()
 		param = {"s":sid}
-		result = infQuery('SELECT a FROM "{}" WHERE s=$s LIMIT 1'.format(escape(_type)),bind_params=param)
+		result = infQuery('SELECT a FROM "{}" WHERE s=$s LIMIT 1'.format(_type),bind_params=param)
 		return result.raw
 
 	def getLastPIR(self,mac,_type="pir"):
 		infQuery = self.query.getInfQuery()
 		param = {"mac":mac}
-		result = infQuery('SELECT status FROM "{}" WHERE MAC=$mac LIMIT 1'.format(escape(_type)),bind_params=param)
+		result = infQuery('SELECT status FROM "{}" WHERE MAC=$mac LIMIT 1'.format(_type),bind_params=param)
 		return result.raw
 
+	def getTable(self,devFind={}): #/
+		res = []
+		for _type in self._db["iot_type"].find(devFind):
+			name = _type["sensor_type"] 
+			if(_type["device_type"] != ''):
+				name = name + "_" + _type["device_type"]
+			res.append(name)
+		return res
 
 def getTimeZone():
 	cfg = getConfig()
 	return cfg.TIME_ZONE
 
-def getTable():
-	cfg = getConfig()
-	return cfg.INF_TABLE
-
 def getTemplate():
 	cfg = getConfig()
 	return cfg.Nofify_Template
-
-def escape(txt):
-	blocklst = ["'","\"",";",":","-","#","\\","/","%","&"]
-	for i in blocklst:
-		txt = txt.replace(i,"")
-	return txt
 
 def _topic2type(topic):
 	topic = topic.split("/")
@@ -85,7 +92,7 @@ def getINFVal(raw):
 def checkRule():
 	db = dbHandler()
 	query = db.getQuery()
-	
+
 	daylst = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
 
 	allrule = query.getRule()
@@ -152,6 +159,7 @@ def checkRule():
 def checkSchedule():
 	db = dbHandler()
 	query = db.getQuery()
+
 	allroom = query.roomWithBPrefix()
 	if len(allroom) > 0:
 		burl = allroom[0]["burl"]
@@ -173,23 +181,22 @@ def checkSchedule():
 def updateNewsensor():
 	db = dbHandler()
 	query = db.getQuery()
+
 	alltype = query.getAllType()
 	typelst = {}
 	for _type in alltype:
 		typelst[_type["inf_name"]] = _type["tid"]
-	for t in getTable():
+	for t in db.getTable():
 		allmac = db.getallMAC(t)
 		res = {"MAC":"","data":[]}
-		for i in allmac['series'][0]["values"]:
+		for i in allmac:
 			res["MAC"] = i[1]
 			sensor = db.getallSensor(t,i[1])
-			if len(sensor['series']) > 0:
-				slst = [[i[1],i[2]] for i in sensor['series'][0]["values"]]
-				slst = list(set(tuple(sub) for sub in slst))
-				for s in slst:
-					etype,stype = _topic2type(s[1])
+			if len(sensor) > 0: # sensor > 0 when s and topic found
+				for s in sensor:
+					etype,stype = _topic2type(s["topic"])
 					if etype in typelst.keys():
-						res["data"].append([ "{}({})-{}".format(etype,stype,int(s[0])), int(s[0]), t, typelst[etype] ])
+						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[etype] ])
 			else:
 				topic = db.getallTopic(t,i[1])
 				etype,stype = _topic2type(topic[1])
