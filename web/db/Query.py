@@ -101,16 +101,16 @@ class Query:
 								if(len(result)>0):
 									if(x[0:2]=="VL"):
 										tmp[i]['volt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['volt'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['volt'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:2]=="AL"):
 										tmp[i]['amp'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['amp'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['amp'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:1]=="P"):
 										tmp[i]['watt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['watt'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['watt'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:2]=="AE"):
 										tmp[i]['ae'][0].update({'name':name+"_"+x})
-										tmp[i]['ae'][0]['values'].append(result)
+										tmp[i]['ae'][0]['values'].extend(result)
 				if(data[i]['type'] == "room" or data[i]['type'] == "floor" or data[i]['type'] == "building"):
 					if(data[i]['type'] == "room"):
 						nameCombine+=data[i]['name']+", "
@@ -138,16 +138,16 @@ class Query:
 								if(len(result)>0):
 									if(x[0:2]=="VL"):
 										tmp[i]['volt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['volt'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['volt'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:2]=="AL"):
 										tmp[i]['amp'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['amp'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['amp'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:1]=="P"):
 										tmp[i]['watt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['watt'][int(x[-1])-1]['values'].append(result)
+										tmp[i]['watt'][int(x[-1])-1]['values'].extend(result)
 									elif(x[0:2]=="AE"):
 										tmp[i]['ae'][0].update({'name':name+"_"+x})
-										tmp[i]['ae'][0]['values'].append(result)			
+										tmp[i]['ae'][0]['values'].extend(result)			
 					if(data[i]['type'] == "room"):
 						_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 					if(data[i]['type'] == "floor"):
@@ -179,16 +179,16 @@ class Query:
 							if(len(result)>0):
 								if(x[0:2]=="VL"):
 									tmp2['volt'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['volt'][int(x[-1])-1]['values'].append(result)
+									tmp2['volt'][int(x[-1])-1]['values'].extend(result)
 								elif(x[0:2]=="AL"):
 									tmp2['amp'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['amp'][int(x[-1])-1]['values'].append(result)
+									tmp2['amp'][int(x[-1])-1]['values'].extend(result)
 								elif(x[0:1]=="P"):
 									tmp2['watt'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['watt'][int(x[-1])-1]['values'].append(result)
+									tmp2['watt'][int(x[-1])-1]['values'].extend(result)
 								elif(x[0:2]=="AE"):
 									tmp2['ae'][0].update({'name':nameCombine+"_"+x})
-									tmp2['ae'][0]['values'].append(result)
+									tmp2['ae'][0]['values'].extend(result)
 				if(len(ct) != 0):
 					bomac = []
 					sid = []
@@ -200,7 +200,7 @@ class Query:
 						result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
 						if(len(result)>0):
 							tmp2['ct'][0].update({'name':nameCombine+"_CT"})
-							tmp2['ct'][0]['values'].append(result)
+							tmp2['ct'][0]['values'].extend(result)
 			self.query._CloseCursor(_cur)
 			if(graphType=="CompareAndSeparate"):
 				return tmp
