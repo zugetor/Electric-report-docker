@@ -375,7 +375,9 @@ class Query:
 			return res
 
 		def UpdateUserActive(self,_id,activate):
-			self.query.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
+			user = self.getAllUser()
+			if(len(user) > 1):
+				self.query.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
 
 
 	class Rule:

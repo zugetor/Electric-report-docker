@@ -24,9 +24,9 @@
                         <td>
                             <div class="custom-control custom-checkbox">
                                 {% if i['is_active'] == 1 %}
-                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" checked="" onchange="allowChange('{{i['id']}}',this)">
+                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" checked="" onchange="allowChange('{{i['id']}}',this)" {% if user|length == 1 %}disabled{% endif %}>
                                 {% else %}
-                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" onchange="allowChange('{{i['id']}}',this)">
+                                    <input type="checkbox" class="custom-control-input" id="Check_{{loop.index}}" onchange="allowChange('{{i['id']}}',this)" {% if user|length == 1 %}disabled{% endif %}>
                                 {% endif %}
                                 <label class="custom-control-label" for="Check_{{loop.index}}">Allow</label>
                             </div>
