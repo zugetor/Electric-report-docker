@@ -64,67 +64,67 @@ class Query:
 
 		def dashboard_list(self,data,unit,startTime,endTime,graphType):
 			_cur = self.query._newCursor()
-			sensorType = ["light","air","plug"]
+			sensorType = ["light","air","plug","all"]
 			dmType = ["VL1","VL2","VL3","AL1","AL2","AL3","P1","P2","P3","AE"]
 			tmp=[] #for compare and separate graph
-			tmp2={'name':"",'ct':[{'values':[]}],'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}]} #for combine graph
+			tmp2={'name':"",'ct':[{}],'volt':[{},{},{}],'amp':[{},{},{}],'watt':[{},{},{}],'ae':[{}]} #for combine graph
 			ct=[] #collect data and query one time for combine
 			dm=[] #collect data and query one time for combine
 			nameCombine=""
 			for i in range(len(data)):
 				name = data[i]['name']
-				if(data[i]['type'] == "ct"):
+				if(data[i]['type'][0:2] == "ct"):
 					nameCombine+=data[i]['name']+", "
-					tmp.append({'name':name,'ct':[{'values':[]}]})
+					tmp.append({'name':name,'ct':[{}]})
 					_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid where s.sid = %s",(data[i]['id']))
 					sensor = _cur.fetchall()
 					ct.append(sensor[0])
 					if(len(sensor) != 0):
 						pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.s":sensor[0]['inf_id'],"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message.a"}}},{ "$sort": { '_id': 1 }},{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
-						for sType in sensorType:
-							result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
-							if(len(result)>0):
-								tmp[i]['ct'][0].update({'name':name+"_ct"})
-								tmp[i]['ct'][0]['values'].append(result)
-						return tmp
-				if(data[i]['type'] == "dm"):
+						result = list(self.query._client.iot_data[data[i]['type']].aggregate(pipeline))
+						if(len(result)>0):
+							tmp[i]['ct'][0].update({data[i]['type']:{'name':'','values':[]}})
+							tmp[i]['ct'][0][data[i]['type']].update({'name':name+"_"+data[i]['type']})
+							tmp[i]['ct'][0][data[i]['type']]['values'].extend(result)
+				if(data[i]['type'][0:2] == "dm"):
 					nameCombine+=data[i]['name']+", "
-					tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
+					tmp.append({'name':name,'volt':[{},{},{}],'amp':[{},{},{}],'watt':[{},{},{}],'ae':[{}],'ct':[{}]})
 					_cur.execute("select bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid where s.sid = %s",(data[i]['id']))
 					sensor = _cur.fetchall()
 					dm.append(sensor[0])
 					if(len(sensor) != 0):
 						for x in dmType:
 							pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x}}},{ "$sort": { '_id': 1 }},{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
-							for sType in sensorType:
-								result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
-								if(len(result)>0):
-									if(x[0:2]=="VL"):
-										tmp[i]['volt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['volt'][int(x[-1])-1]['values'].extend(result)
-									elif(x[0:2]=="AL"):
-										tmp[i]['amp'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['amp'][int(x[-1])-1]['values'].extend(result)
-									elif(x[0:1]=="P"):
-										tmp[i]['watt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['watt'][int(x[-1])-1]['values'].extend(result)
-									elif(x[0:2]=="AE"):
-										tmp[i]['ae'][0].update({'name':name+"_"+x})
-										tmp[i]['ae'][0]['values'].extend(result)
+							result = list(self.query._client.iot_data[data[i]['type']].aggregate(pipeline))
+							if(len(result)>0):
+								if(x[0:2]=="VL"):
+									tmp[i]['volt'][int(x[-1])-1].update({data[i]['type']:{'name':'','values':[]}})
+									tmp[i]['volt'][int(x[-1])-1][data[i]['type']].update({'name':name+"_"+x+"_"+data[i]['type']})
+									tmp[i]['volt'][int(x[-1])-1][data[i]['type']]['values'].extend(result)
+								elif(x[0:2]=="AL"):
+									tmp[i]['amp'][int(x[-1])-1].update({data[i]['type']:{'name':'','values':[]}})
+									tmp[i]['amp'][int(x[-1])-1][data[i]['type']].update({'name':name+"_"+x+"_"+data[i]['type']})
+									tmp[i]['amp'][int(x[-1])-1][data[i]['type']]['values'].extend(result)
+								elif(x[0:1]=="P"):
+									tmp[i]['watt'][int(x[-1])-1].update({data[i]['type']:{'name':'','values':[]}})
+									tmp[i]['watt'][int(x[-1])-1][data[i]['type']].update({'name':name+"_"+x+"_"+data[i]['type']})
+									tmp[i]['watt'][int(x[-1])-1][data[i]['type']]['values'].extend(result)
+								elif(x[0:2]=="AE"):
+									tmp[i]['ae'][0].update({data[i]['type']:{'name':'','values':[]}})
+									tmp[i]['ae'][0][data[i]['type']].update({'name':name+"_"+x+"_"+data[i]['type']})
+									tmp[i]['ae'][0][data[i]['type']]['values'].extend(result)
 				if(data[i]['type'] == "room" or data[i]['type'] == "floor" or data[i]['type'] == "building"):
 					if(data[i]['type'] == "room"):
 						nameCombine+=data[i]['name']+", "
-						tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
 						_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 					if(data[i]['type'] == "floor"): 
 						nameCombine+='floor '+data[i]['name']+", "
 						name = 'floor '+data[i]['name']
-						tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
 						_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid where f.fid = %s",(data[i]['id']))
-					if(data[i]['type'] == "building"): 
+					if(data[i]['type'] == "building"):
 						nameCombine+=data[i]['name']+", "
-						tmp.append({'name':name,'volt':[{'values':[]},{'values':[]},{'values':[]}],'amp':[{'values':[]},{'values':[]},{'values':[]}],'watt':[{'values':[]},{'values':[]},{'values':[]}],'ae':[{'values':[]}],'ct':[{'values':[]}]})
 						_cur.execute("select bo.bomac from board as bo inner join room as r on bo.rid=r.rid inner join floor as f on f.fid=r.fid inner join building as b on b.bid=f.bid where b.bid = %s",(data[i]['id']))
+					tmp.append({'name':name,'volt':[{},{},{}],'amp':[{},{},{}],'watt':[{},{},{}],'ae':[{}],'ct':[{}]})
 					sensor = _cur.fetchall()
 					if(len(sensor) != 0):
 						bomac = []
@@ -132,22 +132,26 @@ class Query:
 							dm.append(sensor[index])
 							bomac.append(sensor[index]['bomac'])
 						for x in dmType:
-							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": startTime,"$lt" : endTime },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 							for sType in sensorType:
 								result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
 								if(len(result)>0):
 									if(x[0:2]=="VL"):
-										tmp[i]['volt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['volt'][int(x[-1])-1]['values'].extend(result)
+										tmp[i]['volt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+										tmp[i]['volt'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
+										tmp[i]['volt'][int(x[-1])-1][sType]['values'].extend(result)
 									elif(x[0:2]=="AL"):
-										tmp[i]['amp'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['amp'][int(x[-1])-1]['values'].extend(result)
+										tmp[i]['amp'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+										tmp[i]['amp'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
+										tmp[i]['amp'][int(x[-1])-1][sType]['values'].extend(result)
 									elif(x[0:1]=="P"):
-										tmp[i]['watt'][int(x[-1])-1].update({'name':name+"_"+x})
-										tmp[i]['watt'][int(x[-1])-1]['values'].extend(result)
+										tmp[i]['watt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+										tmp[i]['watt'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
+										tmp[i]['watt'][int(x[-1])-1][sType]['values'].extend(result)		
 									elif(x[0:2]=="AE"):
-										tmp[i]['ae'][0].update({'name':name+"_"+x})
-										tmp[i]['ae'][0]['values'].extend(result)			
+										tmp[i]['ae'][0].update({sType:{'name':'','values':[]}})
+										tmp[i]['ae'][0][sType].update({'name':name+"_"+x+"_"+sType})
+										tmp[i]['ae'][0][sType]['values'].extend(result)		
 					if(data[i]['type'] == "room"):
 						_cur.execute("select s.inf_id,bo.bomac from sensor as s inner join board as bo on bo.boid=s.boid inner join room as r on bo.rid=r.rid where r.rid = %s",(data[i]['id']))
 					if(data[i]['type'] == "floor"):
@@ -161,51 +165,54 @@ class Query:
 						for index in range(len(sensor)):
 							bomac.append(sensor[index]['bomac'])
 							sid.append(sensor[index]['inf_id'])
-						pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": startTime,"$lt" : endTime },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+						pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 						for sType in sensorType:
 							result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
 							if(len(result)>0):
-								tmp[i]['ct'][0].update({'name':name+"_CT"})
-								tmp[i]['ct'][0]['values'].append(result)
-			if(graphType=="Combine"):
-				if(len(dm) != 0):
-					bomac = []
-					for index in range(len(dm)):
-						bomac.append(dm[index]['bomac'])
-					for x in dmType:
-						pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": startTime,"$lt" : endTime },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
-						for sType in sensorType:
-							result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
-							if(len(result)>0):
-								if(x[0:2]=="VL"):
-									tmp2['volt'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['volt'][int(x[-1])-1]['values'].extend(result)
-								elif(x[0:2]=="AL"):
-									tmp2['amp'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['amp'][int(x[-1])-1]['values'].extend(result)
-								elif(x[0:1]=="P"):
-									tmp2['watt'][int(x[-1])-1].update({'name':nameCombine+"_"+x})
-									tmp2['watt'][int(x[-1])-1]['values'].extend(result)
-								elif(x[0:2]=="AE"):
-									tmp2['ae'][0].update({'name':nameCombine+"_"+x})
-									tmp2['ae'][0]['values'].extend(result)
-				if(len(ct) != 0):
-					bomac = []
-					sid = []
-					for index in range(len(ct)):
-						bomac.append(dm[index]['bomac'])
-						sid.append(dm[index]['sid'])
-					pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": startTime,"$lt" : endTime },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+								tmp[i]['ct'][0].update({sType:{'name':'','values':[]}})
+								tmp[i]['ct'][0][sType].update({'name':name+"_CT_"+sType})
+								tmp[i]['ct'][0][sType]['values'].extend(result)
+			if(len(dm) != 0):
+				bomac = []
+				for index in range(len(dm)):
+					bomac.append(dm[index]['bomac'])
+				for x in dmType:
+					pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 					for sType in sensorType:
-						result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
+						result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
 						if(len(result)>0):
-							tmp2['ct'][0].update({'name':nameCombine+"_CT"})
-							tmp2['ct'][0]['values'].extend(result)
+							if(x[0:2]=="VL"):
+								tmp2['volt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+								tmp2['volt'][int(x[-1])-1][sType].update({'name':nameCombine+"_"+x+"_"+sType})
+								tmp2['volt'][int(x[-1])-1][sType]['values'].extend(result)
+							elif(x[0:2]=="AL"):
+								tmp2['amp'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+								tmp2['amp'][int(x[-1])-1][sType].update({'name':nameCombine+"_"+x+"_"+sType})
+								tmp2['amp'][int(x[-1])-1][sType]['values'].extend(result)
+							elif(x[0:1]=="P"):
+								tmp2['watt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
+								tmp2['watt'][int(x[-1])-1][sType].update({'name':nameCombine+"_"+x+"_"+sType})
+								tmp2['watt'][int(x[-1])-1][sType]['values'].extend(result)
+							elif(x[0:2]=="AE"):
+								tmp2['ae'][0].update({sType:{'name':'','values':[]}})
+								tmp2['ae'][0][sType].update({'name':nameCombine+"_"+x+"_"+sType})
+								tmp2['ae'][0][sType]['values'].extend(result)
+			if(len(ct) != 0):
+				bomac = []
+				sid = []
+				for index in range(len(ct)):
+					bomac.append(ct[index]['bomac'])
+					sid.append(ct[index]['inf_id'])
+				pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$sum": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+				for sType in sensorType:
+					result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
+					if(len(result)>0):
+						tmp2['ct'][0].update({sType:{'name':'','values':[]}})
+						tmp2['ct'][0][sType].update({'name':nameCombine+"_CT_"+sType})
+						tmp2['ct'][0][sType]['values'].extend(result)
 			self.query._CloseCursor(_cur)
-			if(graphType=="CompareAndSeparate"):
-				return tmp
-			if(graphType=="Combine"):
-				return tmp2
+			response = [tmp,tmp2]
+			return response
 
 	class Sensor:
 
