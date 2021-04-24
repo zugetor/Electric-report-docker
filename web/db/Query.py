@@ -15,7 +15,6 @@ class Query:
 		self.user = self.User(self)
 		self.rule = self.Rule(self)
 
-
 	def init_db(self,conn,client):
 		self._conn = conn
 		self._client = client
@@ -382,7 +381,9 @@ class Query:
 			return res
 
 		def UpdateUserActive(self,_id,activate):
-			self.query.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
+			user = self.getAllUser()
+			if(len(user) > 1):
+				self.query.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
 
 
 	class Rule:
@@ -522,4 +523,16 @@ class Query:
 								INNER JOIN board b ON s.boid = b.boid 
 								INNER JOIN room r ON b.rid = r.rid 
 								WHERE s.inf_type IS NOT NULL AND r.rname = %s AND b.register = 1""",(rname,))
+		return res
+
+	def newSetting(self, data, digest):
+		#Check if it already exist
+		setting = self.getSetting(digest)
+		if(setting == None):
+			doc = {"data":data,"hash": digest}
+			res = self._client["iot_data"]["graph_setting"].insert_one(doc)
+			return res
+
+	def getSetting(self, digest):
+		res = self._client["iot_data"]["graph_setting"].find_one({"hash": digest})
 		return res
