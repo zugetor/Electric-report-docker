@@ -6,7 +6,6 @@ import json, time, hashlib
 app = Blueprint('Private', __name__)
 
 @app.route('/dashboard_list/',methods=['POST'])
-@login_required
 def dashboard_list():
 	data = json.loads(request.form.get('data'))
 	unit = request.form.get('unit')
@@ -240,7 +239,6 @@ def get_token():
 	return jsonify(query.notification.getToken())
 
 @app.route('/link',methods=['GET'])
-@login_required
 def get_setting():
 	data = request.args.get('hash')
 	res = query.getSetting(data)
