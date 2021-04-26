@@ -1,0 +1,533 @@
+{% extends 'base.html' %}
+{% block title %}Energy Saving - Charts{% endblock %}
+{% block css %}
+.selected{
+background-color: rgba(192,192,192,0.5);
+}
+tr[role="row"]:hover {
+cursor:pointer;
+}
+{% endblock %}
+{% block content %}
+<div id="dashGraph" class="bg-white">
+	<div id="compare" class="row justify-content-center"></div>
+	<div id="combine" class="row justify-content-center"></div>
+	<div id="separate" class="row justify-content-center"></div>
+
+</div>
+
+<!-- /.container-fluid -->
+{% endblock %}
+{% block js %}
+<script>
+	let dashboardArray;
+	let startTime;
+	let endTime;
+	let mode;
+	let unit;
+	let autoUpdate;
+
+	function showCompare() {
+		mode = "compare"
+		$("#compare").show();
+		$("#combine").hide();
+		$("#separate").hide();
+		$("#modeTable").html('<span class="badge badge-success">' + mode + '</span>');
+	};
+
+	function showCombine() {
+		mode = "combine"
+		$("#combine").show();
+		$("#compare").hide();
+		$("#separate").hide();
+		$("#modeTable").html('<span class="badge badge-danger">' + mode + '</span>');
+	};
+
+	function showSeparate() {
+		mode = "separate"
+		$("#separate").show();
+		$("#combine").hide();
+		$("#compare").hide();
+		$("#modeTable").html('<span class="badge badge-warning">' + mode + '</span>');
+	};
+	
+	var color = Chart.helpers.color;
+	var cfg = {
+		data: {
+			datasets: [{
+				label: 'tmp',
+				backgroundColor: color(window.chartColors.blue).alpha(0.5).rgbString(),
+				borderColor: window.chartColors.blue,
+				data: [{
+					t: 000000000000,
+					y: "0"
+				}],
+				type: 'line',
+				pointRadius: 0,
+				fill: false,
+				lineTension: 0,
+				borderWidth: 2
+			}]
+		},
+		options: {
+			title: {
+				display: true,
+				text: 'Chart'
+			},
+			maintainAspectRatio: false,
+			animation: {
+				duration: 0
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					distribution: 'series',
+					offset: true,
+					gridLines: {
+						display: false,
+						drawBorder: false
+					},
+					ticks: {
+						major: {
+							enabled: true,
+							fontStyle: 'bold'
+						},
+						source: 'data',
+						autoSkip: true,
+						autoSkipPadding: 75,
+						maxRotation: 0,
+						sampleSize: 100
+					}
+				}],
+				yAxes: [{
+					gridLines: {
+						color: "rgb(234, 236, 244)",
+						zeroLineColor: "rgb(234, 236, 244)",
+						drawBorder: false,
+						borderDash: [2],
+						zeroLineBorderDash: [2]
+					},
+					scaleLabel: {
+						display: true,
+						labelString: 'Watt'
+					}
+				}]
+			},
+			pan: {
+				enabled: true,
+				mode: "xy",
+				speed: 100,
+				threshold: 100
+			},
+			zoom: {
+				enabled: true,
+				drag: false,
+				mode: "xy",
+			},
+			tooltips: {
+				intersect: false,
+				mode: 'index',
+				callbacks: {
+					label: function (tooltipItem, myData) {
+						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+						if (label) {
+							label += ': ';
+						}
+						label += parseFloat(tooltipItem.value).toFixed(2);
+						return label;
+					}
+				}
+			}
+		}
+	};
+	window.chartColors = {
+      red: 'rgb(255, 99, 132)',
+      orange: 'rgb(255, 159, 64)',
+      yellow: 'rgb(255, 205, 86)',
+      green: 'rgb(75, 192, 192)',
+      blue: 'rgb(54, 162, 235)',
+      purple: 'rgb(153, 102, 255)',
+      grey: 'rgb(169,171,176)',
+	  lightBlue: 'rgb(153,255,255)',
+	  violet: 'rgb(229,204,255)',
+	  pink: 'rgb(255,153,204)',
+	  lime: 'rgb(178,255,102)',
+	  black: 'rgb(0,0,0)',
+	  brown: 'rgb(153,76,0)',
+    };
+	let colorTmp = Object.keys(window.chartColors);
+	let compareChart = [];
+	let combineChart = [];
+	let separateChart = [];
+	var colorNames = shuffle(colorTmp);
+
+	function loadCompare(data) {
+		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
+			var divChart = "<div class=\"col mb-5\" name=\"compare" + value +
+				"\"><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
+			$("#compare").append(divChart);
+			var ctxTmp = document.getElementById('compare' + value).getContext('2d');
+			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
+			var chart = new Chart(ctxTmp, cfgTmp);
+			chart.canvas.parentNode.style.height = '500px';
+			chart.canvas.parentNode.style.width = '600px';
+			compareChart.push(chart);
+			$.each(data, function (i, v) {
+				$.each(v, function (i2, v2) {
+					if (value == i2) {
+						$.each(v2, function (i3, v3) {
+							$.each(v3, function (i4, v4) {
+								if (v4.name !== undefined) {
+									var colorName = colorNames[i];
+									var newColor = window.chartColors[colorName];
+									var newDataset = {
+										label: v4.name,
+										backgroundColor: newColor,
+										borderColor: newColor,
+										data: v4.values,
+										type: 'line',
+										pointRadius: 0,
+										fill: false,
+										lineTension: 0,
+										borderWidth: 2
+									};
+									chart.config.data.datasets.push(newDataset);
+								}
+							})
+						})
+					}
+				})
+			});
+			chart.config.data.datasets.splice(0, 1);
+			chart.update();
+			if (chart.config.data.datasets.length == 0) {
+				chart.destroy()
+				compareChart.pop()
+				$('[name="compare' + value + '"]').remove();
+			}
+		});
+		if (compareChart.length == 1) {
+			compareChart[0].canvas.parentNode.style.height = '750px';
+		}else{
+			$.each(compareChart, function (i, v) {
+				compareChart[i].canvas.parentNode.style.height = '370px';
+				compareChart[i].canvas.parentNode.style.width = '450px';
+			})
+		}
+	}
+
+	function loadSeparate(data) {
+		checkName = [];
+		$.each(data, function (index, value) {
+			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
+				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name+ index + "-" + v +
+					"\"><canvas class=\"card shadow\" id=\"separate-" + value.name + index + "-" + v +
+					"\"></canvas></div>"
+				$("#separate").append(divChart);
+				var ctxTmp = document.getElementById("separate" + "-" + value.name + index + "-" + v).getContext(
+					'2d');
+				var cfgTmp = JSON.parse(JSON.stringify(cfg));
+				cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = v
+				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length + index];
+				var newColor = window.chartColors[colorName];
+				var chart = new Chart(ctxTmp, cfgTmp);
+				chart.canvas.parentNode.style.height = '500px';
+				chart.canvas.parentNode.style.width = '600px';
+				separateChart.push(chart);
+				$.each(value, function (i2, v2) {
+					if (i2 == v) {
+						$.each(v2, function (i3, v3) {
+							$.each(v3, function (i4, v4) {
+								if (v4.name !== undefined) {
+									var newDataset = {
+										label: v4.name,
+										backgroundColor: newColor,
+										borderColor: newColor,
+										data: v4.values,
+										type: 'line',
+										pointRadius: 0,
+										fill: false,
+										lineTension: 0,
+										borderWidth: 2
+									};
+									chart.config.data.datasets.push(newDataset);
+								}
+							})
+						})
+					}
+				});
+				chart.config.data.datasets.splice(0, 1);
+				chart.update();
+				if (chart.config.data.datasets.length == 0) {
+					chart.destroy()
+					separateChart.pop()
+					$('[name="separate-' + value.name + index + '-' + v + '"]').remove();
+				}
+			});
+		});
+	if(separateChart.length>=7){
+		$.each(separateChart, function (i, v) {
+			v.canvas.parentNode.style.height = '300px';
+			v.canvas.parentNode.style.width = '400px';
+		});
+	}
+	else if(separateChart.length<=2){
+		$.each(separateChart, function (i, v) {
+			v.canvas.parentNode.style.height = '500px';
+		});
+	}
+	}
+	
+
+	function loadCombine(data) {
+		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
+			var divChart = "<div class=\"col mb-5\" name=\"combine" + value +
+				"\"><canvas class=\"card shadow\" id=\"combine" +
+				value + "\"></canvas></div>";
+			$("#combine").append(divChart);
+			var ctxTmp = document.getElementById('combine' + value).getContext('2d');
+			var cfgTmp = JSON.parse(JSON.stringify(cfg));
+			cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = value
+			var chart = new Chart(ctxTmp, cfgTmp);
+			chart.canvas.parentNode.style.height = '375px';
+			chart.canvas.parentNode.style.width = '450px';
+			combineChart.push(chart);
+			$.each(data, function (i, v) {
+				if (value == i) {
+					$.each(v, function (i2, v2) {
+						$.each(v2, function (i3, v3) {
+							if (v3.name !== undefined) {
+								var colorName = colorNames[i2];
+								var newColor = window.chartColors[colorName];
+								var newDataset = {
+									label: v3.name,
+									backgroundColor: newColor,
+									borderColor: newColor,
+									data: v3.values,
+									type: 'line',
+									pointRadius: 0,
+									fill: false,
+									lineTension: 0,
+									borderWidth: 2
+								};
+								chart.config.data.datasets.push(newDataset);
+							}
+						})
+					})
+				}
+			});
+			chart.config.data.datasets.splice(0, 1);
+			chart.update();
+			if (chart.config.data.datasets.length == 0) {
+				combineChart.pop()
+				chart.destroy()
+				$('[name="combine' + value + '"]').remove();
+			}
+		});
+		if (combineChart.length == 1) {
+			combineChart[0].canvas.parentNode.style.height = '600px';
+		}
+	}
+
+	function clearChart() {
+		$.each(compareChart, function (index, value) {
+			value.destroy()
+		});
+		$.each(combineChart, function (index, value) {
+			value.destroy()
+		});
+		$.each(separateChart, function (index, value) {
+			value.destroy()
+		});
+		compareChart = [];
+		combineChart = [];
+		separateChart = [];
+		$('#compare').html('');
+		$('#combine').html('');
+		$('#separate').html('');
+	}
+
+	function getAndLoad() {
+		clearChart();
+
+		if (startTime == undefined) {
+			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
+		}
+		console.log(parseInt(startTime)+":::::"+parseInt(endTime))
+		console.log({
+					data: JSON.stringify(dashboardArray),
+					unit: parseInt(unit),
+					startTime: parseInt(startTime),
+					endTime: parseInt(endTime),
+					graphType: "CompareAndSeparate"
+				});
+		$.ajax({
+				url: "{{ url_for('Private.dashboard_list') }}",
+				method: "POST",
+				data: {
+					data: JSON.stringify(dashboardArray),
+					unit: parseInt(unit),
+					startTime: parseInt(startTime),
+					endTime: parseInt(endTime),
+					graphType: "CompareAndSeparate"
+				}
+			}).then(function (res) {
+				console.log(res)
+				loadSeparate(res[0]);
+				loadCompare(res[0]);
+				loadCombine(res[1]);
+				if(legends!=undefined && titles!=undefined){
+					updateLegend(titles,legends)
+				}
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
+
+	let checkFullScreen = false;
+	let timerId;
+
+	function fullscreen() {
+		if (checkFullScreen == false) {
+			$('#dashGraph').css({
+				position: 'fixed',
+				top: 0,
+				right: 0,
+				bottom: 0,
+				left: 0,
+				padding: 3,
+				zIndex: 999
+			});
+			checkFullScreen = true;
+		} else {
+			$('#dashGraph').css({
+				position: 'static',
+				top: 'auto',
+				right: 'auto',
+				bottom: 'auto',
+				left: 'auto',
+				zIndex: 'auto'
+			});
+			checkFullScreen = false;
+		}
+	}
+
+	let titles;
+	let legends;
+	const queryString = window.location.search;
+	if (queryString !== "") {
+		fullscreen()
+		const urlParams = new URLSearchParams(queryString);
+		hash = urlParams.get('hash')
+		$.ajax({
+				url: "{{ url_for('Private.get_setting') }}",
+				method: "GET",
+				data: {"hash": hash}
+			}).then(function (res) {
+				setParameter(res.data)
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+	}
+
+	function setParameter(data) {
+		parameter = JSON.parse(data).postData;
+		dashboardArray = parameter.dashboardArray;
+		startTime = parameter.startTime;
+		endTime = parameter.endTime;
+		unit = parameter.unit;
+		mode = parameter.mode;
+		autoUpdate = parameter.autoUpdate;
+
+		titles = [];
+		legends = [];
+
+		$.each(parameter.legends, function (i, v) {
+			titles.push(v.title);
+			$.each(v.legend, function (i1, v1){
+				legends.push(v1);
+			})
+		})
+
+		if (mode == "compare") {
+			showCompare()		
+		} else if (mode == "combine") {
+			showCombine()
+		} else if (mode == "separate") {
+			showSeparate()
+		}
+
+		getAndLoad();
+		if (autoUpdate == true) {
+			refresh()
+		}
+	}
+
+	function shuffle(arra1) {
+		var ctr = arra1.length,
+			temp, index;
+		// While there are elements in the array
+		while (ctr > 0) {
+			// Pick a random index
+			index = Math.floor(Math.random() * ctr);
+			// Decrease ctr by 1
+			ctr--;
+			// And swap the last element with it
+			temp = arra1[ctr];
+			arra1[ctr] = arra1[index];
+			arra1[index] = temp;
+		}
+		return arra1;
+	}
+
+	function refresh() {
+		if (checkRefresh == false) {
+			$(this).removeClass('btn-outline-success').addClass('btn-outline-danger');
+			endTime = new Date(moment()).getTime()/1000;
+			getAndLoad()
+			timerId = setInterval(() => {
+				getAndLoad()
+			}, updateTime);
+			checkRefresh = true;
+		} else {
+			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
+			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
+			clearInterval(timerId);
+			checkRefresh = false;
+		}
+		$("#autoUpdateTable").text(checkRefresh);
+	};
+
+	$('#fullscreen').click(function () {
+		fullscreen();
+	});
+
+	$('#autoRefresh').click(function () {
+		refresh()
+	});
+
+	
+
+	function updateLegend(titles,legends){
+		var chartArray = [compareChart, combineChart, separateChart]
+		var chartIndex
+		if (mode == "compare") chartIndex = 0;
+		if (mode == "combine") chartIndex = 1;
+		if (mode == "separate") chartIndex = 2;
+		var countLegend = 0;
+		
+				$.each(chartArray[chartIndex], function (i, v) {
+					v.config.options.title.text = titles[i]
+					$.each(v.config.data.datasets, function (i2, v2) {
+						v2.label = legends[countLegend];
+						countLegend++;
+					});
+					v.update();
+				});
+	}
+</script>
+{% endblock %}

@@ -48,6 +48,18 @@ cursor:pointer;
 
 							</select>
 						</div>
+					</div>
+					<div class="form-row">
+						<div class="col-md-12 mb-4">
+							<label for="sensorType">Type</label>
+							<select class="custom-select" id="sensorType">
+								<option selected value="allType">All Type</option>
+								<option value="all">All</option>
+								<option value="light">Light</option>
+								<option value="air">Air Conditioner</option>
+								<option value="plug">Electricity</option>
+							</select>
+						</div>
 						<label for="sName">Sensor Type :</label>
 					</div>
 					<div class="form-row">
@@ -392,7 +404,8 @@ cursor:pointer;
 					roomToAdd = {
 						'type': 'room',
 						'id': $('#room').val(),
-						'name': $("#room option:selected").html()
+						'name': $("#room option:selected").html(),
+						'sensorType':$("#sensorType option:selected").val()
 					};
 					if (hasDup(roomToAdd) === false) {
 						dashboardArray.push(roomToAdd);
@@ -401,7 +414,8 @@ cursor:pointer;
 					floorToAdd = {
 						'type': 'floor',
 						'id': $('#floor').val(),
-						'name': $("#floor option:selected").html()
+						'name': $("#floor option:selected").html(),
+						'sensorType':$("#sensorType option:selected").val()
 					};
 					if (hasDup(floorToAdd) === false) {
 						dashboardArray.push(floorToAdd);
@@ -411,7 +425,8 @@ cursor:pointer;
 				buildingToAdd = {
 					'type': 'building',
 					'id': $('#building').val(),
-					'name': $("#building option:selected").html()
+					'name': $("#building option:selected").html(),
+					'sensorType':$("#sensorType option:selected").val()
 				};
 				if (hasDup(buildingToAdd) === false) {
 					dashboardArray.push(buildingToAdd);
@@ -652,6 +667,21 @@ cursor:pointer;
 		}
 	};
 
+	window.chartColors = {
+      red: 'rgb(255, 99, 132)',
+      orange: 'rgb(255, 159, 64)',
+      yellow: 'rgb(255, 205, 86)',
+      green: 'rgb(75, 192, 192)',
+      blue: 'rgb(54, 162, 235)',
+      purple: 'rgb(153, 102, 255)',
+      grey: 'rgb(169,171,176)',
+	  lightBlue: 'rgb(153,255,255)',
+	  violet: 'rgb(229,204,255)',
+	  pink: 'rgb(255,153,204)',
+	  lime: 'rgb(178,255,102)',
+	  black: 'rgb(0,0,0)',
+	  brown: 'rgb(153,76,0)',
+    };
 	let colorTmp = Object.keys(window.chartColors);
 	let compareChart = [];
 	let combineChart = [];
@@ -728,21 +758,22 @@ cursor:pointer;
 	}
 
 	function loadSeparate(data) {
+		checkName = [];
 		$.each(data, function (index, value) {
 			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
-				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name + "-" + v +
-					"\"><canvas class=\"card shadow\" id=\"separate-" + value.name + "-" + v +
+				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name+ index + "-" + v +
+					"\"><canvas class=\"card shadow\" id=\"separate-" + value.name + index + "-" + v +
 					"\"></canvas></div>"
 				$("#separate").append(divChart);
-				var ctxTmp = document.getElementById("separate" + "-" + value.name + "-" + v).getContext(
+				var ctxTmp = document.getElementById("separate" + "-" + value.name + index + "-" + v).getContext(
 					'2d');
 				var cfgTmp = JSON.parse(JSON.stringify(cfg));
 				cfgTmp.options.scales.yAxes[0].scaleLabel.labelString = v
 				var colorName = colorNames[cfgTmp.data.datasets.length % colorNames.length + index];
 				var newColor = window.chartColors[colorName];
 				var chart = new Chart(ctxTmp, cfgTmp);
-				chart.canvas.parentNode.style.height = '500px';
-				chart.canvas.parentNode.style.width = '600px';
+				chart.canvas.parentNode.style.height = '375px';
+				chart.canvas.parentNode.style.width = '450px';
 				separateChart.push(chart);
 				$.each(value, function (i2, v2) {
 					if (i2 == v) {
@@ -771,14 +802,14 @@ cursor:pointer;
 				if (chart.config.data.datasets.length == 0) {
 					chart.destroy()
 					separateChart.pop()
-					$('[name="separate-' + value.name + '-' + v + '"]').remove();
+					$('[name="separate-' + value.name + index + '-' + v + '"]').remove();
 				}
 			});
 		});
 	if(separateChart.length>=7){
 		$.each(separateChart, function (i, v) {
-			v.canvas.parentNode.style.height = '300px';
-			v.canvas.parentNode.style.width = '400px';
+			v.canvas.parentNode.style.height = '225px';
+			v.canvas.parentNode.style.width = '300px';
 		});
 	}
 	else if(separateChart.length<=2){
@@ -918,36 +949,6 @@ cursor:pointer;
 	}
 	let titles;
 	let legends;
-	const queryString = window.location.search;
-	if (queryString !== "") {
-		fullscreen()
-		const urlParams = new URLSearchParams(queryString);
-		for (var i = 0; i < urlParams.getAll('id').length; i++) {
-			dashboardArray.push({
-				'type': urlParams.getAll('type')[i],
-				'id': urlParams.getAll('id')[i],
-				'name': urlParams.getAll('name')[i]
-			})
-		}
-		startTime = urlParams.get('startTime')
-		endTime = urlParams.get('endTime')
-		unit = urlParams.get('unit')
-		mode = urlParams.get('mode')
-		autoUpdate = urlParams.get('autoUpdate')
-		if (mode == "compare") {
-			showCompare()		
-		} else if (mode == "combine") {
-			showCombine()
-		} else if (mode == "separate") {
-			showSeparate()
-		}
-		getAndLoad();
-		titles = urlParams.getAll('titles')
-		legends = urlParams.getAll('legends')
-		if (autoUpdate == true) {
-			refresh()
-		}
-	}
 
 	function copyToClipboard() {
 		var copyText = document.getElementById("getLink");
@@ -974,24 +975,44 @@ cursor:pointer;
 				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 			}
-			param = "?";
-			$.each(dashboardArray, function (i, v) {
-				param += "id=" + encodeURIComponent(v.id) + "&"
-				param += "type=" + encodeURIComponent(v.type) + "&"
-				param += "name=" + encodeURIComponent(v.name) + "&"
-			});
-			param += "startTime=" + startTime + "&endTime=" + endTime + "&unit=" + $("#unit").val() + "&mode=" + mode +"&autoUpdate=" + checkRefresh + "&"
+			param = "?hash=";
 			var chartArray = [compareChart, combineChart, separateChart]
 			if (mode == "compare") chartIndex = 0;
 			if (mode == "combine") chartIndex = 1;
 			if (mode == "separate") chartIndex = 2;
+			let legends = [];
 			$.each(chartArray[chartIndex], function (i, v) {
-				param += "titles=" + v.config.options.title.text +"&"
+				var tmpLegends={"title":v.config.options.title.text,"legend":[]};
 				$.each(v.config.data.datasets, function (i2, v2) {
-					param += "legends=" + v2.label +"&"
+					tmpLegends.legend.push(v2.label);
 				});
+				legends.push(tmpLegends);
 			});
-			var swal_html = '<div class="card shadow mb-4">\
+			postData = {"dashboardArray":dashboardArray,
+						"startTime":startTime,
+						"endTime":endTime,
+						"unit":$("#unit").val(),
+						"mode":mode,
+						"autoUpdate":checkRefresh,
+						"legends":legends};
+
+			var swal_html = "";
+			$.ajax({
+				url: "{{ url_for('Private.set_setting') }}",
+				method: "POST",
+				data: {data:JSON.stringify({postData})}
+			}).then(function (res) {
+				linkShow(res.hash)
+			})
+			.catch(function (err) {
+				console.log(err);
+			});
+
+		}
+	});
+
+	function linkShow(hash) {
+		swal_html = '<div class="card shadow mb-4">\
     			<div class="card-body">\
         		<div class="table-responsive">\
             	<table class="table table-bordered" id="sensor_list" width="100%" cellspacing="0">\
@@ -1023,7 +1044,7 @@ cursor:pointer;
         </div>\
 		<div class="form-group">\
     <label for="getLink">Link</label>\
-    <input type="text" class="form-control" id="getLink" value="' + window.location.href + param + '">\
+    <input type="text" class="form-control" id="getLink" value="' + window.location.href.split("/")[0]+"//"+window.location.href.split("/")[2]+"/graph_show" + param + hash+'">\
   </div>\
   <button onclick="copyToClipboard()" class="btn btn-success">Get link</button>\
     </div>\
@@ -1035,8 +1056,7 @@ cursor:pointer;
 				confirmButtonColor: '#d33',
 				confirmButtonText: 'Close',
 			});
-		}
-	});
+	}
 
 	function shuffle(arra1) {
 		var ctr = arra1.length,
