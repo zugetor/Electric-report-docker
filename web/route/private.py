@@ -1,12 +1,11 @@
-from flask import Blueprint, jsonify, request, escape, session
+from flask import Blueprint, jsonify, request, escape, session, Response
 from extensions import query, html_escape, toHourandMin
 from login import login_required
-import json, time
+import json, time, hashlib
 
 app = Blueprint('Private', __name__)
 
 @app.route('/dashboard_list/',methods=['POST'])
-@login_required
 def dashboard_list():
 	data = json.loads(request.form.get('data'))
 	unit = request.form.get('unit')
@@ -236,5 +235,29 @@ def notify_token_edit():
 	
 @app.route('/token/',methods=['GET'])
 @login_required
-def getToken():
+def get_token():
 	return jsonify(query.notification.getToken())
+
+@app.route('/link',methods=['GET'])
+def get_setting():
+	data = request.args.get('hash')
+	res = query.getSetting(data)
+	if(res == None):
+		return jsonify({"data": "","hash": ""})
+	return jsonify({"data": res["data"],"hash": res["hash"]})
+
+@app.route('/link',methods=['POST'])
+@login_required
+def set_setting():
+	data = request.form.get('data')
+	try:
+		data = json.dumps(json.loads(data)) #minify json
+	except:
+		print("JSON Decode error")
+	digest = hashlib.md5(data.encode()).hexdigest()
+	if(data == "" or data == None):
+		return Response('{"Code":"400 Bad request"}', status=400, content_type="application/json")
+	res = query.newSetting(data, digest)
+	# if(res.inserted_id == "" or res.inserted_id == None):
+	# 	return Response('{"Code":"500 Internal Server Error"}', status=500, content_type="application/json")
+	return jsonify({"Code": "200 OK", "hash": digest})

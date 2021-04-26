@@ -53,16 +53,20 @@ class dbHandler():
 		})
 		return ['topic', result["topic"], 'MAC', result["message"]["MAC"]]
 
-	def getLastCT(self,sid,_type="ct"):
+	def getLastVAL(self,sid,mac,_type="ct"):
 		createdAt = 0
-		res = {}
-		for t in self.getTable({"sensor_type":_type}):
-			rawCT = self._db[t].find({"message.s": sid}).sort("created_at", -1).limit(1)
-			for CT in rawCT:
-				if(CT["created_at"] > createdAt):
-					res = CT
-					createdAt = CT["created_at"]
-		return res
+		res = None
+		query = {"message.MAC": mac}
+		if(_type.split("_") == "dm"):
+			query["message.s"] = sid
+		rawCT = self._db[_type].find(query).sort("created_at", -1).limit(1)
+		for CT in rawCT:
+			if(CT["created_at"] > createdAt):
+				res = CT
+				createdAt = CT["created_at"]
+		if(_type.split("_")[0] == "dm"):
+			return (res["message"]["AL1"] + res["message"]["AL2"] + res["message"]["AL3"]) / 3
+		return res["message"]["a"]
 
 	def getLastPIR(self,mac,_type="pir"):
 		createdAt = 0
@@ -132,7 +136,6 @@ def checkRule():
 					tmp = {'dow': daylst[weekday+1], "time":now1.hour,"date":now_date,
 							"room":[rname,rstatus],"floor":fname,"building":bname}
 					rsensor = query.getRoomSensor(rname)
-
 					for rtype in _rtype:
 						tmp[rtype["inf_name"]] = 0
 
@@ -142,12 +145,10 @@ def checkRule():
 							if(pir_tmp != {}):
 								tmp["pir"] += pir_tmp["message"]["status"]
 						else:
-							ct_tmp = db.getLastCT(s["inf_id"],s["inf_type"])
-							if(ct_tmp != {}):
-								tmp[s["inf_name"]] += ct_tmp["message"]["a"]
-					#print(tmp)
+							ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
+							if(ct_tmp != None):
+								tmp[s["inf_name"]] += ct_tmp
 					objects.append(tmp)
-
 		matched = evaluator.get_matching_objects(objects)
 
 		tokens = query.getToken()

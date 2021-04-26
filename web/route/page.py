@@ -102,6 +102,10 @@ def reset():
 @login_required
 def graph_view():
 	return render_template("graph_view.html")
+
+@app.route("/graph_show")
+def graph_show():
+	return render_template("graph_show.html")
     
 @app.route("/graph_view_tradingview")
 def graph_view_tradingview():
