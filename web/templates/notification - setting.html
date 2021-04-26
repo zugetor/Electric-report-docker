@@ -100,7 +100,7 @@
   });
 
   function getData(){
-  $.get("{{ url_for('Private.getToken') }}", function(data, status){
+  $.get("{{ url_for('Private.get_token') }}", function(data, status){
     if(parseInt(data[0].ntime)<60){
       $("#time").val(data[0].ntime);
       $("#unit").val("second");
