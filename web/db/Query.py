@@ -202,7 +202,6 @@ class Query:
 							{"$lookup":{"from": "ct_all","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_all"}},
 							{"$project":{"t":1,"y":{"$round":[{"$avg":[{"$first":"$ct_air.y"},{"$first":"$ct_plug.y"},{"$first":"$ct_all.y"},"$y"]},2]}}}
 							]
-							return pipeline
 							result = list(self.query._client.iot_data["ct_light"].aggregate(pipeline))
 							if(len(result)>0):
 								tmp[i]['ct'][0].update({"allType":{'name':'','values':[]}})
