@@ -80,7 +80,7 @@ class Query:
 					sensor = _cur.fetchall()
 					ct.append(sensor[0])
 					if(len(sensor) != 0):
-						pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.s":sensor[0]['inf_id'],"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"}}},{ "$sort": { '_id': 1 }},{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
+						pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.s":sensor[0]['inf_id'],"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"}}},{ "$sort": { '_id': 1 }},{"$addFields": { "y":{"$round":["$y",2]},"t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
 						result = list(self.query._client.iot_data[data[i]['type']].aggregate(pipeline))
 						if(len(result)>0):
 							tmp[i]['ct'][0].update({data[i]['type']:{'name':'','values':[]}})
@@ -94,7 +94,7 @@ class Query:
 					dm.append(sensor[0])
 					if(len(sensor) != 0):
 						for x in dmType:
-							pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x}}},{ "$sort": { '_id': 1 }},{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
+							pipeline = [{"$match": {"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },"message.MAC":sensor[0]['bomac']}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x}}},{ "$sort": { '_id': 1 }},{"$addFields": {"y":{"$round":["$y",2]}, "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{ "$unset": "_id" }]
 							result = list(self.query._client.iot_data[data[i]['type']].aggregate(pipeline))
 							if(len(result)>0):
 								if(x[0:2]=="VL"):
@@ -133,27 +133,33 @@ class Query:
 							dm.append(sensor[index])
 							bomac.append(sensor[index]['bomac'])
 						for x in dmType:
-							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "y":{"$round":["$y",2]},"t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 							if data[i]['sensorType'] == "allType":
-								for sType in sensorType:
-									result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
-									if(len(result)>0):
-										if(x[0:2]=="VL"):
-											tmp[i]['volt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
-											tmp[i]['volt'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
-											tmp[i]['volt'][int(x[-1])-1][sType]['values'].extend(result)
-										elif(x[0:2]=="AL"):
-											tmp[i]['amp'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
-											tmp[i]['amp'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
-											tmp[i]['amp'][int(x[-1])-1][sType]['values'].extend(result)
-										elif(x[0:1]=="P"):
-											tmp[i]['watt'][int(x[-1])-1].update({sType:{'name':'','values':[]}})
-											tmp[i]['watt'][int(x[-1])-1][sType].update({'name':name+"_"+x+"_"+sType})
-											tmp[i]['watt'][int(x[-1])-1][sType]['values'].extend(result)		
-										elif(x[0:2]=="AE"):
-											tmp[i]['ae'][0].update({sType:{'name':'','values':[]}})
-											tmp[i]['ae'][0][sType].update({'name':name+"_"+x+"_"+sType})
-											tmp[i]['ae'][0][sType]['values'].extend(result)
+								lookupPipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$match": {"$expr":{"$eq":["$t","$$tt"]}}},{"$unset": "_id" }]
+								pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" },
+								{"$lookup":{"from": "dm_plug","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "dm_plug"}},
+								{"$lookup":{"from": "dm_light","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "dm_air"}},
+								{"$lookup":{"from": "dm_all","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "dm_all"}},
+								{"$project":{"t":1,"y":{"$round":[{"$avg":[{"$first":"$dm_light.y"},{"$first":"$dm_plug.y"},{"$first":"$dm_all.y"},"$y"]},2]}}}
+								]
+								result = list(self.query._client.iot_data["dm_air"].aggregate(pipeline))
+								if(len(result)>0):
+									if(x[0:2]=="VL"):
+										tmp[i]['volt'][int(x[-1])-1].update({"allType":{'name':'','values':[]}})
+										tmp[i]['volt'][int(x[-1])-1]["allType"].update({'name':name+"_"+x+"_allType"})
+										tmp[i]['volt'][int(x[-1])-1]["allType"]['values'].extend(result)
+									elif(x[0:2]=="AL"):
+										tmp[i]['amp'][int(x[-1])-1].update({"allType":{'name':'','values':[]}})
+										tmp[i]['amp'][int(x[-1])-1]["allType"].update({'name':name+"_"+x+"_allType"})
+										tmp[i]['amp'][int(x[-1])-1]["allType"]['values'].extend(result)
+									elif(x[0:1]=="P"):
+										tmp[i]['watt'][int(x[-1])-1].update({"allType":{'name':'','values':[]}})
+										tmp[i]['watt'][int(x[-1])-1]["allType"].update({'name':name+"_"+x+"_allType"})
+										tmp[i]['watt'][int(x[-1])-1]["allType"]['values'].extend(result)		
+									elif(x[0:2]=="AE"):
+										tmp[i]['ae'][0].update({"allType":{'name':'','values':[]}})
+										tmp[i]['ae'][0]["allType"].update({'name':name+"_"+x+"_allType"})
+										tmp[i]['ae'][0]["allType"]['values'].extend(result)
 							elif data[i]['sensorType'] != "allType":
 								result = list(self.query._client.iot_data["dm_"+data[i]['sensorType']].aggregate(pipeline))
 								if(len(result)>0):
@@ -187,14 +193,21 @@ class Query:
 							ct.append(sensor[index])
 							bomac.append(sensor[index]['bomac'])
 							sid.append(sensor[index]['inf_id'])
-						pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+						pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "y":{"$round":["$y",2]},"t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 						if data[i]['sensorType'] == "allType":
-							for sType in sensorType:
-								result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
-								if(len(result)>0):
-									tmp[i]['ct'][0].update({sType:{'name':'','values':[]}})
-									tmp[i]['ct'][0][sType].update({'name':name+"_CT_"+sType})
-									tmp[i]['ct'][0][sType]['values'].extend(result)
+							lookupPipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$match": {"$expr":{"$eq":["$t","$$tt"]}}},{"$unset": "_id" }]
+							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" },
+							{"$lookup":{"from": "ct_plug","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_plug"}},
+							{"$lookup":{"from": "ct_air","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_air"}},
+							{"$lookup":{"from": "ct_all","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_all"}},
+							{"$project":{"t":1,"y":{"$round":[{"$avg":[{"$first":"$ct_air.y"},{"$first":"$ct_plug.y"},{"$first":"$ct_all.y"},"$y"]},2]}}}
+							]
+							return pipeline
+							result = list(self.query._client.iot_data["ct_light"].aggregate(pipeline))
+							if(len(result)>0):
+								tmp[i]['ct'][0].update({"allType":{'name':'','values':[]}})
+								tmp[i]['ct'][0]["allType"].update({'name':name+"_CT_allType"})
+								tmp[i]['ct'][0]["allType"]['values'].extend(result)
 						elif data[i]['sensorType'] != "allType":
 							result = list(self.query._client.iot_data["ct_"+data[i]['sensorType']].aggregate(pipeline))
 							if(len(result)>0):
@@ -210,7 +223,7 @@ class Query:
 				for index in range(len(dm)):
 					bomac.append(dm[index]['bomac'])
 				for x in dmType:
-					pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+					pipeline = [{"$match": {"message.MAC":{"$in":bomac },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message."+x},}},{ "$sort": { '_id': 1 } },{"$addFields": { "y":{"$round":["$y",2]},"t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 					for sType in sensorTypeCombine:
 						result = list(self.query._client.iot_data["dm_"+sType].aggregate(pipeline))
 						if(len(result)>0):
@@ -236,7 +249,7 @@ class Query:
 				for index in range(len(ct)):
 					bomac.append(ct[index]['bomac'])
 					sid.append(ct[index]['inf_id'])
-				pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
+				pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "y":{"$round":["$y",2]},"t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" }]
 				for sType in sensorTypeCombine:
 					result = list(self.query._client.iot_data["ct_"+sType].aggregate(pipeline))
 					if(len(result)>0):
