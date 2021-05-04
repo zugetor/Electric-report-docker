@@ -7,6 +7,19 @@ background-color: rgba(192,192,192,0.5);
 tr[role="row"]:hover {
 cursor:pointer;
 }
+[class*='close-'] {
+	color: #e74a73;
+	font: 14px/100% arial, sans-serif;
+	position: absolute;
+	right: 20px;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #fff;
+	top: 5px;
+	z-index: 1;
+  }
+.close-thik:after {
+	content: '✖'; /* UTF-8 symbol */
+  }
 {% endblock %}
 {% block content %}
 
@@ -706,10 +719,17 @@ cursor:pointer;
 		$('#separate').html('');
 	}
 
+	var deletedGraph = [];
+
+	function delGraph(thisElm){
+		deletedGraph.push($(thisElm).parent('div').attr("name"));
+		$(thisElm).parent('div').remove();
+	}
+
 	function loadCompare(data) {
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
 			var divChart = "<div class=\"col mb-5\" name=\"compare" + value +
-				"\"><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
+				"\"><div onclick=\"delGraph(this)\" class=\"close-thik\"></div><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
 			$("#compare").append(divChart);
 			var ctxTmp = document.getElementById('compare' + value).getContext('2d');
 			var cfgTmp = JSON.parse(JSON.stringify(cfg));
@@ -762,7 +782,7 @@ cursor:pointer;
 		$.each(data, function (index, value) {
 			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
 				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name+ index + "-" + v +
-					"\"><canvas class=\"card shadow\" id=\"separate-" + value.name + index + "-" + v +
+					"\"><div onclick=\"delGraph(this)\" class=\"close-thik\"></div><canvas class=\"card shadow\" id=\"separate-" + value.name + index + "-" + v +
 					"\"></canvas></div>"
 				$("#separate").append(divChart);
 				var ctxTmp = document.getElementById("separate" + "-" + value.name + index + "-" + v).getContext(
@@ -823,7 +843,7 @@ cursor:pointer;
 	function loadCombine(data) {
 		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
 			var divChart = "<div class=\"col mb-5\" name=\"combine" + value +
-				"\"><canvas class=\"card shadow\" id=\"combine" +
+				"\"><div onclick=\"delGraph(this)\" class=\"close-thik\"></div><canvas class=\"card shadow\" id=\"combine" +
 				value + "\"></canvas></div>";
 			$("#combine").append(divChart);
 			var ctxTmp = document.getElementById('combine' + value).getContext('2d');
@@ -994,7 +1014,8 @@ cursor:pointer;
 						"unit":$("#unit").val(),
 						"mode":mode,
 						"autoUpdate":checkRefresh,
-						"legends":legends};
+						"legends":legends,
+						"delGraph":deletedGraph};
 
 			var swal_html = "";
 			$.ajax({
