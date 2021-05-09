@@ -107,10 +107,42 @@ def checkRule():
 	db = dbHandler()
 	query = db.getQuery()
 	print("Checking Rule")
-	daylst = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
+	daylst = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
 	allrule = query.getRule()
 	_rtype = query.getAllType()
+
+	weekday = datetime.datetime.today().weekday()
+	tz = pytz.timezone(getTimeZone())
+	now1 = datetime.datetime.now(tz)
+	now_date = now1.strftime("%d/%m/%Y")	
+	objects = []
+
+	all_room_list = query.all_room_list()
+	for building in all_room_list:
+		bname = building["bname"]
+		for floor in building["floor"]:
+			fname = floor["fname"]
+			for room in floor["room"]:
+				rname = room["rname"]
+				rstatus = room["rstatus"]
+				tmp = {'dow': daylst[weekday], "time":now1.hour,"date":now_date,
+						"room":[rname,rstatus],"floor":fname,"building":bname}
+				rsensor = query.getRoomSensor(rname)
+				for rtype in _rtype:
+					tmp[rtype["inf_name"]] = 0
+
+				for s in rsensor:
+					if s["inf_type"] == "pir":
+						pir_tmp = db.getLastPIR(s["bomac"])
+						if(pir_tmp != {}):
+							tmp["pir"] += pir_tmp["message"]["status"]
+					else:
+						ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
+						if(ct_tmp != None):
+							tmp[s["inf_name"]] += ct_tmp
+				objects.append(tmp)
+					
 	for rule in allrule:
 		rule_name = rule["rname"]
 		rjson = rule["rjson"]
@@ -118,39 +150,10 @@ def checkRule():
 		rule_json = json.loads(rjson)
 		evaluator = Evaluator(rule_json)
 
-		weekday = datetime.datetime.today().weekday()
-		tz = pytz.timezone(getTimeZone())
-		now1 = datetime.datetime.now(tz)
-		now_date = now1.strftime("%d/%m/%Y")
-
-		objects = []
-
-		all_room_list = query.all_room_list()
-		for building in all_room_list:
-			bname = building["bname"]
-			for floor in building["floor"]:
-				fname = floor["fname"]
-				for room in floor["room"]:
-					rname = room["rname"]
-					rstatus = room["rstatus"]
-					tmp = {'dow': daylst[weekday+1], "time":now1.hour,"date":now_date,
-							"room":[rname,rstatus],"floor":fname,"building":bname}
-					rsensor = query.getRoomSensor(rname)
-					for rtype in _rtype:
-						tmp[rtype["inf_name"]] = 0
-
-					for s in rsensor:
-						if s["inf_type"] == "pir":
-							pir_tmp = db.getLastPIR(s["bomac"])
-							if(pir_tmp != {}):
-								tmp["pir"] += pir_tmp["message"]["status"]
-						else:
-							ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
-							if(ct_tmp != None):
-								tmp[s["inf_name"]] += ct_tmp
-					objects.append(tmp)
 		matched = evaluator.get_matching_objects(objects)
-
+		print(rule_name)
+		print(matched)
+		print("")
 		tokens = query.getToken()
 		all_messages = []
 		line_message = ""
@@ -163,7 +166,6 @@ def checkRule():
 				all_messages.append(line_message)
 				line_message = ""
 		all_messages.append(line_message)
-
 		for m in all_messages:
 			for token in tokens:
 				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
