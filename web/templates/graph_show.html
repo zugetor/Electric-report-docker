@@ -26,6 +26,7 @@ cursor:pointer;
 	let mode;
 	let unit;
 	let autoUpdate;
+	let deletedGraph;
 
 	function showCompare() {
 		mode = "compare"
@@ -381,6 +382,7 @@ cursor:pointer;
 				if(legends!=undefined && titles!=undefined){
 					updateLegend(titles,legends)
 				}
+				updateDelGraph();
 			})
 			.catch(function (err) {
 				console.log(err);
@@ -434,6 +436,8 @@ cursor:pointer;
 			});
 	}
 
+
+
 	function setParameter(data) {
 		parameter = JSON.parse(data).postData;
 		dashboardArray = parameter.dashboardArray;
@@ -442,6 +446,7 @@ cursor:pointer;
 		unit = parameter.unit;
 		mode = parameter.mode;
 		autoUpdate = parameter.autoUpdate;
+		deletedGraph = parameter.delGraph
 
 		titles = [];
 		legends = [];
@@ -462,6 +467,7 @@ cursor:pointer;
 		}
 
 		getAndLoad();
+		
 		if (autoUpdate == true) {
 			refresh()
 		}
@@ -529,5 +535,12 @@ cursor:pointer;
 					v.update();
 				});
 	}
+
+	function updateDelGraph(){
+		$.each(deletedGraph, function (i, v) {
+			$('[name="' + v + '"]').remove();
+		});			
+	};
+
 </script>
 {% endblock %}
