@@ -547,8 +547,8 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
-		def getToken(self):
-			res = self.query.fetchAll("SELECT * FROM notify")
+		def getToken(self,uid):
+			res = self.query.fetchAll("SELECT * FROM notify where user_id= %s;",(uid))
 			return res
 
 		def updateNotiTime(self,uid,unitSec):
