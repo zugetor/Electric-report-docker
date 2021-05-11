@@ -163,7 +163,7 @@ def checkRule():
 				line_message = ""
 			all_messages.append(line_message)
 	
-    tokens = query.getToken()
+	tokens = query.getToken()
 	all_messages = [messages for messages in all_messages if messages != ""]
 	for token in tokens:
 		if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
