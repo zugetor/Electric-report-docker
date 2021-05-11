@@ -142,7 +142,7 @@ def checkRule():
 						if(ct_tmp != None):
 							tmp[s["inf_name"]] += ct_tmp
 				objects.append(tmp)
-					
+	all_messages = []	
 	for rule in allrule:
 		rule_name = rule["rname"]
 		rjson = rule["rjson"]
@@ -151,11 +151,7 @@ def checkRule():
 		evaluator = Evaluator(rule_json)
 
 		matched = evaluator.get_matching_objects(objects)
-		print(rule_name)
-		print(matched)
-		print("")
-		tokens = query.getToken()
-		all_messages = []
+		
 		line_message = ""
 		for idx,match in enumerate(matched):
 			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
@@ -165,11 +161,14 @@ def checkRule():
 			if idx % 3 == 0:
 				all_messages.append(line_message)
 				line_message = ""
-		all_messages.append(line_message)
-		for m in all_messages:
-			for token in tokens:
-				if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
-					linenotify(m,token["ntoken"],True,query)
+			all_messages.append(line_message)
+	
+    tokens = query.getToken()
+	all_messages = [messages for messages in all_messages if messages != ""]
+	for token in tokens:
+		if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
+			for m in all_messages:
+				linenotify(m,token["ntoken"],True,query)
 
 def checkSchedule():
 	db = dbHandler()
