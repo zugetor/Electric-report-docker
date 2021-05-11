@@ -236,7 +236,7 @@ def notify_token_edit():
 @app.route('/token/',methods=['GET'])
 @login_required
 def get_token():
-	return jsonify(query.notification.getToken())
+	return jsonify(query.notification.getToken(session['id']))
 
 @app.route('/link',methods=['GET'])
 def get_setting():
