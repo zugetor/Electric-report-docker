@@ -919,7 +919,7 @@ cursor:pointer;
 					graphType: "CompareAndSeparate"
 				}
 			}).then(function (res) {
-				console.log(res)
+				// console.log(res)
 				loadSeparate(res[0]);
 				loadCompare(res[0]);
 				loadCombine(res[1]);
@@ -1098,10 +1098,10 @@ cursor:pointer;
 			$('#autoRefresh').removeClass('btn-outline-success').addClass('btn-outline-danger');
 			endTime = new Date(moment()).getTime()/1000;
 			getAndLoad()
-			console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+			// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			timerId = setInterval(() => {
 				getAndLoad()
-				console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+				// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			}, updateTime);
 			checkRefresh = true;
 		} else {
