@@ -229,6 +229,8 @@ cursor:pointer;
 							<option value="3600">1hours</option>
 							<option value="43200">12hours</option>
 							<option value="86400">1day</option>
+							<option value="1296000">15days</option>
+							<option value="2592000">1month</option>
 						</select>
 
 					</div>
@@ -288,7 +290,7 @@ cursor:pointer;
 
 	$("#sTimeTable").text(moment().subtract(1, 'days').format('YYYY-MM-DD hh:mm:ss'));
 	$("#eTimeTable").text(moment().format('YYYY-MM-DD hh:mm:ss'));
-	$("#unitTable").text($("#unit").val());
+	$("#unitTable").text($( "#unit option:selected" ).text());
 	$("#autoUpdateTable").text(checkRefresh);
 	$("#modeTable").html('<span class="badge badge-secondary">' + mode + '</span>');
 
@@ -457,10 +459,11 @@ cursor:pointer;
 
 
 	var unit = $("#unit").val();
-	var updateTime = ""
+	var updateTime = 300000
 	$("#unit").change(function () {
 		unit = $("#unit").val();
-		$("#unitTable").text($("#unit").val());
+		$("#unitTable").text($( "#unit option:selected" ).text());
+		updateTime = $("#unit").val()*1000;
 	});
 
 	$("#compare").hide();
@@ -897,14 +900,14 @@ cursor:pointer;
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
-		console.log(parseInt(startTime)+":::::"+parseInt(endTime))
-		console.log({
-					data: JSON.stringify(dashboardArray),
-					unit: parseInt(unit),
-					startTime: parseInt(startTime),
-					endTime: parseInt(endTime),
-					graphType: "CompareAndSeparate"
-				});
+		// console.log(parseInt(startTime)+":::::"+parseInt(endTime))
+		// console.log({
+		// 			data: JSON.stringify(dashboardArray),
+		// 			unit: parseInt(unit),
+		// 			startTime: parseInt(startTime),
+		// 			endTime: parseInt(endTime),
+		// 			graphType: "CompareAndSeparate"
+		// 		});
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
@@ -931,12 +934,6 @@ cursor:pointer;
 	
 
 	document.getElementById('update').addEventListener('click', function () {
-
-		if(unit == "300") updateTime=300000
-		if(unit == "1800") updateTime=1800000
-		if(unit == "3600") updateTime=3600000
-		if(unit == "43200") updateTime=43200000
-		if(unit == "86400") updateTime=86400000
 		getAndLoad();
 	});
 
@@ -1098,16 +1095,18 @@ cursor:pointer;
 
 	function refresh() {
 		if (checkRefresh == false) {
-			$(this).removeClass('btn-outline-success').addClass('btn-outline-danger');
+			$('#autoRefresh').removeClass('btn-outline-success').addClass('btn-outline-danger');
 			endTime = new Date(moment()).getTime()/1000;
 			getAndLoad()
+			console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			timerId = setInterval(() => {
 				getAndLoad()
+				console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			}, updateTime);
 			checkRefresh = true;
 		} else {
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
-			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
+			$('#autoRefresh').removeClass('btn-outline-danger').addClass('btn-outline-success');
 			clearInterval(timerId);
 			checkRefresh = false;
 		}
