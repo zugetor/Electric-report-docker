@@ -25,8 +25,9 @@ cursor:pointer;
 	let endTime;
 	let mode;
 	let unit;
-	let autoUpdate;
 	let deletedGraph;
+	let checkRefresh;
+	let updateTime;
 
 	function showCompare() {
 		mode = "compare"
@@ -356,14 +357,14 @@ cursor:pointer;
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
-		console.log(parseInt(startTime)+":::::"+parseInt(endTime))
-		console.log({
-					data: JSON.stringify(dashboardArray),
-					unit: parseInt(unit),
-					startTime: parseInt(startTime),
-					endTime: parseInt(endTime),
-					graphType: "CompareAndSeparate"
-				});
+		// console.log(parseInt(startTime)+":::::"+parseInt(endTime))
+		// console.log({
+		// 			data: JSON.stringify(dashboardArray),
+		// 			unit: parseInt(unit),
+		// 			startTime: parseInt(startTime),
+		// 			endTime: parseInt(endTime),
+		// 			graphType: "CompareAndSeparate"
+		// 		});
 		$.ajax({
 				url: "{{ url_for('Private.dashboard_list') }}",
 				method: "POST",
@@ -375,7 +376,7 @@ cursor:pointer;
 					graphType: "CompareAndSeparate"
 				}
 			}).then(function (res) {
-				console.log(res)
+				// console.log(res)
 				loadSeparate(res[0]);
 				loadCompare(res[0]);
 				loadCombine(res[1]);
@@ -445,8 +446,9 @@ cursor:pointer;
 		endTime = parameter.endTime;
 		unit = parameter.unit;
 		mode = parameter.mode;
-		autoUpdate = parameter.autoUpdate;
+		checkRefresh = parameter.autoUpdate;
 		deletedGraph = parameter.delGraph
+		updateTime = unit*1000
 
 		titles = [];
 		legends = [];
@@ -465,12 +467,13 @@ cursor:pointer;
 		} else if (mode == "separate") {
 			showSeparate()
 		}
-
-		getAndLoad();
 		
-		if (autoUpdate == true) {
+		if (checkRefresh == true) {
 			refresh()
+		}else{
+			getAndLoad();
 		}
+
 	}
 
 	function shuffle(arra1) {
@@ -489,34 +492,6 @@ cursor:pointer;
 		}
 		return arra1;
 	}
-
-	function refresh() {
-		if (checkRefresh == false) {
-			$(this).removeClass('btn-outline-success').addClass('btn-outline-danger');
-			endTime = new Date(moment()).getTime()/1000;
-			getAndLoad()
-			timerId = setInterval(() => {
-				getAndLoad()
-			}, updateTime);
-			checkRefresh = true;
-		} else {
-			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
-			$(this).removeClass('btn-outline-danger').addClass('btn-outline-success');
-			clearInterval(timerId);
-			checkRefresh = false;
-		}
-		$("#autoUpdateTable").text(checkRefresh);
-	};
-
-	$('#fullscreen').click(function () {
-		fullscreen();
-	});
-
-	$('#autoRefresh').click(function () {
-		refresh()
-	});
-
-	
 
 	function updateLegend(titles,legends){
 		var chartArray = [compareChart, combineChart, separateChart]
@@ -540,6 +515,18 @@ cursor:pointer;
 		$.each(deletedGraph, function (i, v) {
 			$('[name="' + v + '"]').remove();
 		});			
+	};
+
+	function refresh() {
+		if (checkRefresh == true) {
+			endTime = new Date(moment()).getTime()/1000;
+			getAndLoad()
+			// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+			timerId = setInterval(() => {
+				getAndLoad()
+				// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+			}, updateTime);
+		}
 	};
 
 </script>
