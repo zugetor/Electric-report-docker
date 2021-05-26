@@ -1,5 +1,6 @@
 import reg
 import json
+from cache import timed_lru_cache
 
 class Query:
 
@@ -61,6 +62,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
+		@timed_lru_cache(30)
 		def dashboard_list(self,data,unit,startTime,endTime,graphType):
 			_cur = self.query._newCursor()
 			sensorType = ["light","air","plug","all"]
@@ -280,6 +282,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
+		@timed_lru_cache(10)
 		def all_room_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT * FROM building")
@@ -362,6 +365,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
+		@timed_lru_cache(10)
 		def register_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT bo.boid,bo.bomac,bo.register,bo.time,bo.rid,f.fid,b.bid,r.rname,f.fname,b.bname FROM board as bo INNER JOIN room as r ON bo.rid=r.rid INNER JOIN floor as f ON f.fid=r.fid INNER JOIN building as b ON b.bid=f.bid")

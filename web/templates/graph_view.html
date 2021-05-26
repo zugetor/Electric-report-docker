@@ -896,7 +896,7 @@ cursor:pointer;
 	function getAndLoad() {
 		clearChart();
 
-		if (startTime == undefined) {
+		if (startTime == undefined || Number.isNaN(startTime)) {
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
@@ -988,7 +988,7 @@ cursor:pointer;
 				'error'
 			)
 		} else {
-			if (startTime == undefined && endTime == undefined) {
+			if ((startTime == undefined && endTime == undefined) || (Number.isNaN(startTime) && Number.isNaN(endTime))) {
 				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 			}
