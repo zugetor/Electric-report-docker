@@ -96,6 +96,7 @@
             board.destroy();
 
             board = $('#board').DataTable({
+                order: [[ "{{_type|length+6}}", "asc" ]],
                 ajax: {
                     "url": "{{ url_for('Private.register_list') }}",
                     "type": "GET",

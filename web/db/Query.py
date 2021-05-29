@@ -282,7 +282,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
-		@timed_lru_cache(3)
+		@timed_lru_cache(1)
 		def all_room_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT * FROM building")
@@ -365,7 +365,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
-		@timed_lru_cache(3)
+		@timed_lru_cache(1)
 		def register_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT bo.boid,bo.bomac,bo.register,bo.time,bo.rid,f.fid,b.bid,r.rname,f.fname,b.bname FROM board as bo INNER JOIN room as r ON bo.rid=r.rid INNER JOIN floor as f ON f.fid=r.fid INNER JOIN building as b ON b.bid=f.bid")
@@ -408,6 +408,9 @@ class Query:
 			_cur.execute("DELETE FROM sensor WHERE boid = %s",(boid,))
 			_cur.execute("DELETE FROM board WHERE boid = %s",(boid,))
 			self.query._CloseCursor(_cur)
+
+		#def schema_list(self):
+		#	self.query._client.iot_data
 
 	
 	class User:
