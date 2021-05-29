@@ -57,6 +57,9 @@ def callback(ch, method, properties, body):
 	except Exception as e:
 		print("[ERROR] Error: ", e)
 		ch.basic_nack(delivery_tag = method.delivery_tag)
+	finally:
+		cursor.close()
+		_conn.close()
 
 def class2Str(val):
 	if(isinstance(val, str)):
