@@ -124,7 +124,8 @@ def settings():
 @app.route("/sensor_add")
 @login_required
 def sensor_add():
-	return render_template("sensor_add.html")
+	_type = query.getAllType()
+	return render_template("sensor_add.html",_type=_type)
 
 @app.route("/conditions")
 @login_required

@@ -282,7 +282,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
-		@timed_lru_cache(10)
+		@timed_lru_cache(3)
 		def all_room_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT * FROM building")
@@ -365,7 +365,7 @@ class Query:
 		def __init__(self,query):
 			self.query = query
 
-		@timed_lru_cache(10)
+		@timed_lru_cache(3)
 		def register_list(self):
 			_cur = self.query._newCursor()
 			_cur.execute("SELECT bo.boid,bo.bomac,bo.register,bo.time,bo.rid,f.fid,b.bid,r.rname,f.fname,b.bname FROM board as bo INNER JOIN room as r ON bo.rid=r.rid INNER JOIN floor as f ON f.fid=r.fid INNER JOIN building as b ON b.bid=f.bid")
@@ -376,9 +376,13 @@ class Query:
 				sensor = _cur.fetchall()
 				for s in sensor:
 					bo['sensor'].append(s)
-				_cur.execute("SELECT COUNT(CASE WHEN tid = 1 THEN 1 END) AS light ,COUNT(CASE WHEN tid = 2 THEN 1 END) AS elec ,COUNT(CASE WHEN tid = 3 THEN 1 END) AS air ,COUNT(CASE WHEN tid = 4 THEN 1 END) AS motion FROM sensor WHERE boid = %s",(bo['boid']))
-				count = _cur.fetchall()
-				bo.update({'type':{'light':count[0]['light'],'electricity':count[0]['elec'],'air conditioner':count[0]['air'],'motion':count[0]['motion']}})
+				alltype = {}
+				_cur.execute("SELECT * FROM type")
+				for _type in _cur.fetchall():
+					_cur.execute("SELECT COUNT(sid) AS COUNT FROM sensor WHERE boid = %s AND tid = %s",(bo['boid'], _type["tid"]))
+					count = _cur.fetchone()
+					alltype[_type["inf_name"]] = count["COUNT"]
+				bo.update({'type':alltype})
 			self.query._CloseCursor(_cur)
 			return board
 

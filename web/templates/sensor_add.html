@@ -42,10 +42,9 @@
                     <tr>
                         <th>#</th>
                         <th>MAC Address</th>
-                        <th>Air Conditioner</th>
-                        <th>Electricity</th>
-                        <th>Light</th>
-                        <th>Motion</th>
+                        {% for i in _type %}
+                        <th>{{ i["tname"] }}</th>
+                        {% endfor %}
                         <th>Building</th>
                         <th>Floor</th>
                         <th>Room</th>
@@ -106,15 +105,13 @@
                         data: 'boid'
                     }, {
                         data: 'bomac'
-                    }, {
-                        data: 'type.air conditioner'
-                    }, {
-                        data: 'type.electricity'
-                    }, {
-                        data: 'type.light'
-                    }, {
-                        data: 'type.motion'
-                    }, {
+                    },
+                    {% for i in _type %}
+                    {
+                        data: 'type.{{ i["inf_name"] }}'
+                    },
+                    {% endfor %}
+                    {
                         data: 'bname'
                     }, {
                         data: 'fname'
@@ -141,22 +138,20 @@
                             }
                         }
                     }
-
                 ],
-                columnDefs: [{
-                    "width": "5%",
-                    "targets": 2
-                }, {
-                    "width": "5%",
-                    "targets": 3
-                }, {
-                    "width": "5%",
-                    "targets": 4
-                }, {
-                    "width": "5%",
-                    "targets": 5
-                }, {
-                    targets: 9,
+                columnDefs: [
+                {
+                    "width": "3%",
+                    "targets": 0
+                },
+                {% for i in range(2,_type|length+2) %}
+                {
+                    "width": "3%",
+                    "targets": {{ i }}
+                },
+                {% endfor %}
+                {
+                    targets: {{_type|length+5}},
                     render: function(data) {
                         return moment(data).format('YYYY-MM-DD hh:mm:ss');
                     }
@@ -171,7 +166,7 @@
                 var min = $('#startDate').val();
                 var max = $('#endDate').val();
 
-                var startDate = data[9];
+                var startDate = data[{{_type|length+5}}];
                 if (min == null && max == null) {
                     return true;
                 }
@@ -206,7 +201,7 @@
                 return '^' + this.value + '$';
             }).get().join('|');
             console.log(isReg);
-            board.column(10).search(isReg, true, false, false).draw(false);
+            board.column({{_type|length+6}}).search(isReg, true, false, false).draw(false);
 
         });
 
