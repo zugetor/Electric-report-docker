@@ -101,7 +101,12 @@ def _topic2type(topic):
 	if len(topic) % 2 != 0:
 		return topic[-1], topic[-2]
 	else:
-		return topic[-1],topic[-1]
+		return topic[-1], None
+
+def getName(etype, stype):
+	if(stype == "" or stype == None):
+		return etype
+	return stype + "_" + etype
 
 def checkRule():
 	db = dbHandler()
@@ -200,6 +205,7 @@ def updateNewsensor():
 	typelst = {}
 	for _type in alltype:
 		typelst[_type["inf_name"]] = _type["tid"]
+
 	for t in db.getTable():
 		allmac = db.getallMAC(t)
 		res = {"MAC":"","data":[]}
@@ -208,13 +214,15 @@ def updateNewsensor():
 			sensor = db.getallSensor(t,i)
 			if len(sensor) > 0: # sensor > 0 when s and topic found
 				for s in sensor:
-					etype,stype = _topic2type(s["topic"])
-					if etype in typelst.keys():
-						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[etype] ])
+					etype, stype = _topic2type(s["topic"])
+					typename = getName(etype, stype)
+					if typename in typelst.keys():
+						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[typename] ])
 			else:
 				topic = db.getallTopic(t,i)
-				etype,stype = _topic2type(topic[1])
-				if etype in typelst.keys():
-					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[etype] ])
+				etype, stype = _topic2type(topic[1])
+				typename = getName(etype, stype)
+				if typename in typelst.keys():
+					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[typename] ])
 			query.addnewSensor(res)
 			res = {"MAC":"","data":[]}
