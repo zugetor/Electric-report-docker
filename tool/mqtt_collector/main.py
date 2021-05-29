@@ -25,9 +25,17 @@ def callback(ch, method, properties, body):
 		print("Routing key: %r" % topicRaw)
 		print("Collection name: %r" % collectionName)
 
+		schema = {}
+		if(isinstance(body, dict)):
+			for key in body.keys():
+				_class = class2Str(body[key])
+				if(_class != None):
+					schema[key] = _class
+
 		db = client[cfg.MONGODB_COLLECTION]
-		_type = {"sensor_type": sensorType, "device_type": deviceType}
+		_type = {"sensor_type": sensorType, "device_type": deviceType, "schema": schema}
 		db["iot_type"].update(_type, _type, upsert=True)
+
 		doc = {}
 		doc["topic"] = topicRaw.replace(".","/")
 		doc["created_at"] = int(time())
@@ -40,6 +48,15 @@ def callback(ch, method, properties, body):
 	except Exception as e:
 		print("[ERROR] Error: ", e)
 		ch.basic_nack(delivery_tag = method.delivery_tag)
+
+def class2Str(val):
+	if(isinstance(val, str)):
+		return "string"
+	if(isinstance(val, int)):
+		return "int"
+	if(isinstance(val, bool)):
+		return "bool"
+	return None
 
 if __name__ == '__main__':
 	try:
