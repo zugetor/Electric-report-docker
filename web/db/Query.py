@@ -276,7 +276,6 @@ class Query:
 		def sensor_del(self,sid):
 			self.query.execute("DELETE FROM sensor WHERE sid = %s",(sid,))
 
-
 	class Building:
 
 		def __init__(self,query):
@@ -409,10 +408,6 @@ class Query:
 			_cur.execute("DELETE FROM board WHERE boid = %s",(boid,))
 			self.query._CloseCursor(_cur)
 
-		#def schema_list(self):
-		#	self.query._client.iot_data
-
-	
 	class User:
 
 		def __init__(self,query):
@@ -441,7 +436,6 @@ class Query:
 			user = self.getAllUser()
 			if(len(user) > 1):
 				self.query.execute("UPDATE `user` SET is_active = %s WHERE id = %s",(activate,_id))
-
 
 	class Rule:
 
@@ -472,20 +466,17 @@ class Query:
 						tmp = {}
 						if(dType != None and dType != ""):
 							tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
+							tmp["id"] = "{}_{}_{}".format(sType, dType, schema).lower()
 						else:
-							tmp["name"] = "{}_{}".format(sType, schema) 
-						tmp["id"] = "{}_{}_{}".format(sType, dType, schema)
+							tmp["name"] = "{}_{}".format(sType, schema)
+							tmp["id"] = "{}_{}".format(sType, schema).lower()
 						res.append(tmp)
 			return sorted(res,key=lambda x: x.get('name'))
-
-
-
 
 	def getAllType(self):
 		res = self.fetchAll("SELECT * FROM type")
 		return res
 
-	
 	class Logs:
 
 		def __init__(self,query):
@@ -514,8 +505,6 @@ class Query:
 			self.query._CloseCursor(_cur)
 			return res
 	
-
-
 	def auto_add_room(self,prefix,data):
 		_cur = self._newCursor()
 		building = reg.getAllBuilding()
@@ -541,10 +530,6 @@ class Query:
 					WHERE NOT EXISTS ( SELECT rname, fid  FROM room WHERE rname = %s AND fid = %s)""",(i[0],floor_id[i[1]],i[0],floor_id[i[1]]))
 		self._CloseCursor(_cur)
 
-
-
-	
-
 	def roomWithBPrefix(self):
 		res = self.fetchAll("SELECT r.rid,r.rname,r.rstatus,b.burl FROM room r INNER JOIN floor f ON r.fid = f.fid INNER JOIN building b ON f.bid = b.bid WHERE b.burl != ''")
 		return res
@@ -567,8 +552,6 @@ class Query:
 							(s[0],s[1],s[2],s[3],lastid,s[1],s[2],s[3],lastid))
 		self._CloseCursor(_cur)
 
-	
-	
 	class Notification:
 
 		def __init__(self,query):
@@ -587,8 +570,6 @@ class Query:
 				self.query.execute("UPDATE `notify` SET ntoken= %s",(token))
 			else:
 				self.query.execute("INSERT INTO `notify` (`nid`, `ntoken`, `ntime`, `nlast_time`, `user_id`) VALUES (NULL, %s, 10, CURRENT_TIMESTAMP, %s);",(token,uid))
-
-
 
 	def getRoomSensor(self,rname):
 		res = self.fetchAll("""SELECT s.inf_id,s.inf_type,b.bomac,t.inf_name FROM sensor s 

@@ -57,16 +57,17 @@ class dbHandler():
 		createdAt = 0
 		res = None
 		query = {"message.MAC": mac}
-		if(_type.split("_") == "dm"):
+
+		message = self._db[_type].find_one()
+		if("s" in message["message"].keys()):
 			query["message.s"] = sid
+
 		rawCT = self._db[_type].find(query).sort("created_at", -1).limit(1)
 		for CT in rawCT:
 			if(CT["created_at"] > createdAt):
 				res = CT
 				createdAt = CT["created_at"]
-		if(_type.split("_")[0] == "dm"):
-			return (res["message"]["AL1"] + res["message"]["AL2"] + res["message"]["AL3"]) / 3
-		return res["message"]["a"]
+		return res["message"]
 
 	def getLastPIR(self,mac,_type="pir"):
 		createdAt = 0
@@ -115,7 +116,7 @@ def checkRule():
 	daylst = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
 	allrule = query.getRule()
-	_rtype = query.getAllType()
+	_rtype = query.getCondition()
 
 	weekday = datetime.datetime.today().weekday()
 	tz = pytz.timezone(getTimeZone())
@@ -135,18 +136,23 @@ def checkRule():
 						"room":[rname,rstatus],"floor":fname,"building":bname}
 				rsensor = query.getRoomSensor(rname)
 				for rtype in _rtype:
-					tmp[rtype["inf_name"]] = 0
-
+					tmp[rtype["id"]] = 0
+				
 				for s in rsensor:
-					if s["inf_type"] == "pir":
-						pir_tmp = db.getLastPIR(s["bomac"])
+					if "_" not in s["inf_type"]:
+						pir_tmp = db.getLastPIR(s["bomac"], s["inf_type"])
 						if(pir_tmp != {}):
-							tmp["pir"] += pir_tmp["message"]["status"]
+							for key in pir_tmp["message"].keys():
+								keyName = "{}_{}".format(s["inf_type"],key).lower()
+								tmp[keyName] = pir_tmp["message"][key]
 					else:
 						ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
 						if(ct_tmp != None):
-							tmp[s["inf_name"]] += ct_tmp
+							for key in ct_tmp.keys():
+								keyName = "{}_{}".format(s["inf_type"],key).lower()
+								tmp[keyName] = ct_tmp[key]
 				objects.append(tmp)
+
 	all_messages = []	
 	for rule in allrule:
 		rule_name = rule["rname"]
