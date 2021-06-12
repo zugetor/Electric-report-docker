@@ -470,10 +470,13 @@ class Query:
 				for schema in _type["schema"].keys():
 					if(_type["schema"][schema] == "int"):
 						tmp = {}
-						tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
+						if(dType != None and dType != ""):
+							tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
+						else:
+							tmp["name"] = "{}_{}".format(sType, schema) 
 						tmp["id"] = "{}_{}_{}".format(sType, dType, schema)
 						res.append(tmp)
-			return res
+			return sorted(res,key=lambda x: x.get('name'))
 
 
 
