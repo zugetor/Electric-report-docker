@@ -460,7 +460,20 @@ class Query:
 
 		def DeleteRule(self,ruid):
 			self.query.execute("DELETE FROM rule WHERE ruid = %s",(ruid,))
-	
+		
+		def getCondition(self):
+			allType = self.query._client["iot_data"]["iot_type"].find()
+			res = []
+			for _type in allType:
+				sType = _type["sensor_type"]
+				dType = _type["device_type"]
+				for schema in _type["schema"].keys():
+					if(_type["schema"][schema] == "int"):
+						tmp = {}
+						tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
+						tmp["id"] = "{}_{}_{}".format(sType, dType, schema)
+						res.append(tmp)
+			return res
 
 
 

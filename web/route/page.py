@@ -130,8 +130,8 @@ def sensor_add():
 @app.route("/conditions")
 @login_required
 def conditions():
-	_type = query.getAllType()
-	return render_template("sensor_condition.html",_type=_type)
+	_condition = query.rule.getCondition()
+	return render_template("sensor_condition.html",_condition=_condition)
 
 @app.route("/sensor_view")
 @login_required
