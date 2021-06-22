@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Energy Saving - Settings{% endblock %}
+{% block css %}
+#content{
+  font-size: 1rem;
+}
+{% endblock %}
+{% block content %}
+<!-- Page Heading -->
+<h1 class="h3 mb-4 text-gray-800">Anomaly Setting</h1>
+<!-- Earnings (Monthly) Card Example -->
+<div class="card border-left-primary shadow h-100 py-2">
+  <div class="card-body">
+    <div class="row no-gutters align-items-center">
+      <div class="col mr-2">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="enabled">
+          <label class="form-check-label" for="enabled">
+            Enabled anomaly detection
+          </label>
+        </div>
+        <br>
+        <div class="form-group mb-4">
+          <label for="unit">Detection list (should be two variables or more)</label>
+          <select class="form-control" id="detection_list" name="states[]" multiple="multiple">
+            {% for i in _condition %}
+            <option value="{{ i['id'] }}">Type-{{ i["name"] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="button" class="btn btn-primary" id="update">Update</button>
+        <br>
+      </div>
+      <div class="col-auto">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+  $('#detection_list').select2({
+      placeholder: "Select a data",
+      allowClear: true
+  });
+  $("#update").click(function () {
+/*    let unitSec = ""
+    if($("#unit").val()=="second"){
+      unitSec = $("#time").val()
+    }
+    else if($("#unit").val()=="minute"){
+      unitSec = $("#time").val()*60
+    }
+    else if($("#unit").val()=="hour"){
+      unitSec = $("#time").val()*60*60
+    }
+    $.post("{{ url_for('Private.notify_time_edit') }}",
+  {
+    unitSec: unitSec
+  },
+  function(data, status){
+    Swal.fire(
+      'Updated!',
+      'Notify time is updated',
+      'success'
+    )
+    getData()
+  })*/
+  });
+</script>
+{% endblock %}

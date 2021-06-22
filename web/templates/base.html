@@ -125,6 +125,11 @@
 					<span>Notify Setting</span></a>
 			</li>
 			<li class="nav-item">
+				<a class="nav-link" href="{{ url_for('Page.anomaly') }}">
+					<i class="fas fa-sliders-h"></i>
+					<span>Anomaly Setting</span></a>
+			</li>
+			<li class="nav-item">
 				<a class="nav-link" href="{{ url_for('Page.user_manage') }}">
 					<i class="fas fa-users"></i>
 					<span>Users Management</span></a>
@@ -279,7 +284,8 @@
   		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" integrity="sha512-TQQ3J4WkE/rwojNFo6OJdyu6G8Xe9z8rMrlF9y7xpFbQfW5g8aSWcygCQ4vqRiJqFsDsE1T6MoAOMJkFXlrI9A==" crossorigin="anonymous" />
   		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous"></script>
   		<script src="{{ url_for('static', filename='js/query-builder.standalone.js') }}" ></script>
-
+  		<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 		{% block js %}{% endblock %}
 
 </body>
