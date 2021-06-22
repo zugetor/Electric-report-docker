@@ -150,3 +150,9 @@ def room_add():
 def user_manage():
 	user = query.user.getAllUser()
 	return render_template("user_manage.html",user=user)
+
+@app.route("/anomaly")
+@login_required
+def anomaly():
+	_condition = query.rule.getCondition()
+	return render_template("anomaly.html",_condition=_condition)
