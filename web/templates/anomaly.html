@@ -38,11 +38,11 @@
   </div>
 </div>
 
-<div class="card border-left-primary shadow h-100 py-2">
+<div class="card border-left-info shadow h-100 py-2">
   <div class="card-body">
     <div class="row no-gutters align-items-center">
       <div class="col mr-2">
-		<div class="text-xs font-weight-bold text-primary text-uppercase mb-3">Advance setting</div>
+		<div class="text-xs font-weight-bold text-info text-uppercase mb-3">Advance setting</div>
         <div class="form-group">
 			<label for="training">Training every</label>
 			<select class="form-control" id="training" name="training">
@@ -54,10 +54,10 @@
         </div>
         <br>
         <div class="form-group">
-			<label for="datasize">Dataset limit(Limit maximum amount of data usage for training)(-1 for disabled)</label>
+			<label for="datasize">Dataset limit(Limit maximum amount of data for training to save memory)(-1 for disabled)</label>
 			<input class="form-control" type="number" value="{{ settingAnomaly['datasize'] }}" id="datasize" min="-1">
         </div>
-        <button type="button" class="btn btn-primary" name="update">Update</button>
+        <button type="button" class="btn btn-info" name="update">Update</button>
         <br>
       </div>
       <div class="col-auto">
