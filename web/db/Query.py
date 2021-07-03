@@ -590,3 +590,19 @@ class Query:
 	def getSetting(self, digest):
 		res = self._client["iot_data"]["graph_setting"].find_one({"hash": digest})
 		return res
+		
+	def saveAnomaly(self, enable, detections, training, datasize):
+		db = self._client["web_config"]
+		db["key_storage"].update({"key":"enable"}, {"key":"enable","value":enable}, upsert=True)
+		db["key_storage"].update({"key":"detections"}, {"key":"detections","value":detections}, upsert=True)
+		db["key_storage"].update({"key":"training"}, {"key":"training","value":training}, upsert=True)
+		db["key_storage"].update({"key":"datasize"}, {"key":"datasize","value":datasize}, upsert=True)
+		return True
+		
+	def getAnomaly(self):
+		db = self._client["web_config"]
+		enable = db["key_storage"].find_one({"key":"enable"})
+		detections = db["key_storage"].find_one({"key":"detections"})
+		training = db["key_storage"].find_one({"key":"training"})
+		datasize = db["key_storage"].find_one({"key":"datasize"})
+		return {"enable":enable["value"],"detections":detections["value"],"training":training["value"],"datasize":datasize["value"]}

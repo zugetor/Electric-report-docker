@@ -9,26 +9,55 @@
 <!-- Page Heading -->
 <h1 class="h3 mb-4 text-gray-800">Anomaly Setting</h1>
 <!-- Earnings (Monthly) Card Example -->
-<div class="card border-left-primary shadow h-100 py-2">
+<div class="card border-left-primary shadow h-100 py-2 mb-4">
   <div class="card-body">
     <div class="row no-gutters align-items-center">
       <div class="col mr-2">
+		<div class="text-xs font-weight-bold text-primary text-uppercase mb-3">General setting</div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="enabled">
+          <input class="form-check-input" type="checkbox" id="enabled" {{ 'checked' if settingAnomaly["enable"] else '' }}>
           <label class="form-check-label" for="enabled">
             Enabled anomaly detection
           </label>
         </div>
         <br>
         <div class="form-group mb-4">
-          <label for="unit">Detection list (should be two variables or more)</label>
+          <label for="detection_list">Detection list (should be two variables or more)</label>
           <select class="form-control" id="detection_list" name="states[]" multiple="multiple">
             {% for i in _condition %}
             <option value="{{ i['id'] }}">Type-{{ i["name"] }}</option>
             {% endfor %}
           </select>
         </div>
-        <button type="button" class="btn btn-primary" id="update">Update</button>
+        <button type="button" class="btn btn-primary" name="update">Update</button>
+        <br>
+      </div>
+      <div class="col-auto">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card border-left-primary shadow h-100 py-2">
+  <div class="card-body">
+    <div class="row no-gutters align-items-center">
+      <div class="col mr-2">
+		<div class="text-xs font-weight-bold text-primary text-uppercase mb-3">Advance setting</div>
+        <div class="form-group">
+			<label for="training">Training every</label>
+			<select class="form-control" id="training" name="training">
+				<option value="24" {{ 'selected' if settingAnomaly["training"] == 24 else '' }}>Day</option>
+				<option value="168" {{ 'selected' if settingAnomaly["training"] == 168 else '' }}>Weekly</option>
+				<option value="336" {{ 'selected' if settingAnomaly["training"] == 336 else '' }}>Bi Weekly</option>
+				<option value="730" {{ 'selected' if settingAnomaly["training"] == 730 else '' }}>Month</option>
+			</select>
+        </div>
+        <br>
+        <div class="form-group">
+			<label for="datasize">Dataset limit(Limit maximum amount of data usage for training)(-1 for disabled)</label>
+			<input class="form-control" type="number" value="{{ settingAnomaly['datasize'] }}" id="datasize" min="-1">
+        </div>
+        <button type="button" class="btn btn-primary" name="update">Update</button>
         <br>
       </div>
       <div class="col-auto">
@@ -39,33 +68,27 @@
 {% endblock %}
 {% block js %}
 <script>
-  $('#detection_list').select2({
-      placeholder: "Select a data",
-      allowClear: true
-  });
-  $("#update").click(function () {
-/*    let unitSec = ""
-    if($("#unit").val()=="second"){
-      unitSec = $("#time").val()
-    }
-    else if($("#unit").val()=="minute"){
-      unitSec = $("#time").val()*60
-    }
-    else if($("#unit").val()=="hour"){
-      unitSec = $("#time").val()*60*60
-    }
-    $.post("{{ url_for('Private.notify_time_edit') }}",
-  {
-    unitSec: unitSec
-  },
-  function(data, status){
-    Swal.fire(
-      'Updated!',
-      'Notify time is updated',
-      'success'
-    )
-    getData()
-  })*/
-  });
+	$( document ).ready(function() {
+		$('#detection_list').select2({
+			placeholder: "Select a data",
+			allowClear: true
+		});
+		$('#detection_list').val({{ settingAnomaly['detections']|tojson }});
+		$('#detection_list').trigger('change');
+	});
+	
+	$("[name='update']").click(function () {
+		let detections = $('#detection_list').select2('data').map(elem => elem["id"])
+		let param = {
+			enable: $("#enabled").is(':checked'),
+			detections: detections,
+			training: parseInt($("#training").val()),
+			datasize: isNaN(parseInt($("#datasize").val())) ? -1 : parseInt($("#datasize").val())
+		}
+		$.post("{{ url_for('Private.anomaly') }}", param, function(data, status){
+			console.log(data)
+			console.log(status)
+		});
+	});
 </script>
 {% endblock %}

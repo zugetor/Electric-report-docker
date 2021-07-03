@@ -76,9 +76,9 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
-    logout_user()
-    flash('You have been logged out.')
-    return redirect(url_for('Page.login'))
+	logout_user()
+	flash('You have been logged out.')
+	return redirect(url_for('Page.login'))
 
 @app.route("/reset",methods=['GET','POST'])
 @login_required
@@ -96,7 +96,7 @@ def reset():
 				flash('Please check your password and try again.')
 		except:
 			flash('Please check your password and try again.')
-	return render_template("password_reset.html",form=form)  
+	return render_template("password_reset.html",form=form)	 
 
 @app.route("/graph_view")
 @login_required
@@ -106,7 +106,7 @@ def graph_view():
 @app.route("/graph_show")
 def graph_show():
 	return render_template("graph_show.html")
-    
+	
 @app.route("/graph_view_tradingview")
 def graph_view_tradingview():
 	return render_template("graph_view_tradingview.html")
@@ -137,8 +137,8 @@ def conditions():
 @login_required
 def sensor_view():
 	_type = query.getAllType()
-	return render_template("sensor_view.html",_type=_type)    
-    
+	return render_template("sensor_view.html",_type=_type)	  
+	
 @app.route("/room_add")
 @login_required
 def room_add():
@@ -155,4 +155,5 @@ def user_manage():
 @login_required
 def anomaly():
 	_condition = query.rule.getCondition()
-	return render_template("anomaly.html",_condition=_condition)
+	settingAnomaly = query.getAnomaly()
+	return render_template("anomaly.html",_condition=_condition,settingAnomaly=settingAnomaly)
