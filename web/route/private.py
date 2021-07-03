@@ -259,5 +259,19 @@ def set_setting():
 		return Response('{"Code":"400 Bad request"}', status=400, content_type="application/json")
 	res = query.newSetting(data, digest)
 	# if(res.inserted_id == "" or res.inserted_id == None):
-	# 	return Response('{"Code":"500 Internal Server Error"}', status=500, content_type="application/json")
+	#	return Response('{"Code":"500 Internal Server Error"}', status=500, content_type="application/json")
 	return jsonify({"Code": "200 OK", "hash": digest})
+	
+@app.route("/anomaly",methods=["POST"])
+@login_required
+def anomaly():
+	enable = request.form.get('enable')
+	detections = request.form.getlist('detections[]')
+	training = request.form.get('training')
+	datasize = request.form.get('datasize')
+	if(training.isnumeric()):
+		training = int(training)
+	if(datasize.isnumeric()):
+		datasize = int(datasize)
+	query.saveAnomaly(enable, detections, training, datasize)
+	return jsonify({'Code':'200 OK'})
