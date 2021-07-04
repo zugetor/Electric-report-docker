@@ -1,3 +1,5 @@
+import os
+
 class Config(object):
     DEBUG = False #Disable Debug
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'db') #MySQL Host
