@@ -73,7 +73,7 @@ def class2Str(val):
 if __name__ == '__main__':
 	try:
 		credentials = pika.PlainCredentials(cfg.AMQP_USER, cfg.AMQP_PASSWORD)
-		parameters = pika.ConnectionParameters(cfg.AMQP_HOST, cfg.AMQP_PORT, cfg.AMQP_VHOST, credentials)
+		parameters = pika.ConnectionParameters(cfg.AMQP_HOST, int(cfg.AMQP_PORT), cfg.AMQP_VHOST, credentials)
 		connection = pika.BlockingConnection(parameters)
 		channel = connection.channel()
 
