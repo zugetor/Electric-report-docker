@@ -1,37 +1,17 @@
+import os
+
 class Config(object):
     DEBUG = False #Disable Debug
-    MYSQL_HOST = 'db' #MySQL Host
-    MYSQL_USER = 'myuser' #MySQL username
-    MYSQL_PASSWORD = 'verysecure' #MySQL password
-    MYSQL_DB = 'electric_mon' #MySQL DB name
-    MONGODB_URL = 'mongodb://root:password@mongo:27017/?authSource=admin' #MongoDB Connection String
-    SECRET_KEY = "mysecretkey" #your secret key
+    MYSQL_HOST = os.getenv('MYSQL_HOST', 'db') #MySQL Host
+    MYSQL_USER = os.getenv('MYSQL_USER', 'myuser') #MySQL username
+    MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', 'verysecure') #MySQL password
+    MYSQL_DB = os.getenv('MYSQL_DB', 'electric_mon') #MySQL DB name
+    MONGODB_URL = os.getenv('MONGODB_URL', 'mongodb://root:password@mongo:27017/?authSource=admin') #MongoDB Connection String
+    SECRET_KEY = os.getenv('SECRET_KEY', 'mysecretkey') #your secret key
     SESSION_COOKIE_HTTPONLY = True #Cookie can access from HTTP Only
     REMEMBER_COOKIE_HTTPONLY = True #Cookie can access from HTTP Only
     ALLOW_REGISTER = True #Allow user to register
-    ENABLE_DEV = True #Enable Development Config
     LOGIN_ONLY = True #Enable Login to all page and API
     TIME_ZONE = "Asia/Bangkok" #Time zone for check room schedule
-    Nofify_Template = "Rule: {rname}\nDate: {date}\nDay: {dow}\nTime: {time}\nBuilding: {building}\nfloor: {floor}\nRoom: {room}\nStatus: {status}\nLight: {light}\nPlug: {plug}\nAir: {air}\nPir: {pir}\n"
-    #{rname} = Rule Name
-    #{date} = Current Date at notify time
-    #{dow} = Current Day name at notify time
-    #{time} = Current Hour in 24H. at notify time
-    #{building} = Building name
-    #{floor} = Floor name
-    #{room} = Room name
-    #{status} = Room status
-    #{light} = Current amp light using at notify time
-    #{plug} = Current amp plug using at notify time
-    #{air} = Current amp air using at notify time
-    #{pir} = Current motion using at notify time
-
-class ProductionConfig(Config):
-    DEBUG = False #Disable Debug
-    RECAPTCHA_PUBLIC_KEY = "" #Recaptcha V2 public key from https://www.google.com/recaptcha
-    RECAPTCHA_PRIVATE_KEY = "" #Recaptcha V2 private key from https://www.google.com/recaptcha
-    
-class DevelopmentConfig(Config):
-    DEBUG = True #Enable Debug
-    RECAPTCHA_PUBLIC_KEY = "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" #Recaptcha public key for test only
-    RECAPTCHA_PRIVATE_KEY = "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe" #Recaptcha public key for test only
+    RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI') #Recaptcha V2 public key from https://www.google.com/recaptcha
+    RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', 'vFI1TnRWxMZNFuojJ4WifJWe') #Recaptcha V2 private key from https://www.google.com/recaptcha
