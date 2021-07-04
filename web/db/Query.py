@@ -499,9 +499,10 @@ class Query:
 			temp1 = _cur.fetchall()
 			_cur.execute("SELECT create_time as lastest FROM logs ORDER BY lid DESC LIMIT 1")
 			temp2 = _cur.fetchall()
-			res={}
-			res.update(temp1[0])
-			res.update(temp2[0])
+			res = {"sum_logs":0,"lastest":"N/A"}
+			if(len(temp1) > 0 and len(temp2) > 0):
+				res.update(temp1[0])
+				res.update(temp2[0])
 			self.query._CloseCursor(_cur)
 			return res
 	
@@ -558,7 +559,7 @@ class Query:
 			self.query = query
 
 		def getToken(self,uid):
-			res = self.query.fetchAll("SELECT * FROM notify where user_id= %s;",(uid))
+			res = self.query.fetchOne("SELECT * FROM notify where user_id= %s;",(uid))
 			return res
 
 		def updateNotiTime(self,uid,unitSec):

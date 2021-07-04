@@ -97,6 +97,10 @@ def getTemplate():
 	cfg = getConfig()
 	return cfg.Nofify_Template
 
+def isShowVal():
+	cfg = getConfig()
+	return cfg.SHOW_SENSOR_VALUE
+
 def _topic2type(topic):
 	topic = topic.split("/")
 	if len(topic) % 2 != 0:
@@ -125,6 +129,7 @@ def checkRule():
 	objects = []
 
 	all_room_list = query.all_room_list()
+	sensor_keys = []
 	for building in all_room_list:
 		bname = building["bname"]
 		for floor in building["floor"]:
@@ -145,15 +150,17 @@ def checkRule():
 							for key in pir_tmp["message"].keys():
 								keyName = "{}_{}".format(s["inf_type"],key).lower()
 								tmp[keyName] = pir_tmp["message"][key]
+								sensor_keys.append(keyName)
 					else:
 						ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
 						if(ct_tmp != None):
 							for key in ct_tmp.keys():
 								keyName = "{}_{}".format(s["inf_type"],key).lower()
 								tmp[keyName] = ct_tmp[key]
+								sensor_keys.append(keyName)
 				objects.append(tmp)
-
-	all_messages = []	
+	sensor_keys = list(set(sensor_keys))
+	all_messages = []
 	for rule in allrule:
 		rule_name = rule["rname"]
 		rjson = rule["rjson"]
@@ -168,7 +175,12 @@ def checkRule():
 			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
 			match["room"] = match["room"][0]
 			match["rname"] = rule_name
-			line_message += getTemplate().format(**match) + ("-" * 10) + "\n"
+			line_message += getTemplate().format(**match) + "\n"
+			if(isShowVal()):
+				for device in sensor_keys:
+					if(device in match.keys() and (isinstance(match[device], str) or match[device] > 0)):
+						line_message += device + ": " + str(match[device]) + "\n"
+			line_message += "\n"
 			if idx % 3 == 0:
 				all_messages.append(line_message)
 				line_message = ""
@@ -179,7 +191,11 @@ def checkRule():
 	for token in tokens:
 		if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
 			for m in all_messages:
-				linenotify(m,token["ntoken"],True,query)
+				notify_res = linenotify(m,token["ntoken"])
+				notify_status = "Failed"
+				if(notify_res):
+					notify_status = "Success"
+				query.new_log(notify_status + ": " +m,token["ntoken"])
 
 def checkSchedule():
 	db = dbHandler()
