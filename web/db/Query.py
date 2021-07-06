@@ -70,7 +70,7 @@ class Query:
 			ct=[] #collect data and query one time for combine
 			dm=[] #collect data and query one time for combine
 			nameCombine=""
-			sensorTypeCombine=[];
+			sensorTypeCombine=[]
 			for i in range(len(data)):
 				name = data[i]['name']
 				if(data[i]['type'][0:2] == "ct"):
@@ -198,11 +198,11 @@ class Query:
 							lookupPipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$match": {"$expr":{"$eq":["$t","$$tt"]}}},{"$unset": "_id" }]
 							pipeline = [{"$match": {"message.MAC":{"$in":bomac },"message.s":{"$in":sid },"created_at" : {"$gte": int(startTime),"$lt" : int(endTime) },}},{"$group":{"_id":{ '$multiply':[{'$subtract' :[ {'$divide' : ['$created_at', unit ]}, { '$mod' : [{'$divide' : ['$created_at', unit ]},1] } ] },unit*1000]},"y": { "$avg": "$message.a"},}},{ "$sort": { '_id': 1 } },{"$addFields": { "t":{"$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": {"$toDate" :"$_id"} }} }},{"$unset": "_id" },
 							{"$lookup":{"from": "ct_plug","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_plug"}},
-							{"$lookup":{"from": "ct_air","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_air"}},
+							{"$lookup":{"from": "ct_light","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_light"}},
 							{"$lookup":{"from": "ct_all","let":{"tt" : "$t"},"pipeline": lookupPipeline,"as": "ct_all"}},
-							{"$project":{"t":1,"y":{"$round":[{"$avg":[{"$first":"$ct_air.y"},{"$first":"$ct_plug.y"},{"$first":"$ct_all.y"},"$y"]},2]}}}
+							{"$project":{"t":1,"y":{"$round":[{"$avg":[{"$first":"$ct_light.y"},{"$first":"$ct_plug.y"},{"$first":"$ct_all.y"},"$y"]},2]}}}
 							]
-							result = list(self.query._client.iot_data["ct_light"].aggregate(pipeline))
+							result = list(self.query._client.iot_data["ct_air"].aggregate(pipeline))
 							if(len(result)>0):
 								tmp[i]['ct'][0].update({"allType":{'name':'','values':[]}})
 								tmp[i]['ct'][0]["allType"].update({'name':name+"_CT_allType"})
