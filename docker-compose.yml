@@ -57,20 +57,21 @@ services:
 
     rabbitmq:
         container_name: rabbitmq
-        image: rabbitmq:3-management
+        image: zugetor/rabbitmq_mqtt
         networks:
             - dev_net
         ports:
             - "5672:5672"
-            - "8085:15672"
+            - "15672:15672"
             - "1880:1880"
             - "18800:18800"
         environment:
-            - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbitmq_management load_definitions "/tmp/rabbit.definitions.json"
+            - RABBITMQ_DEFAULT_USER=admin
+            - RABBITMQ_DEFAULT_PASS=password
+            - RABBITMQ_USER=users
+            - RABBITMQ_PASSWORD=password
         volumes:
-            - ./rabbitmq/enabled_plugins.txt:/etc/rabbitmq/enabled_plugins
             - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-            - ./rabbitmq/rabbit_definitions.json:/tmp/rabbit.definitions.json
         restart: always
         
     mongo:
