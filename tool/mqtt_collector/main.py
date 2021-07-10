@@ -60,6 +60,7 @@ def callback(ch, method, properties, body):
 	finally:
 		cursor.close()
 		_conn.close()
+		client.close()
 
 def class2Str(val):
 	if(isinstance(val, str)):

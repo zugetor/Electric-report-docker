@@ -54,6 +54,23 @@ services:
             - rabbitmq
             - mongo
         restart: always
+        
+    anomaly:
+        container_name: anomaly
+        image: zugetor/python3:latest
+        networks:
+            - dev_net
+        volumes:
+            - ./tool/anomaly_detection:/src
+        links:
+            - rabbitmq
+            - db
+            - mongo
+        depends_on:
+            - db
+            - rabbitmq
+            - mongo
+        restart: always
 
     rabbitmq:
         container_name: rabbitmq
