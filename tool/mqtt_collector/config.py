@@ -3,10 +3,10 @@ import os
 class Config(object):
     AMQP_HOST = os.getenv('AMQP_HOST', 'rabbitmq') #  RabbitMQ  host
     AMQP_PORT = os.getenv('AMQP_PORT', '5672') # RabbitMQ Port
-    AMQP_USER = os.getenv('AMQP_USER', 'user') # RabbitMQ username
+    AMQP_USER = os.getenv('AMQP_USER', 'users') # RabbitMQ username
     AMQP_PASSWORD = os.getenv('AMQP_PASSWORD', 'password') # RabbitMQ password
     AMQP_VHOST = os.getenv('AMQP_VHOST', '/') # RabbitMQ VHOST
-    AMQP_TOPIC = os.getenv('AMQP_TOPIC', 'iot_data') # RabbitMQ topic
+    AMQP_TOPIC = os.getenv('AMQP_TOPIC', 'mqtt_data') # RabbitMQ topic
 
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'db') #MySQL Host
     MYSQL_USER = os.getenv('MYSQL_USER', 'myuser') #MySQL username
