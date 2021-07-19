@@ -304,7 +304,6 @@ class Query:
 						keyName = topic[1]
 						queryType = self.query._client["iot_data"]["iot_type"].find_one({"sensor_type":collectionName,"keyName":keyName})
 					res = []
-					return {"lenTopic":len(topic),"query":queryType["schema"]}
 					for schema in queryType["schema"].keys():
 						if(queryType["schema"][schema] == "int"):
 							res.append(schema)
