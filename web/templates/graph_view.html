@@ -67,16 +67,22 @@ cursor:pointer;
 							<label for="sensorType">Type</label>
 							<select class="custom-select" id="sensorType">
 								<option selected value="allType">All Type</option>
-								<option value="all">All</option>
-								<option value="light">Light</option>
-								<option value="air">Air Conditioner</option>
-								<option value="plug">Electricity</option>
+								{% for i in _type %}
+										<option value="{{i['inf_name']}}">{{i["tname"]}}</option>
+								{% endfor %}
 							</select>
 						</div>
 						<label for="sName">Sensor Type :</label>
 					</div>
 					<div class="form-row">
-						<div class="col-md-3 mb-3">
+						
+						<select class="typeFilter" name="filterType[]" multiple="multiple" id="typeFilter" name="typeFilter" style="width: 100%">
+							{% for i in _type %}
+								<option value="{{i["tname"]}}">{{i["tname"]}}</option>
+							{% endfor %}
+						  </select>
+
+						<!-- <div class="col-md-3 mb-3">
 							<div class="custom-control custom-checkbox">
 								<input type="checkbox" class="custom-control-input" id="Light" data-type="" checked
 									value="Light" name="typeFilter">
@@ -96,7 +102,7 @@ cursor:pointer;
 									checked value="Air Conditioner" name="typeFilter">
 								<label class="custom-control-label" for="Air Conditioner">Air Conditioner</label>
 							</div>
-						</div>
+						</div> -->
 					</div>
 
 					<div class="form-row">
@@ -282,11 +288,16 @@ cursor:pointer;
 {% endblock %}
 {% block js %}
 <script>
+	let filterType
 	let range;
 	let startTime;
 	let endTime;
 	let checkRefresh = false;
 	let mode = "none";
+
+	$( document ).ready(function() {
+		$('.typeFilter').select2();
+	})
 
 	$("#sTimeTable").text(moment().subtract(1, 'days').format('YYYY-MM-DD hh:mm:ss'));
 	$("#eTimeTable").text(moment().format('YYYY-MM-DD hh:mm:ss'));
@@ -371,14 +382,6 @@ cursor:pointer;
 	getRoomData();
 
 	var dashboardArray = [];
-	var typeFilter = "Light|Electricity|Air Conditioner";
-	$('input:checkbox').on('change', function () {
-		typeFilter = $('input:checkbox[name="typeFilter"]:checked').map(
-			function () {
-				return this.value;
-			}).get().join('|');
-
-	});
 	var dashboard = $('#dashboard').DataTable();
 	var updateDashboard = function () {
 		dashboard.destroy();
@@ -570,7 +573,10 @@ cursor:pointer;
 					sensors.columns(2).search($("#room option:selected").html()).draw();
 				}
 
-				sensors.column(5).search(typeFilter, true, false, false).draw(false);
+				filterType = $(".typeFilter").select2("val").join('|')
+				console.log(filterType)
+
+				sensors.column(5).search(filterType, true, false, false).draw(false);
 
 				$('#sensor_list tbody').on('click', 'tr', function () {
 					$(this).toggleClass('selected');
@@ -730,7 +736,25 @@ cursor:pointer;
 	}
 
 	function loadCompare(data) {
-		$.each(["volt", "amp", "watt", "ae", "ct"], function (index, value) {
+		distinctArray = ["volt", "amp", "watt", "ae", "ct", "name"]
+		newSensorType = []
+		
+		$.each(data, function (i, v) {
+			$.each(v, function (i2, v2) {
+				newSensorType.push(i2)	
+			})
+		})
+		
+		newSensorType = $.grep(newSensorType, function(value) {
+    		return $.inArray(value, distinctArray) < 0;
+		});
+
+		newSensorArray = ["volt", "amp", "watt", "ae", "ct"]
+		Array.prototype.push.apply(newSensorArray, newSensorType);
+
+		newSensorArray = Array.from([...new Set(newSensorArray)]);
+
+		$.each(newSensorArray, function (index, value) {
 			var divChart = "<div class=\"col mb-5\" name=\"compare" + value +
 				"\"><div onclick=\"delGraph(this)\" class=\"close-thik\"></div><canvas class=\"card shadow\" id=\"compare" + value + "\"></canvas></div>";
 			$("#compare").append(divChart);
@@ -781,9 +805,28 @@ cursor:pointer;
 	}
 
 	function loadSeparate(data) {
+
+		distinctArray = ["volt", "amp", "watt", "ae", "ct", "name"]
+		newSensorType = []
+		
+		$.each(data, function (i, v) {
+			$.each(v, function (i2, v2) {
+				newSensorType.push(i2)	
+			})
+		})
+
+		newSensorType = $.grep(newSensorType, function(value) {
+    		return $.inArray(value, distinctArray) < 0;
+		});
+
+		newSensorArray = ["volt", "amp", "watt", "ae", "ct"]
+		Array.prototype.push.apply(newSensorArray, newSensorType);
+
+		newSensorArray = Array.from([...new Set(newSensorArray)]);
+
 		checkName = [];
 		$.each(data, function (index, value) {
-			$.each(["volt", "amp", "watt", "ae", "ct"], function (i, v) {
+			$.each(newSensorArray, function (i, v) {
 				var divChart = "<div class=\"col mb-4\" name=\"separate-" + value.name+ index + "-" + v +
 					"\"><div onclick=\"delGraph(this)\" class=\"close-thik\"></div><canvas class=\"card shadow\" id=\"separate-" + value.name + index + "-" + v +
 					"\"></canvas></div>"
@@ -896,7 +939,7 @@ cursor:pointer;
 	function getAndLoad() {
 		clearChart();
 
-		if (startTime == undefined) {
+		if (startTime == undefined || Number.isNaN(startTime)) {
 			startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 			endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 		}
@@ -988,7 +1031,7 @@ cursor:pointer;
 				'error'
 			)
 		} else {
-			if (startTime == undefined && endTime == undefined) {
+			if ((startTime == undefined && endTime == undefined) || (Number.isNaN(startTime) && Number.isNaN(endTime))) {
 				startTime = new Date($('input[name="datetimes"]').data('daterangepicker').startDate).getTime()/1000;
 				endTime = new Date($('input[name="datetimes"]').data('daterangepicker').endDate).getTime()/1000;
 			}

@@ -24,7 +24,7 @@
           <option value="hour">Hour</option>
         </select>
         </div>
-        <button type="button" class="btn btn-primary" id="updateTime">update</button>
+        <button type="button" class="btn btn-primary" id="updateTime">Update</button>
         <br>
         
       </div>
@@ -47,7 +47,7 @@
         <input type="password" class="form-control" id="token">
         
         </div>
-        <button type="button" class="btn btn-info" id="updateToken">update</button>
+        <button type="button" class="btn btn-info" id="updateToken">Update</button>
         <br>
         
       </div>
@@ -101,19 +101,19 @@
 
   function getData(){
   $.get("{{ url_for('Private.get_token') }}", function(data, status){
-    if(parseInt(data[0].ntime)<60){
-      $("#time").val(data[0].ntime);
+    if(parseInt(data.ntime)<60){
+      $("#time").val(data.ntime);
       $("#unit").val("second");
     }
-    else if(parseInt(data[0].ntime)<3600){
-      $("#time").val(data[0].ntime/60);
+    else if(parseInt(data.ntime)<3600){
+      $("#time").val(data.ntime/60);
       $("#unit").val("minute");
     }
     else{
-      $("#time").val(data[0].ntime/60/60);
+      $("#time").val(data.ntime/60/60);
       $("#unit").val("hour");
     }
-    $("#showToken").text(data[0].ntoken.substr(0,3)+"*****"+data[0].ntoken.substr(data[0].ntoken.length - 3))
+    $("#showToken").text(data.ntoken)
   });
   }
 

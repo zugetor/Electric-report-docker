@@ -4,7 +4,7 @@ from datetime import timedelta
 
 tl = Timeloop()
 
-@tl.job(interval=timedelta(minutes=3))
+@tl.job(interval=timedelta(seconds=30))
 def ruleChecker():
 	try:
 		checker.checkRule()

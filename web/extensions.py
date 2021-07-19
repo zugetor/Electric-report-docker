@@ -1,5 +1,5 @@
 from flask import escape
-from config import Config, ProductionConfig, DevelopmentConfig
+from config import Config
 from db import MySQL, MongoDB, Query
 
 mysql = MySQL()
@@ -16,7 +16,4 @@ def toHourandMin(timeDel):
 	return "%02d:%02d" % (hours, minutes)
 
 def getConfig():
-	cfg = ProductionConfig
-	if Config.ENABLE_DEV:
-		cfg = DevelopmentConfig
-	return cfg
+	return Config

@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import pandas as pd
 import requests, re
+from cache import timed_lru_cache
 
+@timed_lru_cache(3600) #cache 1 hour
 def getAllBuilding():
 	url = "https://reg.buu.ac.th/registrar/room_timeall.asp"
 	url_nosub = url[:url.rfind("/")+1]
@@ -25,6 +27,7 @@ def getAllBuilding():
 			res.append({"prefix":prefix,"name":name,"url":href})
 	return res
 
+@timed_lru_cache(3600) #cache 1 hour
 def getAllRoomList(url):
 	url = url.replace("room_timeall.asp","room_time.asp")
 	r = requests.get(url)
@@ -36,6 +39,7 @@ def getAllRoomList(url):
 		res.append(i.text.split(" ประเภท")[0])
 	return res
 
+@timed_lru_cache(5 * 60) #cache 5 min
 def getAllSchedule(url):
 	url = url.replace("room_time.asp","room_timeall.asp")
 

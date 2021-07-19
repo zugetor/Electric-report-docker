@@ -6,6 +6,7 @@ cfg = getConfig()
 
 app = Flask(__name__)
 app.config.from_object(cfg)
+app.url_map.strict_slashes = False
 
 mysql.init_app(app.config)
 mongoDB.init_app(app.config)

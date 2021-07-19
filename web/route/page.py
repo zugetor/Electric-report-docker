@@ -76,9 +76,9 @@ def register():
 @app.route('/logout')
 @login_required
 def logout():
-    logout_user()
-    flash('You have been logged out.')
-    return redirect(url_for('Page.login'))
+	logout_user()
+	flash('You have been logged out.')
+	return redirect(url_for('Page.login'))
 
 @app.route("/reset",methods=['GET','POST'])
 @login_required
@@ -96,17 +96,18 @@ def reset():
 				flash('Please check your password and try again.')
 		except:
 			flash('Please check your password and try again.')
-	return render_template("password_reset.html",form=form)  
+	return render_template("password_reset.html",form=form)	 
 
 @app.route("/graph_view")
 @login_required
 def graph_view():
-	return render_template("graph_view.html")
+	_type = query.getAllType()
+	return render_template("graph_view.html",_type=_type)
 
 @app.route("/graph_show")
 def graph_show():
 	return render_template("graph_show.html")
-    
+	
 @app.route("/graph_view_tradingview")
 def graph_view_tradingview():
 	return render_template("graph_view_tradingview.html")
@@ -124,20 +125,21 @@ def settings():
 @app.route("/sensor_add")
 @login_required
 def sensor_add():
-	return render_template("sensor_add.html")
+	_type = query.getAllType()
+	return render_template("sensor_add.html",_type=_type)
 
 @app.route("/conditions")
 @login_required
 def conditions():
-	_type = query.getAllType()
-	return render_template("sensor_condition.html",_type=_type)
+	_condition = query.rule.getCondition()
+	return render_template("sensor_condition.html",_condition=_condition)
 
 @app.route("/sensor_view")
 @login_required
 def sensor_view():
 	_type = query.getAllType()
-	return render_template("sensor_view.html",_type=_type)    
-    
+	return render_template("sensor_view.html",_type=_type)	  
+	
 @app.route("/room_add")
 @login_required
 def room_add():
@@ -149,3 +151,10 @@ def room_add():
 def user_manage():
 	user = query.user.getAllUser()
 	return render_template("user_manage.html",user=user)
+
+@app.route("/anomaly")
+@login_required
+def anomaly():
+	_condition = query.rule.getCondition()
+	settingAnomaly = query.getAnomaly()
+	return render_template("anomaly.html",_condition=_condition,settingAnomaly=settingAnomaly)
