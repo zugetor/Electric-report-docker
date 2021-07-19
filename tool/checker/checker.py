@@ -57,16 +57,17 @@ class dbHandler():
 		createdAt = 0
 		res = None
 		query = {"message.MAC": mac}
-		if(_type.split("_") == "dm"):
+
+		message = self._db[_type].find_one()
+		if("s" in message["message"].keys()):
 			query["message.s"] = sid
+
 		rawCT = self._db[_type].find(query).sort("created_at", -1).limit(1)
 		for CT in rawCT:
 			if(CT["created_at"] > createdAt):
 				res = CT
 				createdAt = CT["created_at"]
-		if(_type.split("_")[0] == "dm"):
-			return (res["message"]["AL1"] + res["message"]["AL2"] + res["message"]["AL3"]) / 3
-		return res["message"]["a"]
+		return res["message"]
 
 	def getLastPIR(self,mac,_type="pir"):
 		createdAt = 0
@@ -96,12 +97,21 @@ def getTemplate():
 	cfg = getConfig()
 	return cfg.Nofify_Template
 
+def isShowVal():
+	cfg = getConfig()
+	return cfg.SHOW_SENSOR_VALUE
+
 def _topic2type(topic):
 	topic = topic.split("/")
 	if len(topic) % 2 != 0:
 		return topic[-1], topic[-2]
 	else:
-		return topic[-1],topic[-1]
+		return topic[-1], None
+
+def getName(etype, stype):
+	if(stype == "" or stype == None):
+		return etype
+	return stype + "_" + etype
 
 def checkRule():
 	db = dbHandler()
@@ -110,7 +120,7 @@ def checkRule():
 	daylst = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
 	allrule = query.getRule()
-	_rtype = query.getAllType()
+	_rtype = query.getCondition()
 
 	weekday = datetime.datetime.today().weekday()
 	tz = pytz.timezone(getTimeZone())
@@ -119,6 +129,7 @@ def checkRule():
 	objects = []
 
 	all_room_list = query.all_room_list()
+	sensor_keys = []
 	for building in all_room_list:
 		bname = building["bname"]
 		for floor in building["floor"]:
@@ -130,19 +141,26 @@ def checkRule():
 						"room":[rname,rstatus],"floor":fname,"building":bname}
 				rsensor = query.getRoomSensor(rname)
 				for rtype in _rtype:
-					tmp[rtype["inf_name"]] = 0
-
+					tmp[rtype["id"]] = 0
+				
 				for s in rsensor:
-					if s["inf_type"] == "pir":
-						pir_tmp = db.getLastPIR(s["bomac"])
+					if "_" not in s["inf_type"]:
+						pir_tmp = db.getLastPIR(s["bomac"], s["inf_type"])
 						if(pir_tmp != {}):
-							tmp["pir"] += pir_tmp["message"]["status"]
+							for key in pir_tmp["message"].keys():
+								keyName = "{}_{}".format(s["inf_type"],key).lower()
+								tmp[keyName] = pir_tmp["message"][key]
+								sensor_keys.append(keyName)
 					else:
 						ct_tmp = db.getLastVAL(s["inf_id"],s["bomac"],s["inf_type"])
 						if(ct_tmp != None):
-							tmp[s["inf_name"]] += ct_tmp
+							for key in ct_tmp.keys():
+								keyName = "{}_{}".format(s["inf_type"],key).lower()
+								tmp[keyName] = ct_tmp[key]
+								sensor_keys.append(keyName)
 				objects.append(tmp)
-	all_messages = []	
+	sensor_keys = list(set(sensor_keys))
+	all_messages = []
 	for rule in allrule:
 		rule_name = rule["rname"]
 		rjson = rule["rjson"]
@@ -157,7 +175,12 @@ def checkRule():
 			match["status"] = "Free" if match["room"][1] == "0" else "Reserved"
 			match["room"] = match["room"][0]
 			match["rname"] = rule_name
-			line_message += getTemplate().format(**match) + ("-" * 10) + "\n"
+			line_message += getTemplate().format(**match) + "\n"
+			if(isShowVal()):
+				for device in sensor_keys:
+					if(device in match.keys() and (isinstance(match[device], str) or match[device] > 0)):
+						line_message += device + ": " + str(match[device]) + "\n"
+			line_message += "\n"
 			if idx % 3 == 0:
 				all_messages.append(line_message)
 				line_message = ""
@@ -168,7 +191,11 @@ def checkRule():
 	for token in tokens:
 		if token["ntime"] + datetime.datetime.timestamp(token["nlast_time"]) <= time():
 			for m in all_messages:
-				linenotify(m,token["ntoken"],True,query)
+				notify_res = linenotify(m,token["ntoken"])
+				notify_status = "Failed"
+				if(notify_res):
+					notify_status = "Success"
+				query.new_log(notify_status + ": " +m,token["ntoken"])
 
 def checkSchedule():
 	db = dbHandler()
@@ -200,6 +227,7 @@ def updateNewsensor():
 	typelst = {}
 	for _type in alltype:
 		typelst[_type["inf_name"]] = _type["tid"]
+
 	for t in db.getTable():
 		allmac = db.getallMAC(t)
 		res = {"MAC":"","data":[]}
@@ -208,13 +236,15 @@ def updateNewsensor():
 			sensor = db.getallSensor(t,i)
 			if len(sensor) > 0: # sensor > 0 when s and topic found
 				for s in sensor:
-					etype,stype = _topic2type(s["topic"])
-					if etype in typelst.keys():
-						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[etype] ])
+					etype, stype = _topic2type(s["topic"])
+					typename = getName(etype, stype)
+					if typename in typelst.keys():
+						res["data"].append([ "{}({})-{}".format(etype,stype,int(s["s"])), int(s["s"]), t, typelst[typename] ])
 			else:
 				topic = db.getallTopic(t,i)
-				etype,stype = _topic2type(topic[1])
-				if etype in typelst.keys():
-					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[etype] ])
+				etype, stype = _topic2type(topic[1])
+				typename = getName(etype, stype)
+				if typename in typelst.keys():
+					res["data"].append([ "{}({})-{}".format(etype,stype,int(1)), 1, t, typelst[typename] ])
 			query.addnewSensor(res)
 			res = {"MAC":"","data":[]}

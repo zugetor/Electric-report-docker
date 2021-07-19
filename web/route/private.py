@@ -7,12 +7,11 @@ app = Blueprint('Private', __name__)
 
 @app.route('/dashboard_list/',methods=['POST'])
 def dashboard_list():
-	data = json.loads(request.form.get('data'))
+	data = request.form.get('data')
 	unit = request.form.get('unit')
 	startTime = request.form.get('startTime')
 	endTime = request.form.get('endTime')
-	graphType = request.form.get('graphType')
-	response = jsonify(query.dashboard.dashboard_list(data,int(unit),startTime,endTime,graphType))
+	response = jsonify(query.dashboard.dashboard_list(data,int(unit),startTime,endTime))
 	# response = query.dashboard_list(data,unit,startTime,endTime,graphType)
 	return response
 
@@ -236,7 +235,9 @@ def notify_token_edit():
 @app.route('/token/',methods=['GET'])
 @login_required
 def get_token():
-	return jsonify(query.notification.getToken(session['id']))
+	res = query.notification.getToken(session['id'])
+	res["ntoken"] = res["ntoken"][0:4] + "*****"
+	return jsonify(res)
 
 @app.route('/link',methods=['GET'])
 def get_setting():
@@ -259,5 +260,19 @@ def set_setting():
 		return Response('{"Code":"400 Bad request"}', status=400, content_type="application/json")
 	res = query.newSetting(data, digest)
 	# if(res.inserted_id == "" or res.inserted_id == None):
-	# 	return Response('{"Code":"500 Internal Server Error"}', status=500, content_type="application/json")
+	#	return Response('{"Code":"500 Internal Server Error"}', status=500, content_type="application/json")
 	return jsonify({"Code": "200 OK", "hash": digest})
+	
+@app.route("/anomaly",methods=["POST"])
+@login_required
+def anomaly():
+	enable = request.form.get('enable')
+	detections = request.form.getlist('detections[]')
+	training = request.form.get('training')
+	datasize = request.form.get('datasize')
+	if(training.isnumeric()):
+		training = int(training)
+	if(datasize.isnumeric()):
+		datasize = int(datasize)
+	query.saveAnomaly(enable, detections, training, datasize)
+	return jsonify({'Code':'200 OK'})
