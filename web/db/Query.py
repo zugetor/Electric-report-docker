@@ -473,6 +473,22 @@ class Query:
 						res.append(tmp)
 			return sorted(res,key=lambda x: x.get('name'))
 
+		def getDeviceType(self):
+			allType = self.query._client["iot_data"]["iot_type"].find()
+			res = []
+			for _type in allType:
+				sType = _type["sensor_type"]
+				dType = _type["device_type"]
+				tmp = {}
+				if(dType != None and dType != ""):
+					tmp["name"] = "{}({})".format(sType, dType) 
+					tmp["id"] = "{}_{}".format(sType, dType).lower()
+				else:
+					tmp["name"] = "{}".format(sType) 
+					tmp["id"] = "{}".format(sType).lower()
+				res.append(tmp)
+			return sorted(res,key=lambda x: x.get('name'))
+
 	def getAllType(self):
 		res = self.fetchAll("SELECT * FROM type")
 		return res

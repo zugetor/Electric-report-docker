@@ -1,4 +1,4 @@
 db/mysql/data
 db/mongodb/data
 __pycache__
-clf.joblib
+*.joblib

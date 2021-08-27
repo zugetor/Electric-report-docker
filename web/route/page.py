@@ -154,6 +154,6 @@ def user_manage():
 @app.route("/anomaly")
 @login_required
 def anomaly():
-	_condition = query.rule.getCondition()
+	_condition = query.rule.getDeviceType()
 	settingAnomaly = query.getAnomaly()
 	return render_template("anomaly.html",_condition=_condition,settingAnomaly=settingAnomaly)

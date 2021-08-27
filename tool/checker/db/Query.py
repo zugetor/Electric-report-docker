@@ -115,19 +115,19 @@ class Query:
 		return res
 
 	def getCondition(self):
-			allType = self._client["iot_data"]["iot_type"].find()
-			res = []
-			for _type in allType:
-				sType = _type["sensor_type"]
-				dType = _type["device_type"]
-				for schema in _type["schema"].keys():
-					if(_type["schema"][schema] == "int"):
-						tmp = {}
-						if(dType != None and dType != ""):
-							tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
-							tmp["id"] = "{}_{}_{}".format(sType, dType, schema).lower()
-						else:
-							tmp["name"] = "{}_{}".format(sType, schema) 
-							tmp["id"] = "{}_{}".format(sType, schema).lower()
-						res.append(tmp)
-			return sorted(res,key=lambda x: x.get('name'))
+		allType = self._client["iot_data"]["iot_type"].find()
+		res = []
+		for _type in allType:
+			sType = _type["sensor_type"]
+			dType = _type["device_type"]
+			for schema in _type["schema"].keys():
+				if(_type["schema"][schema] == "int"):
+					tmp = {}
+					if(dType != None and dType != ""):
+						tmp["name"] = "{}({})_{}".format(sType, dType, schema) 
+						tmp["id"] = "{}_{}_{}".format(sType, dType, schema).lower()
+					else:
+						tmp["name"] = "{}_{}".format(sType, schema) 
+						tmp["id"] = "{}_{}".format(sType, schema).lower()
+					res.append(tmp)
+		return sorted(res,key=lambda x: x.get('name'))
