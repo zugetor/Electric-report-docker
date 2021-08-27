@@ -101,7 +101,8 @@ def reset():
 @app.route("/graph_view")
 @login_required
 def graph_view():
-	return render_template("graph_view.html")
+	_type = query.getAllType()
+	return render_template("graph_view.html",_type=_type)
 
 @app.route("/graph_show")
 def graph_show():

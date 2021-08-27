@@ -7,12 +7,11 @@ app = Blueprint('Private', __name__)
 
 @app.route('/dashboard_list/',methods=['POST'])
 def dashboard_list():
-	data = json.loads(request.form.get('data'))
+	data = request.form.get('data')
 	unit = request.form.get('unit')
 	startTime = request.form.get('startTime')
 	endTime = request.form.get('endTime')
-	graphType = request.form.get('graphType')
-	response = jsonify(query.dashboard.dashboard_list(data,int(unit),startTime,endTime,graphType))
+	response = jsonify(query.dashboard.dashboard_list(data,int(unit),startTime,endTime))
 	# response = query.dashboard_list(data,unit,startTime,endTime,graphType)
 	return response
 
