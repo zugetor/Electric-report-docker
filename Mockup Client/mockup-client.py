@@ -12,6 +12,9 @@ def mockupdata(MAC):
 def mockupdata1(sensor,MAC):
 	return { "MAC": MAC, "s": sensor,"a":random.randint(5, 10) }
 
+def test(MAC):
+	return { "MAC": MAC, "a":random.randint(500, 1000) }
+
 def mockupdata2(MAC):
 	return { "MAC": MAC, "status": random.randint(0, 1)}
 
@@ -22,6 +25,12 @@ client = mqtt.Client()
 client.username_pw_set(username="admin",password="password")
 client.connect(host,port)
 for _ in range(999):
+
+	message = test("AA-BB-CC-DD-EE")
+	client.publish("/infbuu/IF/2/IF-204/my/computer",json.dumps(message))
+	print("Publish: {}".format(message))
+
+
 	message = mockupdata1(1,"AA-BB-CC-DD-EE")
 	client.publish("/infbuu/IF/2/IF-204/ct/light",json.dumps(message))
 	print("Publish: {}".format(message))
@@ -177,4 +186,4 @@ for _ in range(999):
 	client.publish("/infbuu/IF/6/IF-605/pir",json.dumps(message))
 	print("Publish: {}".format(message))
 
-	time.sleep(60)
+	time.sleep(300)
