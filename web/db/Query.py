@@ -72,7 +72,7 @@ class Query:
 			ct=[] #collect data and query one time for combine
 			dm=[] #collect data and query one time for combine
 			nameCombine=""
-			sensorTypeCombine=[];
+			sensorTypeCombine=[]
 			for i in range(len(data)):
 				name = data[i]['name']
 				if(data[i]['type'][0:3] == "ct_"):
