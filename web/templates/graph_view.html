@@ -1141,10 +1141,10 @@ cursor:pointer;
 			$('#autoRefresh').removeClass('btn-outline-success').addClass('btn-outline-danger');
 			endTime = new Date(moment()).getTime()/1000;
 			getAndLoad()
-			// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+			console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			timerId = setInterval(() => {
 				getAndLoad()
-				// console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
+				console.log(moment().format('MMMM Do YYYY, h:mm:ss a'));
 			}, updateTime);
 			checkRefresh = true;
 		} else {
