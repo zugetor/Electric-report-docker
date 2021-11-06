@@ -732,4 +732,7 @@ class Query:
 		detections = db["key_storage"].find_one({"key":"detections"})
 		training = db["key_storage"].find_one({"key":"training"})
 		datasize = db["key_storage"].find_one({"key":"datasize"})
+		if(enable == None or detections == None or training == None or datasize == None):
+			self.saveAnomaly(False,[],168,-1)
+			return {"enable":False,"detections":[],"training":168,"datasize":-1}
 		return {"enable":enable["value"],"detections":detections["value"],"training":training["value"],"datasize":datasize["value"]}
